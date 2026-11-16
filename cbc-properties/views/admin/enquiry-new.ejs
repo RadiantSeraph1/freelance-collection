@@ -1,0 +1,23 @@
+<%- include('../partials/head') %>
+<%- include('nav') %>
+  <h1>Log an enquiry</h1>
+  <p class="muted">For enquiries that arrive by phone, WhatsApp, social media or in person, so every lead is tracked in one place.</p>
+  <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
+  <form method="post" action="/admin/enquiries" class="stack panel wide">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <div class="row">
+      <label>Customer name <input name="name" required maxlength="100" value="<%= form.name || '' %>"></label>
+      <label>Phone <input name="phone" maxlength="30" value="<%= form.phone || '' %>"></label>
+      <label>Email <input name="email" type="email" maxlength="120" value="<%= form.email || '' %>"></label>
+    </div>
+    <div class="row">
+      <label>Source <select name="source"><% SOURCES.forEach((s) => { %><option value="<%= s %>" <%= form.source === s ? 'selected' : '' %>><%= label(s) %></option><% }) %></select></label>
+      <label>Plot <select name="plot_id"><option value="">General enquiry</option><% plots.forEach((p) => { %><option value="<%= p.id %>" <%= form.plot_id === p.id ? 'selected' : '' %>><%= p.ref %></option><% }) %></select></label>
+      <label>Assigned to <input name="assigned_to" maxlength="60" value="<%= form.assigned_to || '' %>"></label>
+      <label>Next follow-up <input name="next_follow_up" type="date" value="<%= form.next_follow_up || '' %>"></label>
+    </div>
+    <label>What they asked for <textarea name="message" rows="4" maxlength="2000"><%= form.message || '' %></textarea></label>
+    <div class="actions"><button class="btn">Save enquiry</button> <a href="/admin/enquiries">Cancel</a></div>
+  </form>
+</div>
+<%- include('../partials/foot') %>

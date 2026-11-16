@@ -1,0 +1,30 @@
+<%- include('partials/head') %>
+<section class="hero">
+  <div class="wrap">
+    <h1>Verified, documented land in Greater Accra</h1>
+    <p>See exactly which plots are available, what they cost, and how far their paperwork has reached.</p>
+    <form class="search" action="/plots">
+      <select name="estate" aria-label="Estate"><option value="">Any estate</option><% estates.forEach((e) => { %><option value="<%= e.id %>"><%= e.name %></option><% }) %></select>
+      <input name="max_price" type="number" min="0" placeholder="Maximum budget (<%= site.currency %>)" aria-label="Maximum budget">
+      <input type="hidden" name="status" value="available">
+      <button class="btn">Find plots</button>
+    </form>
+  </div>
+</section>
+<section class="wrap section">
+  <h2>Our estates</h2>
+  <div class="grid">
+    <% estates.forEach((e) => { %>
+    <a class="card" href="/plots?estate=<%= e.id %>">
+      <div class="card-body">
+        <h3><%= e.name %></h3>
+        <p class="muted"><%= e.location %></p>
+        <p><%= e.description %></p>
+        <p class="price"><% if (e.from_price) { %>From <%= money(e.from_price) %><% } else { %>Sold out<% } %></p>
+        <p class="facts"><span><%= e.available %> of <%= e.total %> plots available</span></p>
+      </div>
+    </a>
+    <% }) %>
+  </div>
+</section>
+<%- include('partials/foot') %>

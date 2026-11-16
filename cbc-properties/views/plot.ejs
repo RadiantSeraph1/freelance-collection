@@ -1,0 +1,30 @@
+<%- include('partials/head') %>
+<section class="wrap section">
+  <p><a href="/plots">← All plots</a></p>
+  <div class="detail">
+    <div>
+      <div class="photo big ph ph-plot <%= plot.status %>"><span>Plot <%= plot.ref %></span></div>
+      <div class="tags"><span class="tag <%= plot.status === 'available' ? 'ok' : plot.status === 'reserved' ? 'warn' : '' %>"><%= label(plot.status) %></span></div>
+      <h1><%= plot.estate_name %> – plot <%= plot.plot_no %></h1>
+      <p class="muted"><%= plot.estate_location %> · Ref <%= plot.ref %></p>
+      <p class="price big"><%= money(plot.price) %></p>
+      <dl class="specs">
+        <% if (plot.dimensions) { %><div><dt>Dimensions</dt><dd><%= plot.dimensions %></dd></div><% } %>
+        <% if (plot.size_sqm !== null) { %><div><dt>Size</dt><dd><%= plot.size_sqm.toLocaleString('en-US') %> m²</dd></div><% } %>
+        <div><dt>Demarcation</dt><dd><%= label(plot.demarcation) %></dd></div>
+      </dl>
+    </div>
+    <aside class="panel">
+      <% if (plot.status === 'available') { %>
+        <h2>Ask about this plot</h2>
+        <a class="btn wa" href="<%= waLink(`Hello, I am interested in plot ${plot.ref} at ${plot.estate_name}.`) %>" rel="noopener">Chat on WhatsApp</a>
+        <p class="muted center">or leave your details and we will call you</p>
+      <% } else { %>
+        <h2>This plot is <%= label(plot.status).toLowerCase() %></h2>
+        <p class="muted">Leave your details and we will suggest similar plots, or tell you if this one becomes available again.</p>
+      <% } %>
+      <%- include('partials/enquiry-form') %>
+    </aside>
+  </div>
+</section>
+<%- include('partials/foot') %>

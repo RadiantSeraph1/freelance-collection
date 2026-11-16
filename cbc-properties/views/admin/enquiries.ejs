@@ -1,0 +1,24 @@
+<%- include('../partials/head') %>
+<%- include('nav') %>
+  <div class="bar"><h1>Enquiries</h1><a class="btn" href="/admin/enquiries/new">Log a phone / WhatsApp enquiry</a></div>
+  <form class="filters" action="/admin/enquiries">
+    <label>Stage <select name="status"><option value="">All</option><option value="open" <%= f.status === 'open' ? 'selected' : '' %>>All open</option><% ENQUIRY_STATUSES.forEach((s) => { %><option value="<%= s %>" <%= f.status === s ? 'selected' : '' %>><%= label(s) %></option><% }) %></select></label>
+    <label>Source <select name="source"><option value="">All</option><% SOURCES.forEach((s) => { %><option value="<%= s %>" <%= f.source === s ? 'selected' : '' %>><%= label(s) %></option><% }) %></select></label>
+    <label class="check"><input type="checkbox" name="due" value="1" <%= f.due ? 'checked' : '' %>> Follow-up due</label>
+    <div class="actions"><button class="btn">Filter</button> <a href="/admin/enquiries">Clear</a></div>
+  </form>
+  <% if (enquiries.length) { %>
+  <table>
+    <thead><tr><th>Received</th><th>Customer</th><th>Plot</th><th>Source</th><th>Stage</th><th>Assigned to</th><th>Next follow-up</th></tr></thead>
+    <tbody><% enquiries.forEach((e) => { const open = !['won','lost'].includes(e.status); %><tr>
+      <td><%= e.created_at.slice(0, 10) %></td>
+      <td><a href="/admin/enquiries/<%= e.id %>"><%= e.name %></a></td>
+      <td><%= e.ref || 'General' %></td><td><%= label(e.source) %></td>
+      <td><span class="tag <%= e.status === 'new' ? 'warn' : e.status === 'won' ? 'ok' : '' %>"><%= label(e.status) %></span></td>
+      <td><%= e.assigned_to || 'Unassigned' %></td>
+      <td><% if (open && e.next_follow_up) { %><span class="<%= e.next_follow_up <= today ? 'overdue' : '' %>"><%= e.next_follow_up %></span><% } else if (open) { %><span class="overdue">Not set</span><% } else { %>–<% } %></td>
+    </tr><% }) %></tbody>
+  </table>
+  <% } else { %><p class="empty">No enquiries match.</p><% } %>
+</div>
+<%- include('../partials/foot') %>

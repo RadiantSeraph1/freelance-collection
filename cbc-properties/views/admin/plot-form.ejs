@@ -1,0 +1,30 @@
+<%- include('../partials/head') %>
+<%- include('nav') %>
+  <h1><%= title %></h1>
+  <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
+  <% const v = (x) => x ?? ''; %>
+  <form method="post" action="/admin/plots<%= plot.id ? '/' + plot.id : '' %>" class="stack panel wide">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <div class="row">
+      <label>Estate <select name="estate_id" required><option value="">Choose…</option><% estates.forEach((e) => { %><option value="<%= e.id %>" <%= plot.estate_id === e.id ? 'selected' : '' %>><%= e.name %> (<%= e.code %>)</option><% }) %></select></label>
+      <label>Plot number <input name="plot_no" required maxlength="10" value="<%= v(plot.plot_no) %>" placeholder="e.g. 08"></label>
+      <label>Price (<%= site.currency %>) <input name="price" type="number" min="0" required value="<%= v(plot.price) %>"></label>
+    </div>
+    <div class="row">
+      <label>Dimensions <input name="dimensions" maxlength="40" value="<%= v(plot.dimensions) %>" placeholder="e.g. 70 × 100 ft"></label>
+      <label>Size (m²) <input name="size_sqm" type="number" min="0" value="<%= v(plot.size_sqm) %>"></label>
+      <label>Demarcation status <select name="demarcation"><% DEMARCATION.forEach((d) => { %><option value="<%= d %>" <%= plot.demarcation === d ? 'selected' : '' %>><%= label(d) %></option><% }) %></select></label>
+    </div>
+    <label>Internal notes (not shown to the public) <textarea name="notes" rows="3" maxlength="2000"><%= v(plot.notes) %></textarea></label>
+    <p class="muted">Availability is not set here: a plot becomes reserved when a reservation is recorded and sold when it is fully paid.</p>
+    <div class="actions"><button class="btn">Save plot</button> <a href="/admin/plots">Cancel</a></div>
+  </form>
+  <% if (plot.id) { %>
+  <form method="post" action="/admin/plots/<%= plot.id %>/delete" class="danger">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <label class="check"><input type="checkbox" required> I want to permanently delete plot <%= plot.ref %>.</label>
+    <button class="btn red">Delete plot</button>
+  </form>
+  <% } %>
+</div>
+<%- include('../partials/foot') %>

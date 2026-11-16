@@ -1,0 +1,39 @@
+<%- include('../partials/head') %>
+<%- include('nav') %>
+  <h1>Dashboard</h1>
+  <div class="stats">
+    <a class="stat" href="/admin/enquiries?status=new"><b><%= stats.newEnquiries %></b>New enquiries</a>
+    <a class="stat <%= stats.due ? 'alert' : '' %>" href="/admin/enquiries?due=1"><b><%= stats.due %></b>Follow-ups due</a>
+    <a class="stat <%= stats.lapsed ? 'alert' : '' %>" href="/admin/sales?view=lapsed"><b><%= stats.lapsed %></b>Lapsed reservations</a>
+    <a class="stat" href="/admin/sales"><b><%= stats.activeSales %></b>Active sales</a>
+    <a class="stat" href="/admin/sales?view=owing"><b><%= money(stats.outstanding) %></b>Still to collect</a>
+    <a class="stat" href="/admin/plots?status=available"><b><%= stats.available %></b>Plots available</a>
+  </div>
+
+  <h2>Reservations past their hold date</h2>
+  <% if (lapsed.length) { %>
+  <table>
+    <thead><tr><th>Held until</th><th>Customer</th><th>Plot</th><th class="num">Paid</th><th class="num">Balance</th><th>Handled by</th></tr></thead>
+    <tbody><% lapsed.forEach((s) => { %><tr>
+      <td class="overdue"><%= s.reservation_expires %></td>
+      <td><a href="/admin/sales/<%= s.id %>"><%= s.customer_name %></a></td>
+      <td><%= s.ref %></td><td class="num"><%= money(s.paid) %></td><td class="num"><%= money(s.agreed_price - s.paid) %></td>
+      <td><%= s.handled_by || 'Unassigned' %></td>
+    </tr><% }) %></tbody>
+  </table>
+  <p class="muted">These plots are still held although the agreement has not been signed. Chase the customer or cancel to release the plot.</p>
+  <% } else { %><p class="muted">None.</p><% } %>
+
+  <h2>Enquiry follow-ups due today or overdue</h2>
+  <% if (due.length) { %>
+  <table>
+    <thead><tr><th>Due</th><th>Customer</th><th>Plot</th><th>Stage</th><th>Assigned to</th></tr></thead>
+    <tbody><% due.forEach((e) => { %><tr>
+      <td><%= e.next_follow_up %></td>
+      <td><a href="/admin/enquiries/<%= e.id %>"><%= e.name %></a></td>
+      <td><%= e.ref || 'General' %></td><td><%= label(e.status) %></td><td><%= e.assigned_to || 'Unassigned' %></td>
+    </tr><% }) %></tbody>
+  </table>
+  <% } else { %><p class="muted">Nothing is due.</p><% } %>
+</div>
+<%- include('../partials/foot') %>

@@ -1,0 +1,81 @@
+<%- include('../partials/head') %>
+<%- include('nav') %>
+  <p><a href="/admin/sales">← All sales</a></p>
+  <h1><%= sale.customer_name %> – plot <%= sale.ref %></h1>
+  <% const active = sale.status === 'active'; const balance = sale.agreed_price - sale.paid; const nextId = (milestones.find((m) => !m.done_on) || {}).id; %>
+  <% if (!active) { %><p class="errors">Cancelled: <%= sale.cancelled_reason %>. The plot was released; this record is kept for reference.</p><% } %>
+  <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
+  <dl class="specs">
+    <div><dt>Estate</dt><dd><%= sale.estate_name %></dd></div>
+    <div><dt>Phone</dt><dd><%= sale.phone || '–' %></dd></div>
+    <div><dt>Email</dt><dd><%= sale.email || '–' %></dd></div>
+    <div><dt>Reserved on</dt><dd><%= sale.reserved_on %></dd></div>
+    <div><dt>Held until</dt><dd><%= sale.reservation_expires || '–' %></dd></div>
+    <div><dt>Handled by</dt><dd><%= sale.handled_by || '–' %></dd></div>
+    <div><dt>Demarcation</dt><dd><%= label(sale.demarcation) %> (<a href="/admin/plots/<%= sale.plot_id %>/edit">update</a>)</dd></div>
+  </dl>
+  <div class="two">
+    <div>
+      <h2>Payments</h2>
+      <div class="stats">
+        <div class="stat"><b><%= money(sale.agreed_price) %></b>Agreed price</div>
+        <div class="stat"><b><%= money(sale.paid) %></b>Paid</div>
+        <div class="stat <%= balance > 0 ? 'alert' : '' %>"><b><%= money(balance) %></b>Balance</div>
+      </div>
+      <progress value="<%= sale.paid %>" max="<%= sale.agreed_price %>"><%= Math.round(100 * sale.paid / sale.agreed_price) %>% paid</progress>
+      <% if (payments.length) { %>
+      <table>
+        <thead><tr><th>Date</th><th>Method</th><th>Reference</th><th class="num">Amount</th><th></th></tr></thead>
+        <tbody><% payments.forEach((p) => { %><tr>
+          <td><%= p.paid_on %></td><td><%= p.method %></td><td><%= p.reference || '–' %></td><td class="num"><%= money(p.amount) %></td>
+          <td><% if (active) { %><form method="post" action="/admin/sales/<%= sale.id %>/payments/<%= p.id %>/delete"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="link">Remove</button></form><% } %></td>
+        </tr><% }) %></tbody>
+      </table>
+      <% } else { %><p class="muted">No payments recorded yet.</p><% } %>
+      <% if (active && balance > 0) { %>
+      <form method="post" action="/admin/sales/<%= sale.id %>/payments" class="panel stack">
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        <h2>Record a payment</h2>
+        <div class="row">
+          <label>Amount (<%= site.currency %>) <input name="amount" type="number" min="1" max="<%= balance %>" required></label>
+          <label>Date received <input name="paid_on" type="date" value="<%= today %>" max="<%= today %>" required></label>
+          <label>Method <select name="method"><% PAYMENT_METHODS.forEach((m) => { %><option><%= m %></option><% }) %></select></label>
+          <label>Receipt / reference <input name="reference" maxlength="60"></label>
+        </div>
+        <button class="btn">Add payment</button>
+      </form>
+      <% } %>
+    </div>
+    <div>
+      <h2>Documentation: <%= sale.steps_done %> of <%= sale.steps %> steps done</h2>
+      <progress value="<%= sale.steps_done %>" max="<%= sale.steps %>"></progress>
+      <ol class="steps">
+        <% milestones.forEach((m) => { %>
+        <li class="<%= m.done_on ? 'done' : m.id === nextId ? 'next' : '' %>">
+          <strong><%= m.label %></strong>
+          <% if (m.done_on) { %>
+            <br><span class="muted">Done <%= m.done_on %> by <%= m.done_by %><% if (m.note) { %> · <%= m.note %><% } %></span>
+            <% if (active) { %><form method="post" action="/admin/sales/<%= sale.id %>/milestones/<%= m.id %>"><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="action" value="undo"><button class="link">Undo</button></form><% } %>
+          <% } else if (active) { %>
+            <form method="post" action="/admin/sales/<%= sale.id %>/milestones/<%= m.id %>">
+              <input type="hidden" name="_csrf" value="<%= csrf %>">
+              <input name="done_on" type="date" value="<%= today %>" max="<%= today %>" aria-label="Date done">
+              <input name="note" maxlength="300" placeholder="Note, e.g. document number" aria-label="Note">
+              <button class="btn">Mark done</button>
+            </form>
+          <% } %>
+        </li>
+        <% }) %>
+      </ol>
+    </div>
+  </div>
+  <% if (active) { %>
+  <form method="post" action="/admin/sales/<%= sale.id %>/cancel" class="danger">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <label>Reason for cancelling <input name="reason" required maxlength="300"></label>
+    <button class="btn red">Cancel sale and release plot</button>
+  </form>
+  <p class="muted">Cancelling keeps this record and its payments for reference. Any refund is handled outside this system.</p>
+  <% } %>
+</div>
+<%- include('../partials/foot') %>

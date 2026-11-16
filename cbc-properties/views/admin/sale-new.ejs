@@ -1,0 +1,24 @@
+<%- include('../partials/head') %>
+<%- include('nav') %>
+  <h1>New reservation</h1>
+  <p class="muted">Recording a reservation takes the plot off the market and starts its documentation checklist.</p>
+  <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
+  <% const v = (x) => x ?? ''; %>
+  <form method="post" action="/admin/sales" class="stack panel wide">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <input type="hidden" name="enquiry_id" value="<%= v(form.enquiry_id) %>">
+    <div class="row">
+      <label>Plot <select name="plot_id" required><option value="">Choose an available plot…</option><% plots.forEach((p) => { %><option value="<%= p.id %>" <%= form.plot_id === p.id ? 'selected' : '' %>><%= p.ref %> – listed at <%= money(p.price) %></option><% }) %></select></label>
+      <label>Agreed price (<%= site.currency %>) <input name="agreed_price" type="number" min="1" required value="<%= v(form.agreed_price) %>"></label>
+      <label>Hold the plot until <input name="reservation_expires" type="date" value="<%= v(form.reservation_expires) %>"></label>
+    </div>
+    <div class="row">
+      <label>Customer name <input name="customer_name" required maxlength="100" value="<%= v(form.customer_name) %>"></label>
+      <label>Phone <input name="phone" maxlength="30" value="<%= v(form.phone) %>"></label>
+      <label>Email <input name="email" type="email" maxlength="120" value="<%= v(form.email) %>"></label>
+      <label>Handled by <input name="handled_by" maxlength="60" value="<%= v(form.handled_by) %>"></label>
+    </div>
+    <div class="actions"><button class="btn">Reserve plot</button> <a href="/admin/sales">Cancel</a></div>
+  </form>
+</div>
+<%- include('../partials/foot') %>

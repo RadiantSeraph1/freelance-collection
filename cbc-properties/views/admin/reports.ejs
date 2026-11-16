@@ -1,0 +1,33 @@
+<%- include('../partials/head') %>
+<%- include('nav') %>
+  <div class="bar"><h1>Reports</h1><a class="btn" href="/admin/reports/sales.csv">Download all sales (CSV)</a></div>
+  <h2>Plots and money by estate</h2>
+  <table>
+    <thead><tr><th>Estate</th><th class="num">Plots</th><th class="num">Available</th><th class="num">Reserved</th><th class="num">Sold</th><th class="num">Agreed sales</th><th class="num">Collected</th><th class="num">Still to collect</th><th class="num">Unsold stock at list price</th></tr></thead>
+    <tbody><% estates.forEach((e) => { %><tr>
+      <td><%= e.name %></td><td class="num"><%= e.total %></td><td class="num"><%= e.available %></td><td class="num"><%= e.reserved %></td><td class="num"><%= e.sold %></td>
+      <td class="num"><%= money(e.agreed) %></td><td class="num"><%= money(e.collected) %></td><td class="num"><%= money(e.agreed - e.collected) %></td><td class="num"><%= money(e.unsold_value) %></td>
+    </tr><% }) %></tbody>
+  </table>
+  <div class="two">
+    <div>
+      <h2>Where active sales are waiting</h2>
+      <% if (stages.length) { %><table><thead><tr><th>Next step</th><th class="num">Sales</th></tr></thead>
+      <tbody><% stages.forEach((s) => { %><tr><td><%= s.stage %></td><td class="num"><%= s.n %></td></tr><% }) %></tbody></table>
+      <% } else { %><p class="muted">No active sales.</p><% } %>
+      <h2>Demarcation progress</h2>
+      <table><tbody><% DEMARCATION.forEach((d) => { const row = demarcation.find((x) => x.demarcation === d); %><tr><td><%= label(d) %></td><td class="num"><%= row ? row.n : 0 %></td></tr><% }) %></tbody></table>
+    </div>
+    <div>
+      <h2>Money received by month</h2>
+      <% if (months.length) { %><table><thead><tr><th>Month</th><th class="num">Payments</th><th class="num">Collected</th></tr></thead>
+      <tbody><% months.forEach((m) => { %><tr><td><%= m.month %></td><td class="num"><%= m.payments %></td><td class="num"><%= money(m.collected) %></td></tr><% }) %></tbody></table>
+      <% } else { %><p class="muted">No payments yet.</p><% } %>
+      <h2>Where enquiries come from</h2>
+      <table><thead><tr><th>Source</th><th class="num">Enquiries</th><th class="num">Reserved / bought</th></tr></thead>
+      <tbody><% sources.forEach((s) => { %><tr><td><%= label(s.source) %></td><td class="num"><%= s.total %></td><td class="num"><%= s.won %></td></tr><% }) %></tbody></table>
+    </div>
+  </div>
+  <p class="muted">Money figures cover active sales only; cancelled sales are excluded.</p>
+</div>
+<%- include('../partials/foot') %>

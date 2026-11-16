@@ -1,0 +1,13 @@
+<a class="card" href="/plots/<%= p.id %>">
+  <div class="photo ph ph-plot <%= p.status %>"><span>Plot <%= p.ref %></span></div>
+  <div class="card-body">
+    <div class="tags"><span class="tag <%= p.status === 'available' ? 'ok' : p.status === 'reserved' ? 'warn' : '' %>"><%= label(p.status) %></span></div>
+    <h3><%= p.estate_name %> – plot <%= p.plot_no %></h3>
+    <p class="muted"><%= p.estate_location %></p>
+    <p class="price"><%= money(p.price) %></p>
+    <p class="facts">
+      <% if (p.dimensions) { %><span><%= p.dimensions %></span><% } %>
+      <% if (p.size_sqm !== null) { %><span><%= p.size_sqm.toLocaleString('en-US') %> m²</span><% } %>
+    </p>
+  </div>
+</a>
