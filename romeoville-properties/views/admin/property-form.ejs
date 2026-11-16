@@ -1,0 +1,37 @@
+<%- include('../partials/head') %>
+<%- include('nav') %>
+  <h1><%= title %></h1>
+  <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
+  <% const sel = (a, b) => a === b ? 'selected' : ''; const v = (x) => x ?? ''; %>
+  <form method="post" action="/admin/properties<%= property.id ? '/' + property.id : '' %>" class="stack panel wide">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <label>Title <input name="title" required maxlength="120" value="<%= v(property.title) %>"></label>
+    <div class="row">
+      <label>Type <select name="type"><% TYPES.forEach((t) => { %><option value="<%= t %>" <%= sel(property.type, t) %>><%= label(t) %></option><% }) %></select></label>
+      <label>Listing <select name="listing"><% LISTINGS.forEach((t) => { %><option value="<%= t %>" <%= sel(property.listing, t) %>><%= label(t) %></option><% }) %></select></label>
+      <label>Status <select name="status"><% PROPERTY_STATUSES.forEach((t) => { %><option value="<%= t %>" <%= sel(property.status, t) %>><%= label(t) %></option><% }) %></select></label>
+    </div>
+    <div class="row">
+      <label>Location <input name="location" required maxlength="80" value="<%= v(property.location) %>"></label>
+      <label>Price (per month if renting) <input name="price" type="number" min="0" required value="<%= v(property.price) %>"></label>
+      <label>Currency <select name="currency"><% CURRENCIES.forEach((t) => { %><option value="<%= t %>" <%= sel(property.currency, t) %>><%= t %></option><% }) %></select></label>
+    </div>
+    <div class="row">
+      <label>Bedrooms <input name="bedrooms" type="number" min="0" value="<%= v(property.bedrooms) %>"></label>
+      <label>Bathrooms <input name="bathrooms" type="number" min="0" value="<%= v(property.bathrooms) %>"></label>
+      <label>Size (m²) <input name="size_sqm" type="number" min="0" value="<%= v(property.size_sqm) %>"></label>
+    </div>
+    <label>Photo link (https://…) <input name="image_url" maxlength="500" value="<%= v(property.image_url) %>"></label>
+    <label>Description <textarea name="description" rows="6" maxlength="4000"><%= v(property.description) %></textarea></label>
+    <label class="check"><input type="checkbox" name="featured" value="1" <%= property.featured ? 'checked' : '' %>> Feature on the home page</label>
+    <div class="actions"><button class="btn">Save listing</button> <a href="/admin/properties">Cancel</a></div>
+  </form>
+  <% if (property.id) { %>
+  <form method="post" action="/admin/properties/<%= property.id %>/delete" class="danger">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <label class="check"><input type="checkbox" required> I want to permanently delete <%= property.ref %>. Its enquiries are kept.</label>
+    <button class="btn red">Delete listing</button>
+  </form>
+  <% } %>
+</div>
+<%- include('../partials/foot') %>

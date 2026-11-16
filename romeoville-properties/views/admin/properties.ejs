@@ -1,0 +1,17 @@
+<%- include('../partials/head') %>
+<%- include('nav') %>
+  <div class="bar"><h1>Listings</h1><a class="btn" href="/admin/properties/new">Add a listing</a></div>
+  <table>
+    <thead><tr><th>Ref</th><th>Title</th><th>Location</th><th class="num">Price</th><th>Status</th><th class="num">Enquiries</th><th></th></tr></thead>
+    <tbody><% properties.forEach((p) => { %><tr>
+      <td><%= p.ref %></td>
+      <td><a href="/properties/<%= p.id %>"><%= p.title %></a><% if (p.featured) { %> <span class="tag">Featured</span><% } %></td>
+      <td><%= p.location %></td>
+      <td class="num"><%= money(p.price, p.currency) %></td>
+      <td><span class="tag <%= p.status === 'available' ? 'ok' : 'warn' %>"><%= label(p.status) %></span></td>
+      <td class="num"><%= p.enquiries %></td>
+      <td><a href="/admin/properties/<%= p.id %>/edit">Edit</a></td>
+    </tr><% }) %></tbody>
+  </table>
+</div>
+<%- include('../partials/foot') %>

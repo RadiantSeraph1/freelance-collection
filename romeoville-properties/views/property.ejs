@@ -1,0 +1,28 @@
+<%- include('partials/head') %>
+<section class="wrap section">
+  <p><a href="/properties">← All properties</a></p>
+  <div class="detail">
+    <div>
+      <% if (property.image_url) { %><img class="photo big" src="<%= property.image_url %>" alt="<%= property.title %>">
+      <% } else { %><div class="photo big ph ph-<%= property.type %>"><span><%= label(property.type) %></span></div><% } %>
+      <div class="tags"><span class="tag"><%= label(property.listing) %></span><span class="tag <%= property.status === 'available' ? 'ok' : 'warn' %>"><%= label(property.status) %></span></div>
+      <h1><%= property.title %></h1>
+      <p class="muted"><%= property.location %> · Ref <%= property.ref %></p>
+      <p class="price big"><%= money(property.price, property.currency) %><% if (property.listing === 'rent') { %><small> / month</small><% } %></p>
+      <dl class="specs">
+        <div><dt>Type</dt><dd><%= label(property.type) %></dd></div>
+        <% if (property.bedrooms !== null) { %><div><dt>Bedrooms</dt><dd><%= property.bedrooms %></dd></div><% } %>
+        <% if (property.bathrooms !== null) { %><div><dt>Bathrooms</dt><dd><%= property.bathrooms %></dd></div><% } %>
+        <% if (property.size_sqm !== null) { %><div><dt>Size</dt><dd><%= property.size_sqm.toLocaleString('en-US') %> m²</dd></div><% } %>
+      </dl>
+      <p class="desc"><%= property.description %></p>
+    </div>
+    <aside class="panel">
+      <h2>Enquire about this property</h2>
+      <a class="btn wa" href="<%= waLink(`Hello, I am interested in ${property.title} (Ref ${property.ref}).`) %>" rel="noopener">Chat on WhatsApp</a>
+      <p class="muted center">or leave your details and we will call you</p>
+      <%- include('partials/enquiry-form') %>
+    </aside>
+  </div>
+</section>
+<%- include('partials/foot') %>

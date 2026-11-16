@@ -1,0 +1,18 @@
+<%- include('partials/head') %>
+<section class="hero">
+  <div class="wrap">
+    <h1>Find your home or investment in Accra</h1>
+    <p>Houses, apartments, land and commercial space from a developer you can visit.</p>
+    <form class="search" action="/properties">
+      <select name="listing" aria-label="Buy or rent"><option value="">Buy or rent</option><% LISTINGS.forEach((l) => { %><option value="<%= l %>"><%= label(l) %></option><% }) %></select>
+      <select name="type" aria-label="Property type"><option value="">Any type</option><% TYPES.forEach((t) => { %><option value="<%= t %>"><%= label(t) %></option><% }) %></select>
+      <select name="location" aria-label="Location"><option value="">Any location</option><% locations.forEach((l) => { %><option><%= l %></option><% }) %></select>
+      <button class="btn">Search</button>
+    </form>
+  </div>
+</section>
+<section class="wrap section">
+  <div class="bar"><h2>Featured properties</h2><a href="/properties">View all properties →</a></div>
+  <div class="grid"><% featured.forEach((p) => { %><%- include('partials/card', { p }) %><% }) %></div>
+</section>
+<%- include('partials/foot') %>

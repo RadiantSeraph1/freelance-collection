@@ -1,0 +1,36 @@
+<%- include('../partials/head') %>
+<%- include('nav') %>
+  <h1>Dashboard</h1>
+  <div class="stats">
+    <a class="stat" href="/admin/enquiries?status=new"><b><%= stats.newEnquiries %></b>New enquiries</a>
+    <a class="stat <%= stats.due ? 'alert' : '' %>" href="/admin/enquiries?due=1"><b><%= stats.due %></b>Follow-ups due</a>
+    <a class="stat" href="/admin/enquiries?status=open"><b><%= stats.open %></b>Open enquiries</a>
+    <a class="stat" href="/admin/properties"><b><%= stats.listings %></b>Available listings</a>
+    <div class="stat"><b><%= stats.closed ? Math.round(100 * stats.won / stats.closed) + '%' : '–' %></b>Closed enquiries won</div>
+  </div>
+
+  <h2>Follow-ups due today or overdue</h2>
+  <% if (due.length) { %>
+  <table>
+    <thead><tr><th>Due</th><th>Customer</th><th>Property</th><th>Stage</th><th>Assigned to</th></tr></thead>
+    <tbody><% due.forEach((e) => { %><tr>
+      <td><%= e.next_follow_up %></td>
+      <td><a href="/admin/enquiries/<%= e.id %>"><%= e.name %></a></td>
+      <td><%= e.ref || 'General' %></td><td><%= label(e.status) %></td><td><%= e.assigned_to || 'Unassigned' %></td>
+    </tr><% }) %></tbody>
+  </table>
+  <% } else { %><p class="muted">Nothing is due. Well done.</p><% } %>
+
+  <div class="two">
+    <div>
+      <h2>Pipeline</h2>
+      <table><tbody><% ENQUIRY_STATUSES.forEach((s) => { %><tr><td><a href="/admin/enquiries?status=<%= s %>"><%= label(s) %></a></td><td class="num"><%= byStatus[s] || 0 %></td></tr><% }) %></tbody></table>
+    </div>
+    <div>
+      <h2>Where enquiries come from</h2>
+      <table><thead><tr><th>Source</th><th class="num">Enquiries</th><th class="num">Won</th></tr></thead>
+      <tbody><% bySource.forEach((s) => { %><tr><td><a href="/admin/enquiries?source=<%= s.source %>"><%= label(s.source) %></a></td><td class="num"><%= s.total %></td><td class="num"><%= s.won %></td></tr><% }) %></tbody></table>
+    </div>
+  </div>
+</div>
+<%- include('../partials/foot') %>

@@ -1,0 +1,7 @@
+<%- include('partials/head') %>
+<section class="wrap section narrow">
+  <h1>Contact us</h1>
+  <p>Tell us what you are looking for and we will get back to you. You can also call <strong><%= site.phone %></strong> or <a href="<%= waLink('Hello, I would like to ask about your properties.') %>" rel="noopener">chat on WhatsApp</a>.</p>
+  <div class="panel"><%- include('partials/enquiry-form', { property: null }) %></div>
+</section>
+<%- include('partials/foot') %>
