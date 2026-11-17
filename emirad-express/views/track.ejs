@@ -1,7 +1,7 @@
 <%- include('partials/head') %>
-<section class="wrap section narrow">
+<section class="section"><div class="narrow">
   <p class="muted">Tracking number</p>
-  <h1 class="mono"><%= s.tracking %> <span class="tag <%= s.status === 'delivered' ? 'ok' : ['failed', 'returned', 'cancelled'].includes(s.status) ? 'bad' : '' %>"><%= label(s.status) %></span></h1>
+  <h1 class="mono"><%= s.tracking %> <span class="badge <%= s.status === 'delivered' ? 'ok' : ['failed', 'returned', 'cancelled'].includes(s.status) ? 'bad' : '' %>"><%= label(s.status) %></span></h1>
   <dl class="specs">
     <div><dt>From</dt><dd><%= s.pickup_zone %></dd></div>
     <div><dt>To</dt><dd><%= s.delivery_zone %></dd></div>
@@ -15,5 +15,5 @@
   <h2>Progress</h2>
   <%- include('partials/timeline', { events, closed }) %>
   <p class="muted">Questions? Call <%= site.phone %> and quote your tracking number.</p>
-</section>
+</div></section>
 <%- include('partials/foot') %>

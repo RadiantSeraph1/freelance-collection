@@ -1,8 +1,8 @@
 <%- include('../partials/head') %>
 <div class="wrap section">
 <%- include('../partials/subnav') %>
-  <p><a href="/admin/shipments">← All shipments</a></p>
-  <h1><span class="mono"><%= s.tracking %></span> <span class="tag <%= s.status === 'delivered' ? 'ok' : ['failed', 'returned', 'cancelled'].includes(s.status) ? 'bad' : '' %>"><%= label(s.status) %></span><% if (s.late) { %> <span class="tag bad">Late</span><% } %></h1>
+  <p><a class="arrow-link small" href="/admin/shipments">← All shipments</a></p>
+  <h1><span class="mono"><%= s.tracking %></span> <span class="badge <%= s.status === 'delivered' ? 'ok' : ['failed', 'returned', 'cancelled'].includes(s.status) ? 'bad' : '' %>"><%= label(s.status) %></span><% if (s.late) { %> <span class="badge bad">Late</span><% } %></h1>
   <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
   <div class="two">
     <div>
@@ -21,25 +21,25 @@
       <h2>History</h2>
       <%- include('../partials/timeline', { events, closed: ['delivered', 'returned', 'cancelled'].includes(s.status), showWho: true }) %>
       <% if (cash.length) { %><h2>Cash</h2>
-      <table><thead><tr><th>What</th><th class="num">Expected</th><th class="num">Collected</th><th>Handed in</th></tr></thead>
-      <tbody><% cash.forEach((c) => { %><tr><td><%= c.kind === 'pickup_fee' ? 'Delivery fee at pickup' : 'Collected on delivery' %></td><td class="num"><%= money(c.expected) %></td><td class="num <%= c.collected < c.expected ? 'overdue' : '' %>"><%= money(c.collected) %></td><td><%= c.remitted_at ? c.remitted_at.slice(0, 10) : 'Not yet' %></td></tr><% }) %></tbody></table><% } %>
+      <div class="table-wrap"><table><thead><tr><th>What</th><th class="num">Expected</th><th class="num">Collected</th><th>Handed in</th></tr></thead>
+      <tbody><% cash.forEach((c) => { %><tr><td><%= c.kind === 'pickup_fee' ? 'Delivery fee at pickup' : 'Collected on delivery' %></td><td class="num"><%= money(c.expected) %></td><td class="num <%= c.collected < c.expected ? 'overdue' : '' %>"><%= money(c.collected) %></td><td><%= c.remitted_at ? c.remitted_at.slice(0, 10) : 'Not yet' %></td></tr><% }) %></tbody></table></div><% } %>
     </div>
     <div>
-      <div class="panel stack">
+      <div class="form-card stack">
         <h2>Tell the customer</h2>
         <a class="btn wa" href="<%= waLink(s.receiver_phone, receiverText) %>" rel="noopener">WhatsApp the receiver</a>
         <a class="btn wa" href="<%= waLink(s.sender_phone, senderText) %>" rel="noopener">WhatsApp the sender</a>
         <p class="muted">Tracking link: <a href="/track/<%= s.tracking %>" class="mono"><%= s.tracking %></a></p>
       </div>
       <% if (!['delivered', 'returned', 'cancelled'].includes(s.status)) { %>
-      <form method="post" action="/admin/shipments/<%= s.id %>/assign" class="panel stack">
+      <form method="post" action="/admin/shipments/<%= s.id %>/assign" class="form-card stack">
         <input type="hidden" name="_csrf" value="<%= csrf %>">
         <h2>Rider</h2>
         <p class="muted">Now: <%= s.rider_name || 'nobody' %></p>
         <label>Assign or change <select name="rider_id"><% riders.forEach((r) => { %><option value="<%= r.id %>" <%= s.rider_id === r.id ? 'selected' : '' %>><%= r.name %></option><% }) %></select></label>
         <button class="btn">Save rider</button>
       </form>
-      <form method="post" action="/admin/shipments/<%= s.id %>/status" class="panel stack">
+      <form method="post" action="/admin/shipments/<%= s.id %>/status" class="form-card stack">
         <input type="hidden" name="_csrf" value="<%= csrf %>">
         <h2>Update status</h2>
         <label>Change to <select name="to"><% next.forEach((n) => { %><option value="<%= n %>"><%= n === 'booked' ? 'Back to booked (remove rider)' : label(n) %></option><% }) %></select></label>

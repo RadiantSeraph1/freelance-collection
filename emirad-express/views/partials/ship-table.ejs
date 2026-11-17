@@ -1,12 +1,12 @@
 <% if (rows.length) { %>
-<table>
+<div class="table-wrap"><table>
   <thead><tr><th>Tracking</th><th>Receiver</th><th>Route</th><th>Service</th><th>Status</th><th>Due</th><th>Rider</th><th class="num">Price</th></tr></thead>
   <tbody><% rows.forEach((s) => { %><tr>
-    <td><a class="mono" href="<%= base %>/<%= s.id %>"><%= s.tracking %></a><% if (s.late) { %> <span class="tag bad">Late</span><% } %></td>
+    <td><a class="mono" href="<%= base %>/<%= s.id %>"><%= s.tracking %></a><% if (s.late) { %> <span class="badge bad">Late</span><% } %></td>
     <td><%= s.receiver_name %></td><td><%= s.pickup_zone %> → <%= s.delivery_zone %></td><td><%= label(s.service) %></td>
-    <td><span class="tag <%= s.status === 'delivered' ? 'ok' : ['failed', 'returned', 'cancelled'].includes(s.status) ? 'bad' : s.status === 'booked' ? 'warn' : '' %>"><%= label(s.status) %></span></td>
+    <td><span class="badge <%= s.status === 'delivered' ? 'ok' : ['failed', 'returned', 'cancelled'].includes(s.status) ? 'bad' : s.status === 'booked' ? 'warn' : '' %>"><%= label(s.status) %></span></td>
     <td class="<%= s.late ? 'overdue' : '' %>"><%= s.due_date %></td><td><%= s.rider_name || (s.status === 'booked' ? 'Unassigned' : '–') %></td>
     <td class="num"><%= money(s.price) %></td>
   </tr><% }) %></tbody>
-</table>
+</table></div>
 <% } else { %><p class="muted">None.</p><% } %>

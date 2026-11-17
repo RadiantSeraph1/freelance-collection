@@ -1,12 +1,12 @@
 <%- include('partials/head') %>
-<section class="wrap section narrow">
+<section class="section"><div class="narrow">
   <h1>Book a pickup</h1>
   <p class="muted">No account needed. We work out the price from your answers, and give you a tracking number straight away.</p>
   <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
-  <form method="post" action="/book" class="stack panel">
+  <form method="post" action="/book" class="stack form-card">
     <%- include('partials/booking-fields', { form, withSender: true, payments: ['sender_cash', 'receiver_cash'] }) %>
     <label class="hp" aria-hidden="true">Website <input name="website" tabindex="-1" autocomplete="off"></label>
     <button class="btn">Book pickup</button>
   </form>
-</section>
+</div></section>
 <%- include('partials/foot') %>

@@ -1,8 +1,8 @@
 <%- include('../partials/head') %>
 <div class="wrap section narrow">
 <%- include('../partials/subnav') %>
-  <p><a href="/account">← My parcels</a></p>
-  <h1><span class="mono"><%= s.tracking %></span> <span class="tag <%= s.status === 'delivered' ? 'ok' : ['failed', 'returned', 'cancelled'].includes(s.status) ? 'bad' : '' %>"><%= label(s.status) %></span></h1>
+  <p><a class="arrow-link small" href="/account">← My parcels</a></p>
+  <h1><span class="mono"><%= s.tracking %></span> <span class="badge <%= s.status === 'delivered' ? 'ok' : ['failed', 'returned', 'cancelled'].includes(s.status) ? 'bad' : '' %>"><%= label(s.status) %></span></h1>
   <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
   <dl class="specs">
     <div><dt>Receiver</dt><dd><%= s.receiver_name %><br><span class="muted"><%= s.receiver_phone %></span></dd></div>

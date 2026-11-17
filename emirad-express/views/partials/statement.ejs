@@ -1,12 +1,12 @@
 <h2><%= business.company %>: statement for <%= data.period %></h2>
 <% if (!data.rows.length) { %><p class="empty">No parcels were completed in this month.</p><% } else { %>
-<table>
+<div class="table-wrap"><table>
   <thead><tr><th>Completed</th><th>Tracking</th><th>To</th><th>Result</th><th class="num">Delivery fee</th><th class="num">Cash collected for you</th></tr></thead>
   <tbody><% data.rows.forEach((r) => { %><tr>
     <td><%= r.closed_at.slice(0, 10) %></td><td><a class="mono" href="<%= base %>/<%= r.id %>"><%= r.tracking %></a></td><td><%= r.receiver_name %>, <%= r.delivery_zone %></td>
     <td><%= label(r.status) %></td><td class="num"><%= money(r.payment_mode === 'account' ? r.price : 0) %></td><td class="num"><%= money(r.cod_collected) %></td>
   </tr><% }) %></tbody>
-</table>
+</table></div>
 <% } %>
 <div class="stats">
   <div class="stat"><b><%= data.delivered %></b>Delivered</div>

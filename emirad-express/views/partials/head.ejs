@@ -3,21 +3,73 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <% if (me) { %><meta name="robots" content="noindex"><% } %>
   <title><%= title %><% if (!title.startsWith(site.name)) { %> | <%= site.name %><% } %></title>
-  <link rel="stylesheet" href="/style.css">
+  <meta name="description" content="Same-day and next-day parcel delivery across Accra and Tema, with live tracking.">
+  <link rel="stylesheet" href="/kit.css">
+  <link rel="stylesheet" href="/theme.css">
 </head>
+<% if (me) { %>
+<body class="app">
+<% const here = (p) => path === p || path.startsWith(p + '/'); const cur = (ok) => (ok ? 'aria-current="page"' : ''); %>
+<div class="app-shell">
+  <aside class="sidebar">
+    <a class="brand" href="<%= {manager: '/admin', rider: '/rider', business: '/account'}[me.role] %>"><span class="brand-mark">E</span><span><%= site.name.split(' ')[0] %></span></a>
+    <nav class="side-nav" aria-label="Main">
+      <% if (me.role === 'manager') { %>
+        <span class="label">Dispatch</span>
+        <a href="/admin" <%- cur(path === '/admin' || path === '/admin/') %>><%- icon('layout-dashboard') %> Dashboard</a>
+        <a href="/admin/board" <%- cur(here('/admin/board')) %>><%- icon('square-kanban') %> Board</a>
+        <a href="/admin/shipments" <%- cur(here('/admin/shipments') && !here('/admin/shipments/new')) %>><%- icon('package') %> Shipments</a>
+        <a href="/admin/shipments/new" <%- cur(here('/admin/shipments/new')) %>><%- icon('plus') %> New booking</a>
+        <span class="label">Money</span>
+        <a href="/admin/cash" <%- cur(here('/admin/cash')) %>><%- icon('wallet') %> Cash</a>
+        <a href="/admin/statements" <%- cur(here('/admin/statements')) %>><%- icon('receipt') %> Statements</a>
+        <a href="/admin/reports" <%- cur(here('/admin/reports')) %>><%- icon('chart-column') %> Reports</a>
+        <span class="label">People</span>
+        <a href="/admin/people" <%- cur(here('/admin/people')) %>><%- icon('users') %> Riders &amp; customers</a>
+      <% } else if (me.role === 'rider') { %>
+        <span class="label">Rider</span>
+        <a href="/rider" <%- cur(path === '/rider' || path === '/rider/' || here('/rider/jobs')) %>><%- icon('bike') %> My jobs</a>
+        <a href="/rider/cash" <%- cur(here('/rider/cash')) %>><%- icon('wallet') %> My cash</a>
+      <% } else { %>
+        <span class="label">Account</span>
+        <a href="/account" <%- cur(path === '/account' || path === '/account/' || here('/account/shipments')) %>><%- icon('package') %> My parcels</a>
+        <a href="/account/book" <%- cur(here('/account/book')) %>><%- icon('plus') %> Book</a>
+        <a href="/account/bulk" <%- cur(here('/account/bulk')) %>><%- icon('list') %> Book many</a>
+        <a href="/account/statement" <%- cur(here('/account/statement')) %>><%- icon('receipt') %> Statement</a>
+      <% } %>
+      <span class="label">Settings</span>
+      <a href="/account-settings/password" <%- cur(here('/account-settings/password')) %>><%- icon('lock') %> Password</a>
+      <a href="/" target="_blank" rel="noopener"><%- icon('external-link') %> Public website</a>
+    </nav>
+    <div class="side-foot">
+      <div class="who"><span class="avatar"><%= initials(me.name) %></span><div><b><%= me.name %></b><span class="muted small"><%= {manager: 'Dispatch', rider: 'Rider', business: 'Business'}[me.role] %></span></div></div>
+      <form method="post" action="/account-settings/logout"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="link"><%- icon('log-out') %> Sign out</button></form>
+    </div>
+  </aside>
+  <div class="app-main">
+    <% if (site.demo) { %><div class="app-demo">Demonstration data.<% if (site.temporary) { %> Changes you make here are temporary and may disappear.<% } %></div><% } %>
+    <div class="page">
+<% } else { %>
 <body>
-<% if (site.demo) { %><div class="demo">Demonstration prepared by Radiant InnovaTech. Parcels, customers, riders and prices shown are sample data.<% if (site.temporary) { %> Changes you make here are temporary and may disappear.<% } %></div><% } %>
-<header class="top">
-  <div class="wrap bar">
-    <a class="brand" href="/"><%= site.name %></a>
-    <nav>
+<% if (site.demo) { %><div class="demo-banner">Demonstration prepared by Radiant InnovaTech. Parcels, customers, riders and prices shown are sample data.<% if (site.temporary) { %> Changes you make here are temporary and may disappear.<% } %></div><% } %>
+<div class="utility"><div class="container">
+  <span class="hide-sm"><%- icon('map-pin') %> <%= site.address %></span>
+  <span class="cluster"><a href="tel:<%= site.phone.replace(/[^\d+]/g, '') %>"><%- icon('phone') %> <%= site.phone %></a><a class="hide-sm" href="mailto:<%= site.email %>"><%- icon('mail') %> <%= site.email %></a></span>
+</div></div>
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="/"><span class="brand-mark">E</span><span><%= site.name.split(' ')[0] %><small><%= site.name.split(' ').slice(1).join(' ') || 'Express' %></small></span></a>
+    <button class="nav-toggle" data-nav-toggle aria-label="Menu" aria-expanded="false"><%- icon('menu') %></button>
+    <nav class="main-nav" aria-label="Main">
       <a href="/">Track</a>
       <a href="/quote">Get a price</a>
-      <a href="/book">Book a pickup</a>
       <a href="/rates">Rates</a>
-      <% if (me) { %><a href="<%= {manager: '/admin', rider: '/rider', business: '/account'}[me.role] %>"><%= me.role === 'manager' ? 'Dispatch' : me.role === 'rider' ? 'My jobs' : 'My account' %></a><% } else { %><a href="/login">Sign in</a><% } %>
+      <a href="/login">Sign in</a>
+      <a class="btn sm" href="/book"><%- icon('package') %> Book a pickup</a>
     </nav>
   </div>
 </header>
 <main>
+<% } %>

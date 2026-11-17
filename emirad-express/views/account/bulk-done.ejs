@@ -3,7 +3,7 @@
 <%- include('../partials/subnav') %>
   <h1><%= made.length %> deliveries booked</h1>
   <p>Total delivery fees: <b><%= money(total) %></b>, added to your statement.</p>
-  <table><thead><tr><th>Tracking</th><th class="num">Fee</th></tr></thead><tbody><% made.forEach((m) => { %><tr><td><a class="mono" href="/account/shipments/<%= m.id %>"><%= m.tracking %></a></td><td class="num"><%= money(m.price) %></td></tr><% }) %></tbody></table>
+  <div class="table-wrap"><table><thead><tr><th>Tracking</th><th class="num">Fee</th></tr></thead><tbody><% made.forEach((m) => { %><tr><td><a class="mono" href="/account/shipments/<%= m.id %>"><%= m.tracking %></a></td><td class="num"><%= money(m.price) %></td></tr><% }) %></tbody></table></div>
   <p><a class="btn" href="/account">Back to my parcels</a></p>
 </div>
 <%- include('../partials/foot') %>

@@ -2,19 +2,19 @@
 <div class="wrap section">
 <%- include('../partials/subnav') %>
   <h1>Riders and customers</h1>
-  <table>
+  <div class="table-wrap"><table>
     <thead><tr><th>Name</th><th>Role</th><th>Username</th><th>Phone</th><th class="num">Open jobs / parcels</th><th>Status</th><th></th></tr></thead>
     <tbody><% people.forEach((p) => { %><tr>
       <td><%= p.company || p.name %><% if (p.company) { %><br><span class="muted"><%= p.name %></span><% } %></td><td><%= label(p.role) %></td><td><%= p.username %></td><td><%= p.phone || '–' %></td>
       <td class="num"><%= p.role === 'rider' ? p.open_jobs : p.parcels %></td>
-      <td><span class="tag <%= p.active ? 'ok' : 'bad' %>"><%= p.active ? 'Active' : 'Deactivated' %></span></td>
+      <td><span class="badge <%= p.active ? 'ok' : 'bad' %>"><%= p.active ? 'Active' : 'Deactivated' %></span></td>
       <td><form method="post" action="/admin/people/<%= p.id %>/toggle"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="link"><%= p.active ? 'Deactivate' : 'Reactivate' %></button></form></td>
     </tr><% }) %></tbody>
-  </table>
+  </table></div>
   <p class="muted">Deactivating a rider stops them signing in and returns pickups they have not yet collected to the booked queue.</p>
   <h2>Add a rider or business customer</h2>
   <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
-  <form method="post" action="/admin/people" class="stack panel wide">
+  <form method="post" action="/admin/people" class="stack form-card wide">
     <input type="hidden" name="_csrf" value="<%= csrf %>">
     <div class="row">
       <label>Type <select name="role"><option value="rider" <%= form.role !== 'business' ? 'selected' : '' %>>Rider</option><option value="business" <%= form.role === 'business' ? 'selected' : '' %>>Business customer</option></select></label>

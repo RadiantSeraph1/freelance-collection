@@ -11,19 +11,19 @@
   <h2>Pickups</h2>
   <% if (pickups.length) { %><div class="grid"><% pickups.forEach((s) => { %>
     <a class="card" href="/rider/jobs/<%= s.id %>"><div class="card-body">
-      <p class="mono"><b><%= s.tracking %></b> <% if (s.late) { %><span class="tag bad">Late</span><% } %></p>
+      <p class="mono"><b><%= s.tracking %></b> <% if (s.late) { %><span class="badge bad">Late</span><% } %></p>
       <h3><%= s.sender_name %></h3><p class="muted"><%= s.pickup_address %>, <%= s.pickup_zone %></p>
       <p>Take to <b><%= s.delivery_zone %></b> · <%= label(s.service) %> · due <%= s.due_date %></p>
-      <% if (s.payment_mode === 'sender_cash') { %><p class="tag warn">Collect <%= money(s.price) %> from sender</p><% } %>
+      <% if (s.payment_mode === 'sender_cash') { %><p class="badge warn">Collect <%= money(s.price) %> from sender</p><% } %>
     </div></a>
   <% }) %></div><% } else { %><p class="muted">No pickups waiting.</p><% } %>
   <h2>Deliveries</h2>
   <% if (deliveries.length) { %><div class="grid"><% deliveries.forEach((s) => { const owed = s.cod_amount + (s.payment_mode === 'receiver_cash' ? s.price : 0); %>
     <a class="card" href="/rider/jobs/<%= s.id %>"><div class="card-body">
-      <p class="mono"><b><%= s.tracking %></b> <span class="tag"><%= label(s.status) %></span> <% if (s.late) { %><span class="tag bad">Late</span><% } %></p>
+      <p class="mono"><b><%= s.tracking %></b> <span class="badge plain"><%= label(s.status) %></span> <% if (s.late) { %><span class="badge bad">Late</span><% } %></p>
       <h3><%= s.receiver_name %></h3><p class="muted"><%= s.delivery_address %>, <%= s.delivery_zone %></p>
       <p><%= label(s.service) %> · due <%= s.due_date %><%= s.attempts ? ' · attempt ' + (s.attempts + 1) : '' %></p>
-      <% if (owed) { %><p class="tag warn">Collect <%= money(owed) %></p><% } %>
+      <% if (owed) { %><p class="badge warn">Collect <%= money(owed) %></p><% } %>
     </div></a>
   <% }) %></div><% } else { %><p class="muted">No deliveries waiting.</p><% } %>
 </div>

@@ -5,7 +5,7 @@
   <p class="muted">One parcel per line, separated by commas:<br><code>receiver name, receiver phone, area, address, what it is, weight kg, cash to collect (optional)</code></p>
   <p class="muted">Example: <code>Akosua Boateng, 024 555 0101, East Legon, 12 Oak Avenue, Sneakers, 2, 250</code></p>
   <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><p class="muted">Nothing was booked. Fix the lines above and send again.</p><% } %>
-  <form method="post" action="/account/bulk" class="stack panel">
+  <form method="post" action="/account/bulk" class="stack form-card">
     <input type="hidden" name="_csrf" value="<%= csrf %>">
     <label>Service <select name="service"><% Object.keys(SERVICES).forEach((k) => { %><option value="<%= k %>" <%= service === k ? 'selected' : '' %>><%= SERVICES[k].name %></option><% }) %></select></label>
     <label>Parcels (up to <%= BULK_MAX %>) <textarea name="lines" rows="10" required><%= text %></textarea></label>

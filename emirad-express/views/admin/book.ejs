@@ -4,7 +4,7 @@
   <h1>Book a parcel for a caller</h1>
   <p class="muted">For bookings that come in by phone or WhatsApp. The price is worked out from the rate card.</p>
   <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
-  <form method="post" action="/admin/shipments" class="stack panel wide">
+  <form method="post" action="/admin/shipments" class="stack form-card wide">
     <input type="hidden" name="_csrf" value="<%= csrf %>">
     <label>Business customer (leave empty for a walk-in or phone customer) <select name="business_id"><option value="">None, a one-off customer</option><% businesses.forEach((b) => { %><option value="<%= b.id %>" <%= String(form.business_id) === String(b.id) ? 'selected' : '' %>><%= b.company %></option><% }) %></select></label>
     <p class="muted">If you choose a business, its name and phone are used as the sender. You can still set the pickup address and area below.</p>

@@ -1,32 +1,51 @@
 <%- include('partials/head') %>
-<section class="hero">
-  <div class="wrap">
-    <h1>Send it today. Watch it arrive.</h1>
-    <p>Parcels and documents across Accra and Tema, with a tracking link for everyone involved.</p>
+<section class="hero left">
+  <img class="cover" src="/img/cr-rider2-lg.jpg" alt="" fetchpriority="high">
+  <div class="container">
+    <span class="eyebrow">Accra · Tema · Same-day &amp; next-day</span>
+    <h1>Send it today. <em>Watch it arrive.</em></h1>
+    <p class="lead">Parcels and documents across Accra and Tema, with a tracking link for everyone involved.</p>
     <% if (error) { %><ul class="errors"><li><%= error %></li></ul><% } %>
     <form class="track-box" action="/track" method="get">
       <input name="code" placeholder="Tracking number, e.g. EE-AB3D-7KMN" aria-label="Tracking number" maxlength="20" autocomplete="off">
-      <button class="btn">Track parcel</button>
+      <button class="btn accent"><%- icon('search') %> Track parcel</button>
     </form>
     <% if (samples.length) { %><p class="hero-note">Demo tracking numbers to try: <% samples.forEach((s, i) => { %><a class="mono" href="/track/<%= s.tracking %>"><%= s.tracking %></a> (<%= label(s.status).toLowerCase() %>)<%= i < samples.length - 1 ? ' · ' : '' %><% }) %></p><% } %>
   </div>
 </section>
-<section class="wrap section">
-  <h2>Choose how fast</h2>
-  <div class="grid">
-    <% Object.keys(SERVICES).forEach((k) => { %>
-    <a class="card" href="/book?service=<%= k %>"><div class="card-body"><h3><%= SERVICES[k].name %></h3><p><%= SERVICES[k].text %>.</p><p class="price">From <%= money(SERVICES[k].base) %></p></div></a>
-    <% }) %>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head row-end"><div><span class="eyebrow">Services</span><h2>Choose how fast</h2></div><a class="arrow-link" href="/quote">Get an exact price <%- icon('arrow-right') %></a></div>
+    <div class="grid grid-3">
+      <% const icons = { same_day: 'zap', next_day: 'truck', standard: 'package' }; Object.keys(SERVICES).forEach((k) => { %>
+      <a class="service-card" href="/book?service=<%= k %>"><span class="ic"><%- icon(icons[k] || 'package') %></span><h3><%= SERVICES[k].name %></h3><p><%= SERVICES[k].text %>.</p><span class="price">From <%= money(SERVICES[k].base) %></span></a>
+      <% }) %>
+    </div>
   </div>
-  <h2>How it works</h2>
-  <div class="two">
-    <ol>
-      <li>Get a price, then book online, or call or WhatsApp us.</li>
-      <li>A rider collects the parcel from you.</li>
-      <li>You and the receiver follow it with your tracking link.</li>
-      <li>The receiver signs for it. Cash on delivery is collected for you if you ask.</li>
-    </ol>
-    <div class="panel"><h2 class="flush">Have a shop or send often?</h2><p>Business accounts get their own login, bulk booking, monthly invoicing and cash-on-delivery statements.</p><a class="btn" href="/login">Business sign in</a></div>
+</section>
+
+<section class="section alt">
+  <div class="container split">
+    <div class="photo-frame"><img src="/img/log-handover-lg.jpg" alt="A parcel being handed to its receiver" loading="lazy"></div>
+    <div>
+      <span class="eyebrow">How it works</span>
+      <h2>From your door to theirs, with proof</h2>
+      <ul class="checklist">
+        <li><%- icon('smartphone') %><div><strong>Book online or by phone</strong><br><span class="muted">Get a price, then book, or call or WhatsApp us.</span></div></li>
+        <li><%- icon('bike') %><div><strong>A rider collects it</strong><br><span class="muted">You get a tracking number the moment you book.</span></div></li>
+        <li><%- icon('route') %><div><strong>Follow it live</strong><br><span class="muted">You and the receiver follow it with your tracking link.</span></div></li>
+        <li><%- icon('package-check') %><div><strong>Signed for on delivery</strong><br><span class="muted">Cash on delivery is collected for you if you ask.</span></div></li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<section class="cta-band">
+  <img src="/img/log-warehouse-lg.jpg" alt="" loading="lazy">
+  <div class="container">
+    <div><h2>Have a shop or send often?</h2><p>Business accounts get their own login, bulk booking, monthly invoicing and cash-on-delivery statements.</p></div>
+    <a class="btn accent" href="/login">Business sign in</a>
   </div>
 </section>
 <%- include('partials/foot') %>

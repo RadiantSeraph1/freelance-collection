@@ -438,3 +438,14 @@ test('production refuses to start without secrets and never creates demo account
   assert.equal(app.locals.db.prepare('SELECT COUNT(*) AS n FROM users').get().n, 1);
   assert.equal(app.locals.db.prepare('SELECT COUNT(*) AS n FROM shipments').get().n, 0);
 });
+
+test('home page, tracking and login render with bundled photos and no inline styles', async () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  for (const url of ['/', '/quote', '/rates', '/book', '/login']) {
+    const html = await (await fetch(`${base}${url}`)).text();
+    assert.doesNotMatch(html, /\sstyle="/, url);
+    for (const [, src] of html.matchAll(/src="(\/img\/[^"]+)"/g)) assert.ok(fs.existsSync(path.join(__dirname, '..', 'public', src)), src);
+  }
+  assert.match((await fetch(`${base}/`)).headers.get('content-security-policy'), /script-src 'self'/);
+});

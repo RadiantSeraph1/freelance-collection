@@ -1,13 +1,13 @@
 <%- include('partials/head') %>
-<section class="wrap section narrow">
+<section class="section"><div class="narrow">
   <h1>Delivery rates</h1>
   <p class="muted">Sample rate card for this demonstration. The price is the service price, plus the dearer of the two area charges, plus a weight charge.</p>
   <h2>Services</h2>
-  <table><thead><tr><th>Service</th><th>When</th><th class="num">Price</th></tr></thead><tbody><% Object.keys(SERVICES).forEach((k) => { %><tr><td><%= SERVICES[k].name %></td><td><%= SERVICES[k].text %></td><td class="num"><%= money(SERVICES[k].base) %></td></tr><% }) %></tbody></table>
+  <div class="table-wrap"><table><thead><tr><th>Service</th><th>When</th><th class="num">Price</th></tr></thead><tbody><% Object.keys(SERVICES).forEach((k) => { %><tr><td><%= SERVICES[k].name %></td><td><%= SERVICES[k].text %></td><td class="num"><%= money(SERVICES[k].base) %></td></tr><% }) %></tbody></table></div>
   <h2>Area charge</h2>
-  <table><thead><tr><th>Area</th><th class="num">Charge</th></tr></thead><tbody><% zoneNames.forEach((z) => { %><tr><td><%= z %></td><td class="num"><%= money(ZONES[z]) %></td></tr><% }) %></tbody></table>
+  <div class="table-wrap"><table><thead><tr><th>Area</th><th class="num">Charge</th></tr></thead><tbody><% zoneNames.forEach((z) => { %><tr><td><%= z %></td><td class="num"><%= money(ZONES[z]) %></td></tr><% }) %></tbody></table></div>
   <h2>Weight charge</h2>
-  <table><thead><tr><th>Parcel weight</th><th class="num">Charge</th></tr></thead><tbody><% WEIGHT_BANDS.forEach(([max, extra], i) => { %><tr><td><%= i === 0 ? 'Up to' : 'Up to' %> <%= max %> kg</td><td class="num"><%= money(extra) %></td></tr><% }) %></tbody></table>
+  <div class="table-wrap"><table><thead><tr><th>Parcel weight</th><th class="num">Charge</th></tr></thead><tbody><% WEIGHT_BANDS.forEach(([max, extra], i) => { %><tr><td><%= i === 0 ? 'Up to' : 'Up to' %> <%= max %> kg</td><td class="num"><%= money(extra) %></td></tr><% }) %></tbody></table></div>
   <p class="muted">Parcels over <%= MAX_WEIGHT_KG %> kg cannot be booked online. Please call us.</p>
-</section>
+</div></section>
 <%- include('partials/foot') %>
