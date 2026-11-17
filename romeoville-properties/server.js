@@ -37,6 +37,7 @@ function createApp(options = {}) {
     email: env.SITE_EMAIL || 'sales@example.com',
     address: env.SITE_ADDRESS || 'Accra, Ghana',
     demo: env.DEMO_BANNER !== 'off',
+    temporary: (options.dbPath || env.DB_PATH) === ':memory:', // serverless demo: data is not kept
   };
   site.whatsapp = (env.SITE_WHATSAPP || site.phone).replace(/\D/g, '');
 

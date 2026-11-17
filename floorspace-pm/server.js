@@ -59,6 +59,7 @@ function createApp(options = {}) {
     phone: env.SITE_PHONE || '+233 00 000 0000',
     email: env.SITE_EMAIL || 'sales@example.com',
     demo: env.DEMO_BANNER !== 'off',
+    temporary: (options.dbPath || env.DB_PATH) === ':memory:', // serverless demo: data is not kept
   };
 
   const db = openDb(options.dbPath || env.DB_PATH || path.join(__dirname, 'data', 'app.db'));

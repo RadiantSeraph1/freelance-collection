@@ -45,6 +45,7 @@ function createApp(options = {}) {
     address: env.SITE_ADDRESS || 'Accra, Ghana',
     currency: env.CURRENCY_SYMBOL || 'GH₵',
     demo: env.DEMO_BANNER !== 'off',
+    temporary: (options.dbPath || env.DB_PATH) === ':memory:', // serverless demo: data is not kept
   };
   site.whatsapp = (env.SITE_WHATSAPP || site.phone).replace(/\D/g, '');
 

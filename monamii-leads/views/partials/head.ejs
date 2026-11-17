@@ -7,7 +7,7 @@
   <link rel="stylesheet" href="/style.css">
 </head>
 <body>
-<% if (site.demo) { %><div class="demo">Demonstration prepared by Radiant InnovaTech. Leads, agents and figures shown are sample data.</div><% } %>
+<% if (site.demo) { %><div class="demo">Demonstration prepared by Radiant InnovaTech. Leads, agents and figures shown are sample data.<% if (site.temporary) { %> Changes you make here are temporary and may disappear.<% } %></div><% } %>
 <header class="top">
   <div class="wrap bar">
     <a class="brand" href="/"><%= site.name %></a>

@@ -60,6 +60,7 @@ function createApp(options = {}) {
     phone: env.SITE_PHONE || '+233 00 000 0000',
     email: env.SITE_EMAIL || 'sales@example.com',
     demo: env.DEMO_BANNER !== 'off',
+    temporary: (options.dbPath || env.DB_PATH) === ':memory:', // serverless demo: data is not kept
   };
   site.whatsapp = (env.SITE_WHATSAPP || site.phone).replace(/\D/g, '');
   // Outside production a fixed demo key lets the API be tried straight away;
