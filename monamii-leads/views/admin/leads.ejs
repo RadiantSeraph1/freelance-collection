@@ -1,0 +1,28 @@
+<%- include('../partials/head') %>
+<%- include('nav') %>
+  <div class="bar"><h1>All leads</h1><div class="inline"><% if (me.role === 'admin') { %><a href="/admin/leads.csv">Download CSV</a><% } %> <a class="btn" href="/admin/leads/new">Log a lead</a></div></div>
+  <form class="filters" action="/admin/leads">
+    <label>Search <input name="q" value="<%= f.q %>" placeholder="Name, phone, property…"></label>
+    <label>Stage <select name="stage"><option value="">All</option><option value="open" <%= f.stage === 'open' ? 'selected' : '' %>>All open</option><% STAGES.forEach((s) => { %><option value="<%= s %>" <%= f.stage === s ? 'selected' : '' %>><%= label(s) %></option><% }) %></select></label>
+    <label>Source <select name="source"><option value="">All</option><% SOURCES.forEach((s) => { %><option value="<%= s %>" <%= f.source === s ? 'selected' : '' %>><%= label(s) %></option><% }) %></select></label>
+    <label>Interest <select name="interest"><option value="">All</option><% INTERESTS.forEach((s) => { %><option value="<%= s %>" <%= f.interest === s ? 'selected' : '' %>><%= label(s) %></option><% }) %></select></label>
+    <label>Agent <select name="agent"><option value="">All</option><option value="me" <%= f.agent === 'me' ? 'selected' : '' %>>Me</option><option value="none" <%= f.agent === 'none' ? 'selected' : '' %>>Unassigned</option><% agents.forEach((a) => { %><option value="<%= a.id %>" <%= f.agent === String(a.id) ? 'selected' : '' %>><%= a.name %></option><% }) %></select></label>
+    <label>Attention <select name="flag"><option value="">Any</option><option value="due" <%= f.flag === 'due' ? 'selected' : '' %>>Follow-up due</option><option value="stale" <%= f.flag === 'stale' ? 'selected' : '' %>>Gone quiet</option></select></label>
+    <div class="actions"><button class="btn">Filter</button> <a href="/admin/leads">Clear</a></div>
+  </form>
+  <p class="muted"><%= leads.length %> <%= leads.length === 1 ? 'lead' : 'leads' %></p>
+  <% if (leads.length) { %>
+  <table>
+    <thead><tr><th>Received</th><th>Lead</th><th>Interested in</th><th>Source</th><th>Stage</th><th>Agent</th><th>Next follow-up</th></tr></thead>
+    <tbody><% leads.forEach((l) => { const open = !['won','lost'].includes(l.stage); %><tr>
+      <td><%= l.created_at.slice(0, 10) %></td>
+      <td><a href="/admin/leads/<%= l.id %>"><%= l.name %></a><% if (l.repeat_count) { %> <span class="tag warn">Asked again</span><% } %><% if (l.stale) { %> <span class="tag late">Quiet</span><% } %></td>
+      <td><%= label(l.interest) %></td><td><%= label(l.source) %></td>
+      <td><span class="tag <%= l.stage === 'new' ? 'warn' : l.stage === 'won' ? 'ok' : l.stage === 'lost' ? 'bad' : '' %>"><%= label(l.stage) %></span></td>
+      <td><%= l.agent_name || 'Unassigned' %></td>
+      <td><% if (open && l.next_follow_up) { %><span class="<%= l.due ? 'overdue' : '' %>"><%= l.next_follow_up %></span><% } else { %>–<% } %></td>
+    </tr><% }) %></tbody>
+  </table>
+  <% } else { %><p class="empty">No leads match.</p><% } %>
+</div>
+<%- include('../partials/foot') %>

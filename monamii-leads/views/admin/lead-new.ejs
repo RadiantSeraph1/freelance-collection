@@ -1,0 +1,27 @@
+<%- include('../partials/head') %>
+<%- include('nav') %>
+  <h1>Log a lead</h1>
+  <p class="muted">For enquiries that arrive by WhatsApp, social media, phone or in person, so every lead is in one place. If this person already has an open lead, the new message is added to it instead of creating a duplicate.</p>
+  <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
+  <form method="post" action="/admin/leads" class="stack panel wide">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <div class="row">
+      <label>Name <input name="name" required maxlength="100" value="<%= form.name || '' %>"></label>
+      <label>Phone <input name="phone" maxlength="30" value="<%= form.phone || '' %>"></label>
+      <label>Email <input name="email" type="email" maxlength="120" value="<%= form.email || '' %>"></label>
+    </div>
+    <div class="row">
+      <label>Came from <select name="source"><% SOURCES.forEach((s) => { %><option value="<%= s %>" <%= form.source === s ? 'selected' : '' %>><%= label(s) %></option><% }) %></select></label>
+      <label>Interested in <select name="interest"><% INTERESTS.forEach((s) => { %><option value="<%= s %>" <%= form.interest === s ? 'selected' : '' %>><%= label(s) %></option><% }) %></select></label>
+      <label>Budget <input name="budget" maxlength="60" value="<%= form.budget || '' %>"></label>
+    </div>
+    <div class="row">
+      <label>Property or listing <input name="property_ref" maxlength="120" value="<%= form.property_ref || '' %>"></label>
+      <label>Assign to <select name="agent_id"><option value="">Automatically</option><% agents.forEach((a) => { %><option value="<%= a.id %>" <%= form.agent_id === a.id ? 'selected' : '' %>><%= a.name %></option><% }) %></select></label>
+      <label>First follow-up <input name="next_follow_up" type="date" value="<%= form.next_follow_up || '' %>"></label>
+    </div>
+    <label>What they asked for <textarea name="message" rows="4" maxlength="2000"><%= form.message || '' %></textarea></label>
+    <div class="actions"><button class="btn">Save lead</button> <a href="/admin/leads">Cancel</a></div>
+  </form>
+</div>
+<%- include('../partials/foot') %>

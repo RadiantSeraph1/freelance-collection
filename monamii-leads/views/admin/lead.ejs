@@ -1,0 +1,50 @@
+<%- include('../partials/head') %>
+<%- include('nav') %>
+  <p><a href="/admin/leads">← All leads</a></p>
+  <% if (duplicate) { %><p class="note">This person already had an open lead, so their new message was added to it and the follow-up was brought forward to today.</p><% } %>
+  <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
+  <div class="bar">
+    <h1><%= lead.name %> <span class="tag <%= lead.stage === 'won' ? 'ok' : lead.stage === 'lost' ? 'bad' : lead.stage === 'new' ? 'warn' : '' %>"><%= label(lead.stage) %></span></h1>
+    <div class="inline">
+      <% if (lead.phone) { %><a class="btn" href="tel:<%= lead.phone.replace(/[^+\d]/g, '') %>">Call</a><a class="btn wa" href="<%= wa %>" rel="noopener">WhatsApp</a><% } %>
+      <% if (lead.email) { %><a class="btn" href="mailto:<%= lead.email %>">Email</a><% } %>
+    </div>
+  </div>
+  <% if (lead.due) { %><p class="errors">Follow-up was due <%= lead.next_follow_up %>.</p><% } %>
+  <% if (lead.stale) { %><p class="errors">No activity for <%= staleDays %> or more days.</p><% } %>
+  <div class="two">
+    <div>
+      <dl class="specs">
+        <div><dt>Phone</dt><dd><%= lead.phone || '–' %></dd></div>
+        <div><dt>Email</dt><dd><%= lead.email || '–' %></dd></div>
+        <div><dt>Came from</dt><dd><%= label(lead.source) %></dd></div>
+        <div><dt>Interested in</dt><dd><%= label(lead.interest) %></dd></div>
+        <div><dt>Budget</dt><dd><%= lead.budget || '–' %></dd></div>
+        <div><dt>Asked about</dt><dd><%= lead.property_ref || '–' %></dd></div>
+        <div><dt>Received</dt><dd><%= lead.created_at %> UTC</dd></div>
+        <div><dt>First response</dt><dd><%= lead.first_response_at ? lead.first_response_at + ' UTC' : 'Not yet' %></dd></div>
+        <% if (lead.repeat_count) { %><div><dt>Enquired again</dt><dd><%= lead.repeat_count %> time<%= lead.repeat_count === 1 ? '' : 's' %></dd></div><% } %>
+        <% if (lead.stage === 'won' && lead.deal_value) { %><div><dt>Deal value</dt><dd><%= money(lead.deal_value) %></dd></div><% } %>
+        <% if (lead.stage === 'lost') { %><div><dt>Lost because</dt><dd><%= label(lead.lost_reason) %></dd></div><% } %>
+      </dl>
+      <h2>Message</h2>
+      <p class="desc"><%= lead.message || 'No message.' %></p>
+      <h2>History</h2>
+      <% if (notes.length) { %><ul class="notes"><% notes.forEach((n) => { %><li><span class="muted"><%= n.created_at %> UTC · <%= n.author %></span><br><%= n.note %></li><% }) %></ul>
+      <% } else { %><p class="muted">No notes yet.</p><% } %>
+    </div>
+    <form method="post" action="/admin/leads/<%= lead.id %>" class="stack panel">
+      <input type="hidden" name="_csrf" value="<%= csrf %>">
+      <h2>Update</h2>
+      <label>Stage <select name="stage"><% STAGES.forEach((s) => { %><option value="<%= s %>" <%= lead.stage === s ? 'selected' : '' %>><%= label(s) %></option><% }) %></select></label>
+      <label>Agent <select name="agent_id"><option value="">Unassigned</option><% agents.forEach((a) => { %><option value="<%= a.id %>" <%= lead.agent_id === a.id ? 'selected' : '' %>><%= a.name %></option><% }) %></select></label>
+      <label>Next follow-up <input name="next_follow_up" type="date" value="<%= lead.next_follow_up || '' %>"></label>
+      <p class="muted">Leave the date as it is when you change the stage and a sensible one is set for you: contacted +2 days, viewing +1 day, negotiating +2 days.</p>
+      <label>If won: deal value (GH₵) <input name="deal_value" type="number" min="0" value="<%= lead.deal_value ?? '' %>"></label>
+      <label>If lost: reason <select name="lost_reason"><option value="">Choose…</option><% LOST_REASONS.forEach((r) => { %><option value="<%= r %>" <%= lead.lost_reason === r ? 'selected' : '' %>><%= label(r) %></option><% }) %></select></label>
+      <label>Add a note <textarea name="note" rows="4" maxlength="2000" placeholder="What was said, what happens next"></textarea></label>
+      <button class="btn">Save</button>
+    </form>
+  </div>
+</div>
+<%- include('../partials/foot') %>

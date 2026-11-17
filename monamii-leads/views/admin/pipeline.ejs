@@ -1,0 +1,25 @@
+<%- include('../partials/head') %>
+<%- include('nav') %>
+  <div class="bar"><h1>Pipeline</h1>
+    <form action="/admin/pipeline" class="inline">
+      <select name="agent" aria-label="Agent"><option value="">Everyone</option><option value="none" <%= agent === 'none' ? 'selected' : '' %>>Unassigned</option><% agents.forEach((a) => { %><option value="<%= a.id %>" <%= agent === String(a.id) ? 'selected' : '' %>><%= a.name %></option><% }) %></select>
+      <button class="btn">Show</button>
+    </form>
+  </div>
+  <div class="board">
+    <% columns.forEach((c) => { %>
+    <section class="col">
+      <h2><span><%= label(c.stage) %></span><span class="muted"><%= c.leads.length %></span></h2>
+      <% c.leads.forEach((l) => { %>
+      <a class="lead-card <%= l.due ? 'late' : '' %>" href="/admin/leads/<%= l.id %>">
+        <b><%= l.name %></b>
+        <span class="muted"><%= label(l.interest) %> · <%= label(l.source) %></span><br>
+        <span class="muted"><%= l.agent_name || 'Unassigned' %> · <%= l.next_follow_up ? 'follow up ' + l.next_follow_up : 'no date' %></span>
+      </a>
+      <% }) %>
+      <% if (!c.leads.length) { %><p class="muted">Empty</p><% } %>
+    </section>
+    <% }) %>
+  </div>
+</div>
+<%- include('../partials/foot') %>

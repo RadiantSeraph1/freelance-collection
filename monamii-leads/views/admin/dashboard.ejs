@@ -1,0 +1,51 @@
+<%- include('../partials/head') %>
+<%- include('nav') %>
+  <div class="bar"><h1><%= mineOnly ? 'My day' : 'Dashboard' %></h1><a class="btn" href="/admin/leads/new">Log a lead</a></div>
+  <% if (mineOnly) { %><p class="muted">Showing your own leads. <a href="/admin/?all=1">Show everyone’s</a></p><% } %>
+  <div class="stats">
+    <a class="stat <%= stats.unassigned ? 'alert' : '' %>" href="/admin/leads?agent=none&stage=new"><b><%= stats.unassigned %></b>Unassigned new leads</a>
+    <a class="stat" href="/admin/leads?stage=new"><b><%= stats.newLeads %></b>New, not yet contacted</a>
+    <a class="stat <%= stats.due ? 'alert' : '' %>" href="/admin/leads?flag=due"><b><%= stats.due %></b>Follow-ups due</a>
+    <a class="stat <%= stats.stale ? 'alert' : '' %>" href="/admin/leads?flag=stale"><b><%= stats.stale %></b>Gone quiet (<%= staleDays %>+ days)</a>
+    <a class="stat" href="/admin/leads?stage=open"><b><%= stats.open %></b>Open leads</a>
+    <a class="stat" href="/admin/leads?stage=won"><b><%= stats.wonMonth %></b>Won this month</a>
+  </div>
+
+  <% if (unassigned.length) { %>
+  <h2>Needs an agent</h2>
+  <table>
+    <thead><tr><th>Received</th><th>Lead</th><th>Interested in</th><th>Source</th><th>Assign to</th></tr></thead>
+    <tbody><% unassigned.forEach((l) => { %><tr>
+      <td><%= l.created_at.slice(0, 10) %></td>
+      <td><a href="/admin/leads/<%= l.id %>"><%= l.name %></a></td>
+      <td><%= label(l.interest) %></td><td><%= label(l.source) %></td>
+      <td><%- include('assign', { l }) %></td>
+    </tr><% }) %></tbody>
+  </table>
+  <% } %>
+
+  <h2>Follow-ups due today or overdue</h2>
+  <% if (due.length) { %>
+  <table>
+    <thead><tr><th>Due</th><th>Lead</th><th>Stage</th><th>Interested in</th><th>Agent</th><th></th></tr></thead>
+    <tbody><% due.forEach((l) => { %><tr>
+      <td class="<%= l.next_follow_up < l.today ? 'overdue' : '' %>"><%= l.next_follow_up %></td>
+      <td><a href="/admin/leads/<%= l.id %>"><%= l.name %></a><% if (l.repeat_count) { %> <span class="tag warn">Asked again</span><% } %></td>
+      <td><%= label(l.stage) %></td><td><%= label(l.interest) %></td><td><%= l.agent_name || 'Unassigned' %></td>
+      <td><% if (l.phone) { %><a href="tel:<%= l.phone.replace(/[^+\d]/g, '') %>">Call</a><% } %></td>
+    </tr><% }) %></tbody>
+  </table>
+  <% } else { %><p class="muted">Nothing is due. Well done.</p><% } %>
+
+  <% if (stale.length) { %>
+  <h2>Leads that have gone quiet</h2>
+  <table>
+    <thead><tr><th>Last activity</th><th>Lead</th><th>Stage</th><th>Agent</th></tr></thead>
+    <tbody><% stale.forEach((l) => { %><tr>
+      <td class="overdue"><%= l.updated_at.slice(0, 10) %></td>
+      <td><a href="/admin/leads/<%= l.id %>"><%= l.name %></a></td><td><%= label(l.stage) %></td><td><%= l.agent_name || 'Unassigned' %></td>
+    </tr><% }) %></tbody>
+  </table>
+  <% } %>
+</div>
+<%- include('../partials/foot') %>

@@ -1,0 +1,31 @@
+<%- include('../partials/head') %>
+<%- include('nav') %>
+  <h1>Team</h1>
+  <form method="post" action="/admin/team/auto-assign" class="panel inline">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <label class="check"><input type="checkbox" name="auto_assign" value="on" <%= autoAssign ? 'checked' : '' %>> Share new leads between active agents automatically (the agent with the fewest open leads gets the next one)</label>
+    <button class="btn">Save</button>
+  </form>
+  <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
+  <h2>People</h2>
+  <table>
+    <thead><tr><th>Name</th><th>Username</th><th>Role</th><th class="num">Open leads</th><th>Status</th><th></th></tr></thead>
+    <tbody><% team.forEach((u) => { %><tr>
+      <td><%= u.name %></td><td><%= u.username %></td><td><%= label(u.role) %></td><td class="num"><%= u.open_leads %></td>
+      <td><span class="tag <%= u.active ? 'ok' : 'bad' %>"><%= u.active ? 'Active' : 'Deactivated' %></span></td>
+      <td><% if (u.role === 'agent') { %><form method="post" action="/admin/team/<%= u.id %>/toggle"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="link"><%= u.active ? 'Deactivate' : 'Reactivate' %></button></form><% } %></td>
+    </tr><% }) %></tbody>
+  </table>
+  <p class="muted">Deactivating an agent stops them signing in and returns their open leads to the unassigned queue.</p>
+  <h2>Add an agent</h2>
+  <form method="post" action="/admin/team" class="stack panel wide">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <div class="row">
+      <label>Name <input name="name" required maxlength="60"></label>
+      <label>Username <input name="username" required maxlength="30" autocomplete="off"></label>
+      <label>Password (8+ characters) <input name="password" type="password" required minlength="8" autocomplete="new-password"></label>
+    </div>
+    <button class="btn">Add agent</button>
+  </form>
+</div>
+<%- include('../partials/foot') %>

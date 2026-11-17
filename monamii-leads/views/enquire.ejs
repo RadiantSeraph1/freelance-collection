@@ -1,0 +1,28 @@
+<%- include('partials/head') %>
+<section class="hero small">
+  <div class="wrap">
+    <h1>Tell us what you are looking for</h1>
+    <p>Houses to buy or rent, land, off-plan homes, property management, architecture and construction. One of our agents will contact you shortly.</p>
+  </div>
+</section>
+<section class="wrap section narrow">
+  <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
+  <form method="post" action="/enquire" class="stack panel">
+    <input type="hidden" name="source" value="<%= form.source || 'website' %>">
+    <label>Your name <input name="name" required maxlength="100" value="<%= form.name || '' %>"></label>
+    <div class="row">
+      <label>Phone / WhatsApp <input name="phone" type="tel" maxlength="30" value="<%= form.phone || '' %>"></label>
+      <label>Email <input name="email" type="email" maxlength="120" value="<%= form.email || '' %>"></label>
+    </div>
+    <div class="row">
+      <label>I am interested in <select name="interest"><% INTERESTS.forEach((i) => { %><option value="<%= i %>" <%= form.interest === i ? 'selected' : '' %>><%= label(i) %></option><% }) %></select></label>
+      <label>Budget (optional) <input name="budget" maxlength="60" value="<%= form.budget || '' %>" placeholder="e.g. GH₵ 800k"></label>
+    </div>
+    <label>Property or listing (optional) <input name="property_ref" maxlength="120" value="<%= form.property_ref || '' %>" placeholder="e.g. 3-bedroom house, East Legon"></label>
+    <label>Message <textarea name="message" rows="4" maxlength="2000"><%= form.message || '' %></textarea></label>
+    <label class="hp" aria-hidden="true">Website <input name="website" tabindex="-1" autocomplete="off"></label>
+    <button class="btn">Send enquiry</button>
+  </form>
+  <p class="muted center">Prefer to talk? Call <%= site.phone %> or <a href="https://wa.me/<%= site.whatsapp %>" rel="noopener">chat on WhatsApp</a>.</p>
+</section>
+<%- include('partials/foot') %>

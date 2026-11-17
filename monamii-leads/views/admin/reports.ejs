@@ -1,0 +1,57 @@
+<%- include('../partials/head') %>
+<%- include('nav') %>
+  <% const pct = (v) => v === null ? '–' : v + '%'; const hrs = (v) => v === null ? '–' : (v < 1 ? 'under 1 hr' : v + (v === 1 ? ' hr' : ' hrs')); %>
+  <div class="bar"><h1>Reports</h1><a class="btn" href="/admin/leads.csv">Download all leads (CSV)</a></div>
+  <div class="stats">
+    <div class="stat"><b><%= totals.total %></b>Leads received</div>
+    <div class="stat"><b><%= pct(totals.rate) %></b>Win rate of closed leads (<%= totals.won %> won, <%= totals.lost %> lost)</div>
+    <div class="stat"><b><%= money(totals.value) %></b>Value of won deals</div>
+    <div class="stat"><b><%= hrs(totals.reply_hours) %></b>Average time to first response</div>
+    <div class="stat"><b><%= totals.days_to_win === null ? '–' : totals.days_to_win + ' days' %></b>Average time to win</div>
+    <div class="stat"><b><%= totals.repeats %></b>Repeat enquiries merged</div>
+  </div>
+
+  <h2>Which channels produce customers</h2>
+  <table>
+    <thead><tr><th>Source</th><th class="num">Leads</th><th class="num">Open</th><th class="num">Won</th><th class="num">Lost</th><th class="num">Win rate</th><th class="num">Won value</th><th class="num">First response</th></tr></thead>
+    <tbody><% bySource.forEach((s) => { %><tr>
+      <td><%= label(s.source) %></td><td class="num"><%= s.total %></td><td class="num"><%= s.open %></td><td class="num"><%= s.won %></td><td class="num"><%= s.lost %></td>
+      <td class="num"><%= pct(s.rate) %></td><td class="num"><%= money(s.value) %></td><td class="num"><%= hrs(s.reply_hours) %></td>
+    </tr><% }) %></tbody>
+  </table>
+  <p class="muted">Win rate counts closed leads only, so a channel with many open leads is not unfairly penalised.</p>
+
+  <h2>Agent performance</h2>
+  <table>
+    <thead><tr><th>Agent</th><th class="num">Leads</th><th class="num">Open</th><th class="num">Overdue follow-ups</th><th class="num">Won</th><th class="num">Lost</th><th class="num">Win rate</th><th class="num">Won value</th><th class="num">First response</th></tr></thead>
+    <tbody><% byAgent.forEach((a) => { %><tr>
+      <td><%= a.agent %></td><td class="num"><%= a.total %></td><td class="num"><%= a.open %></td><td class="num <%= a.overdue ? 'overdue' : '' %>"><%= a.overdue %></td>
+      <td class="num"><%= a.won %></td><td class="num"><%= a.lost %></td><td class="num"><%= pct(a.rate) %></td><td class="num"><%= money(a.value) %></td><td class="num"><%= hrs(a.reply_hours) %></td>
+    </tr><% }) %></tbody>
+  </table>
+
+  <div class="two">
+    <div>
+      <h2>By type of enquiry</h2>
+      <table>
+        <thead><tr><th>Interest</th><th class="num">Leads</th><th class="num">Won</th><th class="num">Win rate</th></tr></thead>
+        <tbody><% byInterest.forEach((i) => { %><tr><td><%= label(i.interest) %></td><td class="num"><%= i.total %></td><td class="num"><%= i.won %></td><td class="num"><%= pct(i.rate) %></td></tr><% }) %></tbody>
+      </table>
+      <h2>Why leads are lost</h2>
+      <% const lostMax = Math.max(1, ...lost.map((r) => r.n)); %>
+      <div class="bars"><% lost.forEach((r) => { %>
+        <div class="bar-row"><span><%= label(r.lost_reason) %></span><progress class="meter" value="<%= r.n %>" max="<%= lostMax %>"></progress><span class="num"><%= r.n %></span></div>
+      <% }) %></div>
+    </div>
+    <div>
+      <h2>Leads per month</h2>
+      <% const monthMax = Math.max(1, ...months.map((m) => m.n)); %>
+      <div class="bars"><% months.forEach((m) => { %>
+        <div class="bar-row"><span><%= m.month %></span><progress class="meter" value="<%= m.n %>" max="<%= monthMax %>"></progress><span class="num"><%= m.n %></span></div>
+      <% }) %></div>
+      <h2>Where leads are now</h2>
+      <table><tbody><% STAGES.forEach((s) => { %><tr><td><a href="/admin/leads?stage=<%= s %>"><%= label(s) %></a></td><td class="num"><%= stages[s] || 0 %></td></tr><% }) %></tbody></table>
+    </div>
+  </div>
+</div>
+<%- include('../partials/foot') %>

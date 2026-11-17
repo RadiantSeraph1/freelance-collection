@@ -1,0 +1,20 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= title %><% if (title !== site.name) { %> | <%= site.name %><% } %></title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<% if (site.demo) { %><div class="demo">Demonstration prepared by Radiant InnovaTech. Leads, agents and figures shown are sample data.</div><% } %>
+<header class="top">
+  <div class="wrap bar">
+    <a class="brand" href="/"><%= site.name %></a>
+    <nav>
+      <a href="/enquire">Make an enquiry</a>
+      <% if (me) { %><a href="/admin">Staff area</a><% } else { %><a href="/admin/login">Staff sign in</a><% } %>
+    </nav>
+  </div>
+</header>
+<main>
