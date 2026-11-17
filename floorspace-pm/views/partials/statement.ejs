@@ -4,7 +4,7 @@
 <% data.lines.forEach((ln) => { %>
 <section class="panel statement-block">
   <div class="bar"><h3><%= ln.property %> <span class="muted">(<%= ln.currency === 'USD' ? 'US dollars' : 'Ghana cedis' %>)</span></h3></div>
-  <table>
+  <div class="table-wrap"><table>
     <tbody>
       <tr><td>Rent received</td><td class="num"><%= money(ln.collected, ln.currency) %></td></tr>
       <% ln.payments.forEach((p) => { %><tr class="sub"><td class="muted">&nbsp;&nbsp;<%= p.paid_on %> · Unit <%= p.unit %></td><td class="num muted"><%= money(p.amount, ln.currency) %></td></tr><% }) %>
@@ -13,14 +13,14 @@
       <% ln.repairItems.forEach((r) => { %><tr class="sub"><td class="muted">&nbsp;&nbsp;<%= r.completed_on %> · Unit <%= r.unit %> · <%= r.title %><%= r.contractor ? ' (' + r.contractor + ')' : '' %></td><td class="num muted"><%= money(r.cost, ln.currency) %></td></tr><% }) %>
       <tr class="total"><td><b><%= ln.net < 0 ? 'Costs exceed rent: owed by the owner' : 'Net amount payable to owner' %></b></td><td class="num"><b><%= ln.net < 0 ? '− ' + money(-ln.net, ln.currency) : money(ln.net, ln.currency) %></b></td></tr>
     </tbody>
-  </table>
+  </table></div>
 </section>
 <% }) %>
 <% if (keys.length > 1) { %>
 <h3>Totals by currency</h3>
-<table>
+<div class="table-wrap"><table>
   <thead><tr><th>Currency</th><th class="num">Rent received</th><th class="num">Management fee</th><th class="num">Repairs</th><th class="num">Net payable</th></tr></thead>
   <tbody><% keys.forEach((c) => { const t = data.totals[c]; %><tr><td><%= c %></td><td class="num"><%= money(t.collected, c) %></td><td class="num"><%= money(t.fee, c) %></td><td class="num"><%= money(t.repairs, c) %></td><td class="num"><%= t.net < 0 ? '− ' + money(-t.net, c) : money(t.net, c) %></td></tr><% }) %></tbody>
-</table>
+</table></div>
 <% } %>
 <p class="muted">Amounts in different currencies are shown separately and are not converted. A negative net means costs exceeded rent received in that currency this month; the system does not carry that balance into later months automatically. To keep a copy, use your browser’s print option and choose “Save as PDF”.</p>

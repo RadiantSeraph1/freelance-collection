@@ -1,7 +1,7 @@
 <%- include('../partials/head') %>
 <div class="wrap section">
 <%- include('../partials/subnav') %>
-  <p><a href="/admin/properties/<%= unit.property_id %>">← <%= unit.property_name %></a></p>
+  <p><a class="arrow-link small" href="/admin/properties/<%= unit.property_id %>">← <%= unit.property_name %></a></p>
   <h1><%= unit.property_name %>, unit <%= unit.label %></h1>
   <p class="muted">Owner: <%= unit.landlord_name %></p>
   <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
@@ -9,9 +9,9 @@
     <div>
       <h2>Tenancy</h2>
       <% if (unit.tenancy_id) { %>
-        <p><a href="/admin/tenancies/<%= unit.tenancy_id %>"><%= unit.tenant_name %></a> pays <%= money(unit.rent, unit.rent_currency) %> a month. <a href="/admin/tenancies/<%= unit.tenancy_id %>">Open rent ledger</a></p>
+        <p><a class="arrow-link small" href="/admin/tenancies/<%= unit.tenancy_id %>"><%= unit.tenant_name %></a> pays <%= money(unit.rent, unit.rent_currency) %> a month. <a href="/admin/tenancies/<%= unit.tenancy_id %>">Open rent ledger</a></p>
       <% } else { %>
-      <form method="post" action="/admin/units/<%= unit.id %>/tenancies" class="stack panel">
+      <form method="post" action="/admin/units/<%= unit.id %>/tenancies" class="stack form-card">
         <input type="hidden" name="_csrf" value="<%= csrf %>">
         <p class="muted">This unit is vacant. Starting a tenancy begins rent charging from the month it starts. Use the 1st of the month unless a part-month is intended, because the first month is charged in full.</p>
         <label>Tenant <select name="tenant_id" required><option value="">Choose…</option><% tenants.forEach((t) => { %><option value="<%= t.id %>" <%= form.tenant_id === t.id ? 'selected' : '' %>><%= t.name %></option><% }) %></select></label>
@@ -29,11 +29,11 @@
       </form>
       <% } %>
       <h2>Tenancy history</h2>
-      <table><thead><tr><th>Tenant</th><th>From</th><th>To</th><th>Status</th></tr></thead>
-      <tbody><% history.forEach((h) => { %><tr><td><a href="/admin/tenancies/<%= h.id %>"><%= h.tenant_name %></a></td><td><%= h.start_date %></td><td><%= h.ended_on || h.end_date || '–' %></td><td><span class="tag <%= h.status === 'active' ? 'ok' : '' %>"><%= h.status === 'active' ? 'Current' : 'Ended' %></span></td></tr><% }) %>
-      <% if (!history.length) { %><tr><td colspan="4" class="muted">No tenants yet.</td></tr><% } %></tbody></table>
+      <div class="table-wrap"><table><thead><tr><th>Tenant</th><th>From</th><th>To</th><th>Status</th></tr></thead>
+      <tbody><% history.forEach((h) => { %><tr><td><a href="/admin/tenancies/<%= h.id %>"><%= h.tenant_name %></a></td><td><%= h.start_date %></td><td><%= h.ended_on || h.end_date || '–' %></td><td><span class="badge <%= h.status === 'active' ? 'ok' : '' %>"><%= h.status === 'active' ? 'Current' : 'Ended' %></span></td></tr><% }) %>
+      <% if (!history.length) { %><tr><td colspan="4" class="muted">No tenants yet.</td></tr><% } %></tbody></table></div>
     </div>
-    <form method="post" action="/admin/units/<%= unit.id %>" class="stack panel">
+    <form method="post" action="/admin/units/<%= unit.id %>" class="stack form-card">
       <input type="hidden" name="_csrf" value="<%= csrf %>">
       <h2>Unit details</h2>
       <label>Name or number <input name="label" required maxlength="30" value="<%= unit.label %>"></label>
@@ -46,6 +46,8 @@
         <label>Currency <select name="currency"><% CURRENCIES.forEach((c) => { %><option <%= unit.currency === c ? 'selected' : '' %>><%= c %></option><% }) %></select></label>
       </div>
       <label>Description <textarea name="description" rows="3" maxlength="1000"><%= unit.description %></textarea></label>
+      <label>Main photo link (https://…) <input name="image_url" maxlength="500" value="<%= unit.image_url %>"></label>
+      <label>More photos, one link per line <textarea name="gallery" rows="3" maxlength="2000"><%= unit.gallery %></textarea></label>
       <label class="check"><input type="checkbox" name="listed" value="1" <%= unit.listed ? 'checked' : '' %>> Advertise on the website when vacant</label>
       <button class="btn">Save unit</button>
     </form>
@@ -53,7 +55,7 @@
   <div class="two">
     <div><div class="bar"><h2>Repair requests</h2><a href="/admin/maintenance/new?unit=<%= unit.id %>">Log one</a></div><%- include('../partials/requests-table', { requests, base: '/admin/maintenance' }) %></div>
     <div><div class="bar"><h2>Inspections</h2><a href="/admin/inspections/new?unit=<%= unit.id %>">Record one</a></div>
-      <% if (inspections.length) { %><table><thead><tr><th>Date</th><th>Type</th></tr></thead><tbody><% inspections.forEach((i) => { %><tr><td><a href="/admin/inspections/<%= i.id %>"><%= i.inspected_on %></a></td><td><%= label(i.kind) %></td></tr><% }) %></tbody></table><% } else { %><p class="muted">None recorded.</p><% } %>
+      <% if (inspections.length) { %><div class="table-wrap"><table><thead><tr><th>Date</th><th>Type</th></tr></thead><tbody><% inspections.forEach((i) => { %><tr><td><a href="/admin/inspections/<%= i.id %>"><%= i.inspected_on %></a></td><td><%= label(i.kind) %></td></tr><% }) %></tbody></table></div><% } else { %><p class="muted">None recorded.</p><% } %>
     </div>
   </div>
 </div>

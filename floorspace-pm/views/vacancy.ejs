@@ -1,30 +1,46 @@
 <%- include('partials/head') %>
-<section class="wrap section">
-  <p><a href="/vacancies">← All vacancies</a></p>
-  <div class="detail">
-    <div>
-      <h1><%= unit.bedrooms === 0 ? 'Studio' : unit.bedrooms + '-bedroom' %> at <%= unit.property_name %></h1>
-      <p class="muted"><%= unit.area %><%= unit.address ? ' · ' + unit.address : '' %> · Unit <%= unit.label %></p>
-      <p class="price big"><%= money(unit.asking_rent, unit.currency) %><small> / month</small></p>
-      <dl class="specs">
-        <% if (unit.bedrooms !== null) { %><div><dt>Bedrooms</dt><dd><%= unit.bedrooms %></dd></div><% } %>
-        <% if (unit.bathrooms !== null) { %><div><dt>Bathrooms</dt><dd><%= unit.bathrooms %></dd></div><% } %>
-      </dl>
-      <p class="desc"><%= unit.description %></p>
+<% const pics = photos(unit); const kind = unit.bedrooms === 0 ? 'Studio' : unit.bedrooms + '-bedroom'; %>
+<section class="section tight">
+  <div class="container">
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/vacancies">Available to rent</a> / <%= unit.area %> / <%= unit.property_name %></nav>
+    <% if (pics.length) { %>
+    <div class="gallery" data-gallery>
+      <div class="main"><img data-gallery-main src="<%= pics[0] %>" alt="<%= kind %> at <%= unit.property_name %>"></div>
+      <% pics.slice(1, 4).forEach((u, i) => { %><button type="button" class="thumb" data-gallery-thumb data-full="<%= u %>" data-alt="<%= kind %> at <%= unit.property_name %>, photo <%= i + 2 %>" aria-label="Show photo <%= i + 2 %>"><img src="<%= thumb(u) %>" alt="" loading="lazy"></button><% }) %>
     </div>
-    <aside class="panel">
-      <h2>Request a viewing</h2>
-      <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
-      <form method="post" action="/vacancies/<%= unit.id %>/viewing" class="stack">
-        <label>Your name <input name="name" required maxlength="100" value="<%= form.name || '' %>"></label>
-        <label>Phone / WhatsApp <input name="phone" type="tel" maxlength="30" value="<%= form.phone || '' %>"></label>
-        <label>Email <input name="email" type="email" maxlength="120" value="<%= form.email || '' %>"></label>
-        <label>Preferred date <input name="preferred_date" type="date" min="<%= todayDate %>" value="<%= form.preferred_date || '' %>"></label>
-        <label>Message <textarea name="message" rows="3" maxlength="1000"><%= form.message || '' %></textarea></label>
-        <label class="hp" aria-hidden="true">Website <input name="website" tabindex="-1" autocomplete="off"></label>
-        <button class="btn">Request viewing</button>
-      </form>
-    </aside>
+    <% } %>
+    <div class="detail-layout">
+      <div>
+        <div class="cluster"><span class="tag">To rent</span><span class="badge ok">Available</span></div>
+        <h1 class="mt-s"><%= kind %> at <%= unit.property_name %></h1>
+        <div class="loc"><%- icon('map-pin') %> <%= unit.area %><%= unit.address ? ' · ' + unit.address : '' %> · Unit <%= unit.label %></div>
+        <p class="price-xl mt-m"><%= money(unit.asking_rent, unit.currency) %> <small>/ month</small></p>
+        <div class="facts">
+          <% if (unit.bedrooms !== null) { %><div><%- icon('bed-double') %><b><%= unit.bedrooms === 0 ? 'Studio' : unit.bedrooms %></b><span>Bedrooms</span></div><% } %>
+          <% if (unit.bathrooms !== null) { %><div><%- icon('bath') %><b><%= unit.bathrooms %></b><span>Bathrooms</span></div><% } %>
+          <div><%- icon('shield-check') %><b>Managed</b><span>Professionally managed</span></div>
+        </div>
+        <h2>About this home</h2>
+        <p class="prose desc"><%= unit.description %></p>
+      </div>
+      <aside class="sticky-card">
+        <div class="form-card">
+          <h3>Request a viewing</h3>
+          <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
+          <form method="post" action="/vacancies/<%= unit.id %>/viewing" class="stack">
+            <label>Your name <input name="name" required maxlength="100" autocomplete="name" value="<%= form.name || '' %>"></label>
+            <div class="row">
+              <label>Phone / WhatsApp <input name="phone" type="tel" maxlength="30" value="<%= form.phone || '' %>"></label>
+              <label>Email <input name="email" type="email" maxlength="120" value="<%= form.email || '' %>"></label>
+            </div>
+            <label>Preferred date <input name="preferred_date" type="date" min="<%= todayDate %>" value="<%= form.preferred_date || '' %>"></label>
+            <label>Message <textarea name="message" rows="3" maxlength="1000"><%= form.message || '' %></textarea></label>
+            <label class="hp" aria-hidden="true">Website <input name="website" tabindex="-1" autocomplete="off"></label>
+            <button class="btn block"><%- icon('calendar-check') %> Request viewing</button>
+          </form>
+        </div>
+      </aside>
+    </div>
   </div>
 </section>
 <%- include('partials/foot') %>

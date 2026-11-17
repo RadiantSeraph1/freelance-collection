@@ -1,11 +1,11 @@
-<table>
+<div class="table-wrap"><table>
   <thead><tr><th>Month</th><th>Due</th><th class="num">Rent</th><th class="num">Paid</th><th class="num">Owing</th><th>Status</th></tr></thead>
   <tbody>
   <% l.rows.slice().reverse().forEach((r) => { %><tr>
     <td><%= r.period %></td><td><%= r.due_date %></td>
     <td class="num"><%= money(r.amount, cur) %></td><td class="num"><%= money(r.applied, cur) %></td><td class="num"><%= money(r.outstanding, cur) %></td>
-    <td><% if (r.outstanding === 0) { %><span class="tag ok">Paid</span><% } else if (r.overdue) { %><span class="tag bad">Overdue</span><% } else if (r.applied > 0) { %><span class="tag warn">Part paid</span><% } else { %><span class="tag">Due</span><% } %></td>
+    <td><% if (r.outstanding === 0) { %><span class="badge ok">Paid</span><% } else if (r.overdue) { %><span class="badge bad">Overdue</span><% } else if (r.applied > 0) { %><span class="badge warn">Part paid</span><% } else { %><span class="badge plain">Due</span><% } %></td>
   </tr><% }) %>
   <% if (!l.rows.length) { %><tr><td colspan="6" class="muted">No rent charged yet.</td></tr><% } %>
   </tbody>
-</table>
+</table></div>

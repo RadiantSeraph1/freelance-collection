@@ -47,6 +47,18 @@ function seedDemo(db, { password }) {
     house: unit(villa, 'Main house', 4, 5, 3500, 'USD', 'Four-bedroom beachside house with a garden and staff quarters.'),
   };
 
+  // Free-licence stock photographs used as placeholders.
+  const photos = {
+    a1: ['apt-living-sunny', 'apt-kitchen', 'int-bedroom-blue', 'apt-block-blue'], a2: ['apt-bright', 'apt-kitchen-2', 'int-bedroom-grey'],
+    b1: ['apt-living-blue', 'apt-kitchen', 'apt-block-dark'], u101: ['int-open-plan', 'int-living-grey', 'apt-dining', 'int-bedroom-grey', 'apt-block-blue'],
+    u102: ['apt-living-sofa', 'apt-kitchen-2', 'int-bedroom-blue'], u103: ['int-living-scandi', 'int-kitchen-faucet', 'int-bedroom-grey'],
+    u201: ['int-living-boho', 'int-bedroom-blue', 'apt-kitchen'], house: ['villa-tropical', 'villa-pool-modern', 'int-living-arch', 'int-kitchen-faucet', 'int-bedroom-grey'],
+  };
+  Object.entries(photos).forEach(([key, list]) => {
+    const urls = list.map((n) => `/img/${n}-lg.jpg`);
+    db.prepare('UPDATE units SET image_url = ?, gallery = ? WHERE id = ?').run(urls[0], urls.slice(1).join('\n'), units[key]);
+  });
+
   const addTenancy = db.prepare('INSERT INTO tenancies (unit_id, tenant_id, rent, currency, due_day, start_date, end_date, deposit) VALUES (?, ?, ?, ?, ?, ?, ?, ?)');
   const tenancy = (unitKey, tenant, rent, currency, dueDay, startOffset, endDate, deposit) =>
     Number(addTenancy.run(units[unitKey], tenants[tenant], rent, currency, dueDay, monthStart(startOffset), endDate, deposit).lastInsertRowid);

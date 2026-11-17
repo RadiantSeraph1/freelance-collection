@@ -1,28 +1,52 @@
 <%- include('partials/head') %>
-<section class="hero small">
-  <div class="wrap">
-    <h1>Homes available to rent</h1>
-    <p>Managed apartments and houses in Accra. Request a viewing online and we will confirm a time.</p>
-    <form class="search" action="/vacancies">
-      <select name="area" aria-label="Area"><option value="">Any area</option><% areas.forEach((a) => { %><option <%= f.area === a ? 'selected' : '' %>><%= a %></option><% }) %></select>
-      <select name="beds" aria-label="Bedrooms"><option value="">Any bedrooms</option><% [1,2,3,4].forEach((n) => { %><option value="<%= n %>" <%= f.beds === n ? 'selected' : '' %>><%= n %>+ bedrooms</option><% }) %></select>
-      <button class="btn">Search</button>
-    </form>
+<section class="hero left">
+  <img class="cover" src="/img/apt-living-sunny-lg.jpg" alt="" fetchpriority="high">
+  <div class="container">
+    <span class="eyebrow">Lettings · Accra</span>
+    <h1>Find a managed home to <em>rent in Accra</em></h1>
+    <p class="lead">Apartments and houses looked after by a professional management team. Request a viewing online and we will confirm a time.</p>
   </div>
 </section>
-<section class="wrap section">
-  <p class="muted"><%= units.length %> available</p>
-  <% if (units.length) { %>
-  <div class="grid"><% units.forEach((u) => { %>
-    <a class="card" href="/vacancies/<%= u.id %>">
-      <div class="card-body">
-        <h3><%= u.bedrooms === 0 ? 'Studio' : u.bedrooms + '-bedroom' %> at <%= u.property_name %></h3>
-        <p class="muted"><%= u.area %> · Unit <%= u.label %></p>
-        <p class="price"><%= money(u.asking_rent, u.currency) %><small> / month</small></p>
-        <p class="facts"><% if (u.bedrooms !== null) { %><span><%= u.bedrooms %> bed</span><% } %><% if (u.bathrooms !== null) { %><span><%= u.bathrooms %> bath</span><% } %></p>
-      </div>
-    </a>
-  <% }) %></div>
-  <% } else { %><div class="empty"><p>Nothing matches right now. Please <a href="/vacancies">clear the filters</a> or call <%= site.phone %>.</p></div><% } %>
+<div class="container">
+  <div class="search-card">
+    <form action="/vacancies" aria-label="Search rentals">
+      <label>Area <select name="area"><option value="">Any area</option><% areas.forEach((a) => { %><option <%= f.area === a ? 'selected' : '' %>><%= a %></option><% }) %></select></label>
+      <label>Bedrooms <select name="beds"><option value="">Any</option><% [1,2,3,4].forEach((n) => { %><option value="<%= n %>" <%= f.beds === n ? 'selected' : '' %>><%= n %>+ bedrooms</option><% }) %></select></label>
+      <button class="btn"><%- icon('search') %> Search</button>
+    </form>
+  </div>
+</div>
+<section class="section tight">
+  <div class="container">
+    <div class="results-bar"><strong><%= units.length %> <%= units.length === 1 ? 'home' : 'homes' %> available</strong><a class="arrow-link small" href="/vacancies">Clear filters</a></div>
+    <% if (units.length) { %>
+    <div class="listing-list"><% units.forEach((u) => { %>
+      <a class="listing-row" href="/vacancies/<%= u.id %>">
+        <div class="media">
+          <img src="<%= thumb(u.image_url) %>" alt="<%= u.bedrooms === 0 ? 'Studio' : u.bedrooms + '-bedroom' %> at <%= u.property_name %>" loading="lazy" width="800" height="600">
+          <div class="tags"><span class="tag light">To rent</span></div>
+          <span class="photo-count"><%- icon('camera') %> <%= photos(u).length %></span>
+        </div>
+        <div class="body">
+          <div class="price"><%= money(u.asking_rent, u.currency) %> <small>/ month</small></div>
+          <h3><%= u.bedrooms === 0 ? 'Studio' : u.bedrooms + '-bedroom' %> at <%= u.property_name %></h3>
+          <div class="loc"><%- icon('map-pin') %> <%= u.area %> · Unit <%= u.label %></div>
+          <p class="muted small"><%= u.description.length > 150 ? u.description.slice(0, 147).trim() + '…' : u.description %></p>
+          <div class="specs"><% if (u.bedrooms !== null) { %><span><%- icon('bed-double') %> <%= u.bedrooms === 0 ? 'Studio' : u.bedrooms + ' bed' %></span><% } %><% if (u.bathrooms !== null) { %><span><%- icon('bath') %> <%= u.bathrooms %> bath</span><% } %></div>
+        </div>
+      </a>
+    <% }) %></div>
+    <% } else { %><div class="empty"><p><strong>Nothing matches right now.</strong></p><p>Please <a href="/vacancies">clear the filters</a> or call <%= site.phone %>.</p></div><% } %>
+  </div>
+</section>
+<section class="section alt" id="how">
+  <div class="container">
+    <div class="section-head"><span class="eyebrow">Property owners</span><h2>Rented, collected and reported. Without the chasing.</h2></div>
+    <div class="grid grid-3">
+      <div class="feature"><span class="ic"><%- icon('banknote') %></span><h3>Rent collected</h3><p>Every payment is recorded against the tenancy, with reminders sent before it falls overdue.</p></div>
+      <div class="feature"><span class="ic"><%- icon('wrench') %></span><h3>Repairs handled</h3><p>Tenants log a request, the office assigns a contractor, and owners see the cost.</p></div>
+      <div class="feature"><span class="ic"><%- icon('receipt') %></span><h3>Clear monthly statements</h3><p>Rent in, fees and repairs out, net payable, in one page you can print or keep.</p></div>
+    </div>
+  </div>
 </section>
 <%- include('partials/foot') %>

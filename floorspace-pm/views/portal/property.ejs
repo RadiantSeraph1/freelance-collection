@@ -1,18 +1,18 @@
 <%- include('../partials/head') %>
 <div class="wrap section">
 <%- include('../partials/subnav') %>
-  <p><a href="/portal">← My properties</a></p>
+  <p><a class="arrow-link small" href="/portal">← My properties</a></p>
   <h1><%= property.name %></h1>
   <p class="muted"><%= property.address %><%= property.area ? ' · ' + property.area : '' %> · Management fee <%= property.fee_percent %>%</p>
-  <table>
+  <div class="table-wrap"><table>
     <thead><tr><th>Unit</th><th>Tenant</th><th class="num">Rent</th><th>Lease ends</th><th>Rent status</th><th>Last inspection</th></tr></thead>
     <tbody><% units.forEach((u) => { %><tr>
       <td><%= u.label %></td><td><%= u.tenant_name || 'Vacant' %></td><td class="num"><%= u.tenancy_id ? money(u.rent, u.rent_currency) : money(u.asking_rent, u.currency) + ' asking' %></td>
       <td><%= u.lease_end || '–' %></td>
-      <td><% if (u.l) { %><% if (u.l.overdue) { %><span class="tag bad">Overdue <%= money(u.l.overdue, u.rent_currency) %></span><% } else { %><span class="tag ok">Up to date</span><% } %><% } else { %><span class="tag warn">Vacant</span><% } %></td>
+      <td><% if (u.l) { %><% if (u.l.overdue) { %><span class="badge bad">Overdue <%= money(u.l.overdue, u.rent_currency) %></span><% } else { %><span class="badge ok">Up to date</span><% } %><% } else { %><span class="badge warn">Vacant</span><% } %></td>
       <td><% if (u.lastInspection) { %><a href="/portal/inspections/<%= u.lastInspection.id %>"><%= u.lastInspection.inspected_on %></a><% } else { %>None<% } %></td>
     </tr><% }) %></tbody>
-  </table>
+  </table></div>
   <h2>Recent repairs</h2>
   <%- include('../partials/requests-table', { requests, base: '/portal/maintenance' }) %>
 </div>

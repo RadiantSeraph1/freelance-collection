@@ -3,7 +3,7 @@
 <%- include('../partials/subnav') %>
   <h1>Viewing requests</h1>
   <% if (viewings.length) { %>
-  <table>
+  <div class="table-wrap"><table>
     <thead><tr><th>Who</th><th>Unit</th><th>Preferred</th><th>Message</th><th>Update</th></tr></thead>
     <tbody><% viewings.forEach((v) => { %><tr>
       <td><b><%= v.name %></b><br><span class="muted"><%= v.phone || v.email %></span><% if (v.phone) { %><br><a href="<%= waLink(v.phone, 'Hello ' + v.name.split(' ')[0] + ', this is ' + site.name + ' about your viewing request for ' + v.property_name + ', unit ' + v.label + '.') %>" rel="noopener">WhatsApp</a><% } %></td>
@@ -17,7 +17,7 @@
         <button class="btn">Save</button>
       </form></td>
     </tr><% }) %></tbody>
-  </table>
+  </table></div>
   <% } else { %><p class="empty">No viewing requests yet.</p><% } %>
 </div>
 <%- include('../partials/foot') %>

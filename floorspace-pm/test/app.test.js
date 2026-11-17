@@ -328,3 +328,23 @@ test('production refuses to start without secrets and never creates demo account
   assert.equal(app.locals.db.prepare('SELECT COUNT(*) AS n FROM users').get().n, 1);
   assert.equal(app.locals.db.prepare('SELECT COUNT(*) AS n FROM properties').get().n, 0);
 });
+
+test('vacancy photos exist on disk, galleries render, and public pages carry no inline styles', async () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const units = db.prepare('SELECT image_url, gallery FROM units WHERE image_url != \'\'').all();
+  assert.ok(units.length >= 8, 'seed units should have photos');
+  for (const u of units) {
+    for (const p of [u.image_url, ...u.gallery.split('\n')].filter(Boolean)) {
+      assert.ok(fs.existsSync(path.join(__dirname, '..', 'public', p)), `missing ${p}`);
+      assert.ok(fs.existsSync(path.join(__dirname, '..', 'public', p.replace('-lg.jpg', '-md.jpg'))), `missing small ${p}`);
+    }
+  }
+  const id = db.prepare("SELECT un.id FROM units un WHERE un.listed = 1 AND NOT EXISTS (SELECT 1 FROM tenancies t WHERE t.unit_id = un.id AND t.status = 'active') LIMIT 1").get().id;
+  const detail = await (await fetch(`${base}/vacancies/${id}`)).text();
+  assert.match(detail, /data-gallery-main/);
+  for (const html of [detail, await (await fetch(`${base}/vacancies`)).text(), await (await fetch(`${base}/login`)).text()]) {
+    assert.doesNotMatch(html, /\sstyle="/);
+  }
+  assert.match((await fetch(`${base}/`)).headers.get('content-security-policy'), /script-src 'self'/);
+});

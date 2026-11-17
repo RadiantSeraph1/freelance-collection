@@ -1,8 +1,8 @@
 <%- include('../partials/head') %>
 <div class="wrap section">
 <%- include('../partials/subnav') %>
-  <p><a href="/portal">← Back</a></p>
-  <h1><%= request.title %> <span class="tag <%= request.status === 'done' ? 'ok' : request.status === 'open' ? 'warn' : '' %>"><%= label(request.status) %></span></h1>
+  <p><a class="arrow-link small" href="/portal">← Back</a></p>
+  <h1><%= request.title %> <span class="badge <%= request.status === 'done' ? 'ok' : request.status === 'open' ? 'warn' : '' %>"><%= label(request.status) %></span></h1>
   <p class="muted"><%= request.property_name %>, unit <%= request.unit_label %> · Reported <%= request.created_at.slice(0, 10) %> · Priority: <%= label(request.priority) %></p>
   <dl class="specs">
     <div><dt>Contractor</dt><dd><%= request.contractor || 'Not yet assigned' %></dd></div>

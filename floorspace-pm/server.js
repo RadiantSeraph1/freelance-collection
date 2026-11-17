@@ -7,6 +7,7 @@ const {
 } = require('./src/db');
 const { seedManager, seedDemo } = require('./src/seed');
 const { sessionMiddleware } = require('./src/session');
+const { icon, initials } = require('./src/ui');
 
 const LABELS = {
   manager: 'Manager', landlord: 'Landlord', tenant: 'Tenant',
@@ -58,6 +59,7 @@ function createApp(options = {}) {
     name: env.SITE_NAME || 'Floorspace Realty',
     phone: env.SITE_PHONE || '+233 00 000 0000',
     email: env.SITE_EMAIL || 'sales@example.com',
+    address: env.SITE_ADDRESS || 'Accra, Ghana',
     demo: env.DEMO_BANNER !== 'off',
     temporary: (options.dbPath || env.DB_PATH) === ':memory:', // serverless demo: data is not kept
   };
@@ -78,7 +80,7 @@ function createApp(options = {}) {
   app.use((req, res, next) => {
     res.set({
       'X-Content-Type-Options': 'nosniff', 'X-Frame-Options': 'DENY', 'Referrer-Policy': 'strict-origin-when-cross-origin',
-      'Content-Security-Policy': "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'none'; frame-ancestors 'none'",
+      'Content-Security-Policy': "default-src 'self'; img-src 'self' data:; style-src 'self'; font-src 'self'; script-src 'self'; frame-ancestors 'none'",
     });
     next();
   });
@@ -88,7 +90,9 @@ function createApp(options = {}) {
 
   app.use((req, res, next) => {
     Object.assign(res.locals, {
-      site, label: (k) => LABELS[k] || k, session: req.session, path: req.path, me: null, money,
+      site, icon, initials, label: (k) => LABELS[k] || k,
+      thumb: (url) => String(url || '').replace(/-lg\.jpg$/, '-md.jpg'),
+      photos: (u) => [u.image_url, ...String(u.gallery || '').split('\n')].map((x) => x.trim()).filter(Boolean), session: req.session, path: req.path, me: null, money,
       waLink: (phone, text) => `https://wa.me/${toWaNumber(phone)}?text=${encodeURIComponent(text)}`,
       todayDate: today(db),
     });
@@ -342,9 +346,12 @@ function createApp(options = {}) {
     res.redirect(`/admin/properties/${id}`);
   });
 
+  const okPhoto = (u) => /^https:\/\/\S+$/.test(u) || /^\/img\/[\w.-]+$/.test(u);
   const readUnit = (body) => ({
     label: clean(body.label, 30), bedrooms: intOrNull(body.bedrooms), bathrooms: intOrNull(body.bathrooms), asking_rent: intOrNull(body.asking_rent) ?? 0,
     currency: oneOf(body.currency, CURRENCIES, 'GHS'), listed: body.listed ? 1 : 0, description: clean(body.description, 1000),
+    image_url: okPhoto(clean(body.image_url, 500)) ? clean(body.image_url, 500) : '',
+    gallery: String(body.gallery || '').split(/\r?\n/).map((l) => l.trim()).filter(okPhoto).slice(0, 8).join('\n'),
   });
   admin.post('/properties/:id/units', (req, res) => {
     const id = intOrNull(req.params.id);
@@ -352,8 +359,8 @@ function createApp(options = {}) {
     const u = readUnit(req.body);
     if (!u.label) return propertyPage(res, id, 400, ['Enter a name or number for the unit.']);
     if (db.prepare('SELECT 1 FROM units WHERE property_id = ? AND label = ?').get(id, u.label)) return propertyPage(res, id, 400, [`This property already has a unit called ${u.label}.`]);
-    const unitId = db.prepare('INSERT INTO units (property_id, label, bedrooms, bathrooms, asking_rent, currency, listed, description) VALUES (?, ?, ?, ?, ?, ?, ?, ?)')
-      .run(id, u.label, u.bedrooms, u.bathrooms, u.asking_rent, u.currency, u.listed, u.description).lastInsertRowid;
+    const unitId = db.prepare('INSERT INTO units (property_id, label, bedrooms, bathrooms, asking_rent, currency, listed, description, image_url, gallery) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)')
+      .run(id, u.label, u.bedrooms, u.bathrooms, u.asking_rent, u.currency, u.listed, u.description, u.image_url, u.gallery).lastInsertRowid;
     res.redirect(`/admin/units/${unitId}`);
   });
 
@@ -376,8 +383,8 @@ function createApp(options = {}) {
     const u = readUnit(req.body);
     if (!u.label) return unitPage(res, id, 400, ['Enter a name or number for the unit.']);
     if (db.prepare('SELECT 1 FROM units WHERE property_id = ? AND label = ? AND id != ?').get(unit.property_id, u.label, id)) return unitPage(res, id, 400, [`This property already has a unit called ${u.label}.`]);
-    db.prepare('UPDATE units SET label = ?, bedrooms = ?, bathrooms = ?, asking_rent = ?, currency = ?, listed = ?, description = ? WHERE id = ?')
-      .run(u.label, u.bedrooms, u.bathrooms, u.asking_rent, u.currency, u.listed, u.description, id);
+    db.prepare('UPDATE units SET label = ?, bedrooms = ?, bathrooms = ?, asking_rent = ?, currency = ?, listed = ?, description = ?, image_url = ?, gallery = ? WHERE id = ?')
+      .run(u.label, u.bedrooms, u.bathrooms, u.asking_rent, u.currency, u.listed, u.description, u.image_url, u.gallery, id);
     res.redirect(`/admin/units/${id}`);
   });
 

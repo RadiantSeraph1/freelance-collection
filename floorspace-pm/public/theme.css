@@ -1,0 +1,37 @@
+@font-face { font-family: "Plus Jakarta Sans"; src: url("/fonts/plus-jakarta-sans-latin-wght-normal.woff2") format("woff2"); font-weight: 200 800; font-style: normal; font-display: swap; }
+:root {
+  --font-display: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-body: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-app-display: "Plus Jakarta Sans", system-ui, sans-serif;
+  --ink: #26304a; --ink-strong: #0f1b36; --muted: #5d6882;
+  --bg: #fff; --bg-alt: #f1f5fb; --line: #e1e7f1;
+  --brand: #1d3f7a; --brand-dark: #142e5c; --brand-ink: #fff;
+  --accent: #0e8f80; --accent-ink: #0a7366; --accent-contrast: #fff; --accent-on-dark: #5fd3c3;
+  --brand-soft: #e4ecfa; --brand-soft-2: #c3d4f0; --ring: rgba(29, 63, 122, .2);
+  --link: #1d3f7a; --red: #b42318; --focus: #5b8bd6;
+  --radius-btn: 10px; --radius-mark: 10px; --display-weight: 700; --display-tracking: -.025em;
+  --side-bg: #0f1b36; --side-active: rgba(95, 211, 195, .16); --footer-bg: #0b1428; --utility-bg: #0f1b36; --app-bg: #f4f6fa;
+}
+.brand-mark { background: linear-gradient(135deg, #1d3f7a, #0e8f80); color: #fff; font-weight: 800; }
+tr.total td { border-top: 2px solid var(--ink); }
+tr.sub td { font-size: .85rem; padding-top: .2rem; padding-bottom: .2rem; }
+.desc, .prose { max-width: 62ch; }
+.statement-block table { background: transparent; border: 0; }
+.grow { flex: 1; }
+.thumb-sm { width: 64px; height: 48px; object-fit: cover; border-radius: 6px; }
+.hero h1 em { font-style: normal; color: var(--accent-on-dark); }
+body.app .section { padding: 0; }
+body.app .wrap { width: auto; margin: 0; }
+body.app .narrow { margin: 0; width: min(720px, 100%); }
+.tenant-hero { background: linear-gradient(135deg, var(--brand), #0e8f80); color: #fff; border-radius: 16px; padding: 1.6rem; margin: 1rem 0 1.5rem; }
+.tenant-hero h2 { color: #fff; margin: 0 0 .2rem; }
+.tenant-hero p { margin: 0; color: rgba(255, 255, 255, .85); }
+.login-split { display: grid; grid-template-columns: 1.1fr 1fr; min-height: 100vh; }
+.login-photo { position: relative; color: #fff; display: flex; align-items: flex-end; padding: 3rem; isolation: isolate; }
+.login-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
+.login-photo::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(10,12,14,.2), rgba(10,12,14,.8)); }
+.login-photo .brand { color: #fff; margin-bottom: 1rem; }
+.login-photo h2 { color: #fff; font-size: 2.2rem; max-width: 12em; }
+.login-form { display: grid; place-items: center; padding: 2rem; }
+.login-form form { width: min(380px, 100%); }
+@media (max-width: 800px) { .login-split { grid-template-columns: 1fr; } .login-photo { display: none; } }

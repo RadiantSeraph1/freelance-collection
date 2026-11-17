@@ -3,7 +3,7 @@
 <%- include('../partials/subnav') %>
   <h1>Log a repair request</h1>
   <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
-  <form method="post" action="/admin/maintenance" class="stack panel wide">
+  <form method="post" action="/admin/maintenance" class="stack form-card wide">
     <input type="hidden" name="_csrf" value="<%= csrf %>">
     <label>Unit <select name="unit_id" required><option value="">Choose…</option><% units.forEach((u) => { %><option value="<%= u.id %>" <%= form.unit_id === u.id ? 'selected' : '' %>><%= u.property_name %>, <%= u.label %><%= u.tenant_name ? ' (' + u.tenant_name + ')' : ' (vacant)' %></option><% }) %></select></label>
     <div class="row">

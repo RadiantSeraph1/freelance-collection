@@ -155,6 +155,10 @@ function openDb(path) {
     CREATE INDEX IF NOT EXISTS idx_payments_tenancy ON payments(tenancy_id);
     CREATE INDEX IF NOT EXISTS idx_maintenance_unit ON maintenance(unit_id);
   `);
+  // Older databases predate unit photos.
+  const unitCols = db.prepare('PRAGMA table_info(units)').all().map((c) => c.name);
+  if (!unitCols.includes('image_url')) db.exec("ALTER TABLE units ADD COLUMN image_url TEXT NOT NULL DEFAULT ''");
+  if (!unitCols.includes('gallery')) db.exec("ALTER TABLE units ADD COLUMN gallery TEXT NOT NULL DEFAULT ''");
   return db;
 }
 

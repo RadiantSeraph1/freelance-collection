@@ -1,12 +1,12 @@
 <% if (requests.length) { %>
-<table>
+<div class="table-wrap"><table>
   <thead><tr><th>Reported</th><th>Problem</th><th>Property</th><th>Priority</th><th>Status</th></tr></thead>
   <tbody><% requests.forEach((m) => { %><tr>
     <td><%= m.created_at.slice(0, 10) %></td>
     <td><a href="<%= base %>/<%= m.id %>"><%= m.title %></a></td>
     <td><%= m.property_name %>, <%= m.unit_label %></td>
-    <td><span class="tag <%= m.priority === 'urgent' ? 'bad' : '' %>"><%= label(m.priority) %></span></td>
-    <td><span class="tag <%= m.status === 'done' ? 'ok' : m.status === 'open' ? 'warn' : '' %>"><%= label(m.status) %></span></td>
+    <td><span class="badge <%= m.priority === 'urgent' ? 'bad' : '' %>"><%= label(m.priority) %></span></td>
+    <td><span class="badge <%= m.status === 'done' ? 'ok' : m.status === 'open' ? 'warn' : '' %>"><%= label(m.status) %></span></td>
   </tr><% }) %></tbody>
-</table>
+</table></div>
 <% } else { %><p class="muted">None.</p><% } %>

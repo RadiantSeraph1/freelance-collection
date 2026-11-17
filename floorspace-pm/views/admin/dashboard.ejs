@@ -13,7 +13,7 @@
 
   <h2>Rent overdue</h2>
   <% if (overdue.length) { %>
-  <table>
+  <div class="table-wrap"><table>
     <thead><tr><th>Tenant</th><th>Property</th><th class="num">Overdue</th><th class="num">Months</th><th class="num">Days late</th><th>Last reminder</th><th></th></tr></thead>
     <tbody><% overdue.forEach((t) => { %><tr>
       <td><a href="/admin/tenancies/<%= t.id %>"><%= t.tenant_name %></a></td>
@@ -25,19 +25,19 @@
         <form method="post" action="/admin/tenancies/<%= t.id %>/reminders"><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="back" value="dashboard"><button class="link">Log sent</button></form>
       </td>
     </tr><% }) %></tbody>
-  </table>
+  </table></div>
   <% } else { %><p class="muted">No rent is overdue.</p><% } %>
 
   <% if (soon.length) { %>
   <h2>Rent falling due in the next 7 days</h2>
-  <table>
+  <div class="table-wrap"><table>
     <thead><tr><th>Tenant</th><th>Property</th><th>Due</th><th class="num">Amount</th><th></th></tr></thead>
     <tbody><% soon.forEach((t) => { %><tr>
       <td><a href="/admin/tenancies/<%= t.id %>"><%= t.tenant_name %></a></td><td><%= t.property_name %>, <%= t.unit_label %></td>
       <td><%= t.l.nextDue.date %></td><td class="num"><%= money(t.l.nextDue.amount, t.currency) %></td>
       <td><% if (t.tenant_phone) { %><a href="<%= waLink(t.tenant_phone, reminderText(t)) %>" rel="noopener">WhatsApp reminder</a><% } %></td>
     </tr><% }) %></tbody>
-  </table>
+  </table></div>
   <% } %>
 
   <div class="two">
@@ -45,18 +45,18 @@
       <h2>Repairs needing attention</h2>
       <%- include('../partials/requests-table', { requests, base: '/admin/maintenance' }) %>
       <h2>Leases ending within 60 days</h2>
-      <% if (ending.length) { %><table><thead><tr><th>Tenant</th><th>Property</th><th>Lease ends</th></tr></thead>
-      <tbody><% ending.forEach((t) => { %><tr><td><a href="/admin/tenancies/<%= t.id %>"><%= t.tenant_name %></a></td><td><%= t.property_name %>, <%= t.unit_label %></td><td><%= t.end_date %></td></tr><% }) %></tbody></table>
+      <% if (ending.length) { %><div class="table-wrap"><table><thead><tr><th>Tenant</th><th>Property</th><th>Lease ends</th></tr></thead>
+      <tbody><% ending.forEach((t) => { %><tr><td><a href="/admin/tenancies/<%= t.id %>"><%= t.tenant_name %></a></td><td><%= t.property_name %>, <%= t.unit_label %></td><td><%= t.end_date %></td></tr><% }) %></tbody></table></div>
       <% } else { %><p class="muted">None.</p><% } %>
     </div>
     <div>
       <h2>Viewing requests</h2>
-      <% if (newViewings.length) { %><table><thead><tr><th>Name</th><th>Unit</th><th>Preferred</th></tr></thead>
-      <tbody><% newViewings.forEach((v) => { %><tr><td><a href="/admin/viewings"><%= v.name %></a></td><td><%= v.property_name %>, <%= v.label %></td><td><%= v.preferred_date || 'Any' %></td></tr><% }) %></tbody></table>
+      <% if (newViewings.length) { %><div class="table-wrap"><table><thead><tr><th>Name</th><th>Unit</th><th>Preferred</th></tr></thead>
+      <tbody><% newViewings.forEach((v) => { %><tr><td><a href="/admin/viewings"><%= v.name %></a></td><td><%= v.property_name %>, <%= v.label %></td><td><%= v.preferred_date || 'Any' %></td></tr><% }) %></tbody></table></div>
       <% } else { %><p class="muted">None waiting.</p><% } %>
       <h2>Inspections due (<%= 180 %>+ days)</h2>
-      <% if (inspectionsDue.length) { %><table><thead><tr><th>Unit</th><th>Last inspected</th><th></th></tr></thead>
-      <tbody><% inspectionsDue.forEach((u) => { %><tr><td><%= u.property_name %>, <%= u.label %></td><td class="<%= u.last ? '' : 'overdue' %>"><%= u.last || 'Never' %></td><td><a href="/admin/inspections/new?unit=<%= u.id %>">Record</a></td></tr><% }) %></tbody></table>
+      <% if (inspectionsDue.length) { %><div class="table-wrap"><table><thead><tr><th>Unit</th><th>Last inspected</th><th></th></tr></thead>
+      <tbody><% inspectionsDue.forEach((u) => { %><tr><td><%= u.property_name %>, <%= u.label %></td><td class="<%= u.last ? '' : 'overdue' %>"><%= u.last || 'Never' %></td><td><a href="/admin/inspections/new?unit=<%= u.id %>">Record</a></td></tr><% }) %></tbody></table></div>
       <% } else { %><p class="muted">All occupied units are up to date.</p><% } %>
     </div>
   </div>

@@ -1,8 +1,8 @@
 <%- include('../partials/head') %>
 <div class="wrap section">
 <%- include('../partials/subnav') %>
-  <p><a href="/admin/maintenance">← Maintenance</a></p>
-  <h1><%= request.title %> <span class="tag <%= request.priority === 'urgent' ? 'bad' : '' %>"><%= label(request.priority) %></span></h1>
+  <p><a class="arrow-link small" href="/admin/maintenance">← Maintenance</a></p>
+  <h1><%= request.title %> <span class="badge <%= request.priority === 'urgent' ? 'bad' : '' %>"><%= label(request.priority) %></span></h1>
   <p class="muted"><a href="/admin/units/<%= request.unit_id %>"><%= request.property_name %>, unit <%= request.unit_label %></a> · Reported <%= request.created_at.slice(0, 10) %> by <%= request.reporter_name || 'the office' %></p>
   <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
   <div class="two">
@@ -12,7 +12,7 @@
       <h2>History</h2>
       <% if (notes.length) { %><ul class="notes"><% notes.forEach((n) => { %><li><span class="muted"><%= n.created_at %> UTC · <%= n.author %></span><br><%= n.note %></li><% }) %></ul><% } else { %><p class="muted">No notes.</p><% } %>
     </div>
-    <form method="post" action="/admin/maintenance/<%= request.id %>" class="stack panel">
+    <form method="post" action="/admin/maintenance/<%= request.id %>" class="stack form-card">
       <input type="hidden" name="_csrf" value="<%= csrf %>">
       <h2>Update</h2>
       <div class="row">
