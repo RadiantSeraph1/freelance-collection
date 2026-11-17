@@ -1,7 +1,20 @@
 // Sample data so the demo is browsable. Every customer, rider, parcel and price
 // here is fictional and must be removed before real use. Dates are relative to
 // today so the demo always looks current.
-const { hashPassword, quote, dueDate, newTracking, addEvent, STATUS_TEXT, FAIL_TEXT, ZONES } = require('./db');
+const crypto = require('node:crypto');
+const { hashPassword, quote, dueDate, addEvent, TRACKING_ALPHABET, STATUS_TEXT, FAIL_TEXT, ZONES } = require('./db');
+
+// Sample tracking numbers are the same every time the demo starts. A hosting
+// platform may run several copies of the app, and the numbers shown on the home
+// page must work on all of them.
+function demoTracking(db, i) {
+  for (let salt = 0; ; salt += 1) {
+    const bytes = crypto.createHash('sha256').update(`emirad-demo-${i}-${salt}`).digest();
+    const chars = Array.from(bytes.subarray(0, 8), (b) => TRACKING_ALPHABET[b % TRACKING_ALPHABET.length]).join('');
+    const code = `EE-${chars.slice(0, 4)}-${chars.slice(4)}`;
+    if (!db.prepare('SELECT 1 FROM shipments WHERE tracking = ?').get(code)) return code;
+  }
+}
 
 function seedManager(db, { user, password }) {
   if (!db.prepare('SELECT 1 FROM users LIMIT 1').get()) {
@@ -82,7 +95,7 @@ function seedDemo(db, { password }) {
     const attempts = status === 'failed' ? failedAttempts : status === 'returned' ? failedAttempts : 0;
     const steps = PATH[status];
     const closedAt = ['delivered', 'returned', 'cancelled'].includes(status) ? stamp(created, steps.length * 70) : null;
-    const tracking = newTracking(db);
+    const tracking = demoTracking(db, i);
     const id = Number(insert.run(tracking, b ? b.id : null, rider ? riders[rider] : null, b ? 'account' : (i % 2 ? 'phone' : 'web'), sender.name, sender.phone, sender.address,
       pickupZone, receiver, `0${24 + (i % 4)} 83${i % 10} ${1000 + i * 37}`, streets[(i + 3) % streets.length], dz, description, kg, service, payment, q.price, cod, status,
       dueDate(db, service, createdDate, hour), attempts, status === 'failed' || status === 'returned' ? failReason : '', status === 'delivered' ? receiver : '',

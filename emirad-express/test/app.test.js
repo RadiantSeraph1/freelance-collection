@@ -128,6 +128,18 @@ test('sender-pays-cash parcels record the fee at pickup; returned and cancelled 
   assert.match(d.changeStatus(db, c.row(), 'pickup_scheduled').error, /cannot be changed/);
 });
 
+test('demo tracking numbers are identical on every start, and every number the home page offers resolves', async () => {
+  const { seedManager, seedDemo } = require('../src/seed');
+  const fresh = () => { const x = d.openDb(':memory:'); seedManager(x, { user: 'a', password: 'x' }); seedDemo(x, { password: 'y' }); return x.prepare('SELECT tracking FROM shipments ORDER BY id').all().map((r) => r.tracking); };
+  const first = fresh();
+  assert.deepEqual(fresh(), first);                       // a second copy of the app shows the same numbers
+  assert.equal(new Set(first).size, first.length);
+  const home = await (await fetch(`${base}/`)).text();
+  const offered = [...home.matchAll(/href="\/track\/(EE-[A-Z0-9]{4}-[A-Z0-9]{4})"/g)].map((m) => m[1]);
+  assert.ok(offered.length >= 3);
+  for (const code of offered) assert.equal((await fetch(`${base}/track/${code}`)).status, 200, `${code} should resolve`);
+});
+
 test('home, quote and rates pages work; demo tracking numbers are offered', async () => {
   const home = await (await fetch(`${base}/`)).text();
   assert.match(home, /Track parcel/);

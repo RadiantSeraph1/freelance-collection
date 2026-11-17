@@ -306,6 +306,6 @@ function businessStatement(db, businessId, period) {
 module.exports = {
   openDb, hashPassword, verifyPassword, transaction, today, daysFromNow, addDays,
   quote, dueDate, parseWeight, newTracking, addEvent, createShipment, changeStatus, assignRider, businessStatement,
-  ROLES, SERVICES, ZONES, WEIGHT_BANDS, MAX_WEIGHT_KG, PAYMENT_MODES, STATUSES, ACTIVE_STATUSES, CLOSED_STATUSES, TRANSITIONS,
+  TRACKING_ALPHABET, ROLES, SERVICES, ZONES, WEIGHT_BANDS, MAX_WEIGHT_KG, PAYMENT_MODES, STATUSES, ACTIVE_STATUSES, CLOSED_STATUSES, TRANSITIONS,
   FAIL_REASONS, SOURCES, STATUS_TEXT, FAIL_TEXT, SAME_DAY_CUTOFF_HOUR, STANDARD_DAYS,
 };
