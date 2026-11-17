@@ -238,11 +238,12 @@ test('reports add up and the CSV is formula-safe', async () => {
 
 test('production refuses to start without secrets, and keeps the API off without a key', async () => {
   assert.throws(() => createApp({ dbPath: ':memory:', env: { NODE_ENV: 'production' } }), /SESSION_SECRET/);
-  const app = createApp({ dbPath: ':memory:', env: { NODE_ENV: 'production', SESSION_SECRET: 's', ADMIN_PASSWORD: 'p', SEED_DEMO: 'off' } });
+  const app = createApp({ dbPath: ':memory:', env: { NODE_ENV: 'production', SESSION_SECRET: 's', ADMIN_PASSWORD: 'p' } }); // no SEED_DEMO: must not create demo agents
   const s = await new Promise((resolve) => { const x = app.listen(0, () => resolve(x)); });
   try {
     const res = await fetch(`http://127.0.0.1:${s.address().port}/api/leads`, { method: 'POST', headers: { 'Content-Type': 'application/json', 'x-api-key': '' }, body: '{"name":"Zed","phone":"0245550000"}' });
     assert.equal(res.status, 401);
     assert.equal(app.locals.db.prepare('SELECT COUNT(*) AS n FROM users').get().n, 1); // only the manager, no demo agents
+    assert.equal(app.locals.db.prepare('SELECT COUNT(*) AS n FROM leads').get().n, 0);
   } finally { s.close(); }
 });

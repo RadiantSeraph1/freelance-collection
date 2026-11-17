@@ -69,7 +69,9 @@ function createApp(options = {}) {
 
   const db = openDb(options.dbPath || env.DB_PATH || path.join(__dirname, 'data', 'app.db'));
   seedAdmin(db, { adminUser: env.ADMIN_USER || 'admin', adminPassword: env.ADMIN_PASSWORD || 'admin123' });
-  if (env.SEED_DEMO !== 'off') seedDemo(db, { agentPassword: env.AGENT_DEMO_PASSWORD || 'agent123' });
+  // Demo agents share a publicly documented password, so in production they are only created if explicitly requested.
+  const withDemoData = env.SEED_DEMO ? env.SEED_DEMO === 'on' : !production;
+  if (withDemoData) seedDemo(db, { agentPassword: env.AGENT_DEMO_PASSWORD || 'agent123' });
   const today = () => daysFromNow(db, 0);
 
   const app = express();

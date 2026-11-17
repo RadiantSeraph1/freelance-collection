@@ -29,7 +29,7 @@ npm start          # http://localhost:3000
 npm test
 ```
 
-Demo logins: `admin` / `admin123` (manager) and `kofi`, `abena` or `yaw` / `agent123` (agents).
+Demo logins (sample data on a local copy only, never use these on a hosted site): `admin` / `admin123` (manager) and `kofi`, `abena` or `yaw` / `agent123` (agents).
 Try the API: `curl -X POST localhost:3000/api/leads -H 'x-api-key: demo-key' -H 'content-type: application/json' -d '{"name":"Test","phone":"0245550000","source":"website"}'`
 
 ## Settings (environment variables)
@@ -40,7 +40,7 @@ Try the API: `curl -X POST localhost:3000/api/leads -H 'x-api-key: demo-key' -H 
 | `NODE_ENV=production` | Secure cookies; refuses to start without `SESSION_SECRET` and `ADMIN_PASSWORD`; the API stays off until `LEAD_API_KEY` is set |
 | `SESSION_SECRET` | Long random string used to sign staff sessions |
 | `ADMIN_USER`, `ADMIN_PASSWORD` | Manager login created when the database is first set up |
-| `SEED_DEMO=off` | Start empty: no sample leads or demo agents |
+| `SEED_DEMO` | `on` or `off`. Sample leads and demo agents are created by default outside production and never in production unless set to `on` |
 | `LEAD_API_KEY` | Secret that website forms or other tools send in the `X-API-Key` header |
 | `STALE_DAYS` | Days without activity before an open lead is flagged as quiet (default 7) |
 | `SITE_NAME`, `SITE_PHONE`, `SITE_WHATSAPP`, `SITE_EMAIL` | Contact details shown on the enquiry page |
@@ -56,7 +56,7 @@ Try the API: `curl -X POST localhost:3000/api/leads -H 'x-api-key: demo-key' -H 
 
 ## Before this could go live
 
-- Start with `SEED_DEMO=off`, set real secrets and a `LEAD_API_KEY`, host behind HTTPS, monitor `/healthz`, and schedule a daily copy of the database file.
+- Leave `SEED_DEMO` unset in production so it starts empty, set real secrets and a `LEAD_API_KEY`, host behind HTTPS, monitor `/healthz`, and schedule a daily copy of the database file.
 - Not yet built: automatic WhatsApp Business API messaging (the button opens WhatsApp for a person to send), SMS or email alerts for new leads, password reset, links to their property listings.
 
 Screenshots are in `docs/screenshots/`.
