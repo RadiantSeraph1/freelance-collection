@@ -1,18 +1,84 @@
-<%- include('partials/head') %>
-<section class="hero">
-  <div class="wrap">
-    <h1>Find your home or investment in Accra</h1>
-    <p>Houses, apartments, land and commercial space from a developer you can visit.</p>
-    <form class="search" action="/properties">
-      <select name="listing" aria-label="Buy or rent"><option value="">Buy or rent</option><% LISTINGS.forEach((l) => { %><option value="<%= l %>"><%= label(l) %></option><% }) %></select>
-      <select name="type" aria-label="Property type"><option value="">Any type</option><% TYPES.forEach((t) => { %><option value="<%= t %>"><%= label(t) %></option><% }) %></select>
-      <select name="location" aria-label="Location"><option value="">Any location</option><% locations.forEach((l) => { %><option><%= l %></option><% }) %></select>
-      <button class="btn">Search</button>
-    </form>
+<%- include('partials/head', { navKey: '' }) %>
+<section class="hero left">
+  <img class="cover" src="/img/villa-pool-modern-lg.jpg" alt="" fetchpriority="high">
+  <div class="container">
+    <span class="eyebrow">Accra · Residential · Land · Commercial</span>
+    <h1>Find a home that <em>suits the way you live</em></h1>
+    <p class="lead">Houses, apartments, land and commercial space across Accra, from a team you can visit and call.</p>
+    <div class="hero-actions">
+      <a class="btn accent" href="/properties?listing=sale">Browse homes for sale</a>
+      <a class="btn ghost-light" href="/properties?listing=rent">Homes to rent</a>
+    </div>
   </div>
 </section>
-<section class="wrap section">
-  <div class="bar"><h2>Featured properties</h2><a href="/properties">View all properties →</a></div>
-  <div class="grid"><% featured.forEach((p) => { %><%- include('partials/card', { p }) %><% }) %></div>
+<div class="container">
+  <div class="search-card">
+    <form action="/properties" aria-label="Search properties">
+      <label>I want to <select name="listing"><option value="">Buy or rent</option><% LISTINGS.forEach((l) => { %><option value="<%= l %>"><%= label(l) %></option><% }) %></select></label>
+      <label>Property type <select name="type"><option value="">Any type</option><% TYPES.forEach((t) => { %><option value="<%= t %>"><%= label(t) %></option><% }) %></select></label>
+      <label>Location <select name="location"><option value="">All of Accra</option><% locations.forEach((l) => { %><option><%= l %></option><% }) %></select></label>
+      <label>Bedrooms <select name="beds"><option value="">Any</option><% [1,2,3,4,5].forEach((n) => { %><option value="<%= n %>"><%= n %>+</option><% }) %></select></label>
+      <button class="btn"><%- icon('search') %> Search</button>
+    </form>
+  </div>
+</div>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head row-end">
+      <div><span class="eyebrow">Featured</span><h2>Properties we are proud to show</h2></div>
+      <a class="arrow-link" href="/properties">View all <%= stats.total %> properties <%- icon('arrow-right') %></a>
+    </div>
+    <div class="grid grid-3"><% featured.forEach((p) => { %><%- include('partials/card', { p }) %><% }) %></div>
+  </div>
+</section>
+
+<section class="stats-strip" aria-label="At a glance">
+  <div class="container">
+    <div><b><%= stats.total %></b><span>Properties listed</span></div>
+    <div><b><%= stats.sale %></b><span>For sale</span></div>
+    <div><b><%= stats.rent %></b><span>To rent</span></div>
+    <div><b><%= stats.areas %></b><span>Accra neighbourhoods</span></div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head"><span class="eyebrow">Neighbourhoods</span><h2>Explore Accra by area</h2><p class="lead">Start with the part of town that fits your commute, your budget and your lifestyle.</p></div>
+    <div class="grid grid-4">
+      <% [['East Legon', 'gh-neigh1', 'Family homes and new estates'], ['Cantonments', 'gh-office', 'Close to embassies and the airport'], ['Osu', 'gh-osu', 'Restaurants, nightlife and the coast'], ['Spintex', 'gh-aerial-interchange', 'Good value, easy road links']].forEach(([name, photo, blurb]) => { %>
+      <a class="area-tile" href="/properties?location=<%= encodeURIComponent(name) %>">
+        <img src="/img/<%= photo %>-md.jpg" alt="" loading="lazy" width="600" height="750">
+        <div><h3><%= name %></h3><p><%= areaCount[name] ? areaCount[name] + (areaCount[name] === 1 ? ' property' : ' properties') + ' · ' : '' %><%= blurb %></p></div>
+      </a>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<section class="section alt">
+  <div class="container">
+    <div class="split">
+      <div class="photo-frame"><img src="/img/int-living-warm-lg.jpg" alt="Bright living room in a family home" loading="lazy"></div>
+      <div>
+        <span class="eyebrow">How it works</span>
+        <h2>From first look to keys in your hand</h2>
+        <div class="stack">
+          <div class="step"><span class="n">1</span><div><h3>Tell us what you need</h3><p>Use search, or send a short message with your budget and preferred areas.</p></div></div>
+          <div class="step"><span class="n">2</span><div><h3>See it in person</h3><p>We arrange viewings that suit your schedule, including weekends.</p></div></div>
+          <div class="step"><span class="n">3</span><div><h3>We guide the paperwork</h3><p>From offer to handover, one named agent keeps you updated.</p></div></div>
+        </div>
+        <p><a class="btn" href="/contact">Book a viewing</a></p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-band">
+  <img src="/img/ld-estate-aerial-lg.jpg" alt="" loading="lazy">
+  <div class="container">
+    <div><h2>Looking for land to build on?</h2><p>Serviced and registered plots in planned estates around Accra.</p></div>
+    <a class="btn accent" href="/properties?type=land">See available land</a>
+  </div>
 </section>
 <%- include('partials/foot') %>

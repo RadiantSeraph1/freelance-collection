@@ -1,0 +1,41 @@
+@font-face { font-family: "Playfair Display"; src: url("/fonts/playfair-display-latin-wght-normal.woff2") format("woff2"); font-weight: 400 900; font-style: normal; font-display: swap; }
+@font-face { font-family: "Playfair Display"; src: url("/fonts/playfair-display-latin-wght-italic.woff2") format("woff2"); font-weight: 400 900; font-style: italic; font-display: swap; }
+@font-face { font-family: "Inter"; src: url("/fonts/inter-latin-wght-normal.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
+:root {
+  --font-display: "Playfair Display", Georgia, "Times New Roman", serif;
+  --font-body: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-app-display: "Inter", system-ui, sans-serif;
+  --ink: #2b2e34; --ink-strong: #14161a; --muted: #667085;
+  --bg: #fff; --bg-alt: #f7f4ee; --line: #e8e3d9;
+  --brand: #96691f; --brand-dark: #7b5518; --brand-ink: #fff;
+  --accent: #96691f; --accent-ink: #8a5f18; --accent-contrast: #fff; --accent-on-dark: #e6c47e;
+  --brand-soft: #f4ebd8; --brand-soft-2: #e9dab8; --ring: rgba(150, 105, 31, .22);
+  --link: #8a5f18; --red: #b42318; --focus: #c99a43;
+  --radius-btn: 4px; --radius-mark: 4px; --display-weight: 500; --display-tracking: -.015em;
+  --side-bg: #15171b; --side-active: rgba(230, 196, 126, .16); --footer-bg: #101215; --utility-bg: #15171b; --app-bg: #f5f3ee;
+}
+.brand { font-family: var(--font-display); font-weight: 600; letter-spacing: .01em; }
+.brand-mark { font-family: var(--font-display); font-size: 1.3rem; background: var(--ink-strong); color: var(--accent-on-dark); }
+.hero h1 em, .section-head h2 em { font-style: italic; font-weight: 500; color: var(--accent-ink); }
+.hero h1 em { color: var(--accent-on-dark); }
+.btn { letter-spacing: .02em; }
+.search-card .btn { height: 2.95rem; }
+.step { display: flex; gap: 1rem; align-items: flex-start; }
+.step .n { font-family: var(--font-display); font-size: 2.4rem; line-height: 1; color: var(--brand-soft-2); font-weight: 600; min-width: 2.2rem; }
+.step h3 { margin: 0 0 .25rem; font-size: 1.1rem; }
+.step p { margin: 0; color: var(--muted); }
+.agent-card { display: flex; gap: .9rem; align-items: center; padding: 1rem; border: 1px solid var(--line); border-radius: 12px; background: #fff; }
+.agent-card .avatar { width: 48px; height: 48px; background: var(--ink-strong); color: var(--accent-on-dark); font-family: var(--font-display); }
+.page .stat b { font-family: var(--font-display); font-weight: 600; }
+.thumb-sm { width: 64px; height: 48px; object-fit: cover; border-radius: 6px; }
+.login-split { display: grid; grid-template-columns: 1.1fr 1fr; min-height: 100vh; }
+.login-photo { position: relative; color: #fff; display: flex; align-items: flex-end; padding: 3rem; isolation: isolate; }
+.login-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
+.login-photo::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(10,12,14,.2), rgba(10,12,14,.8)); }
+.login-photo .brand { color: #fff; margin-bottom: 1rem; }
+.login-photo h2 { color: #fff; font-size: 2.2rem; max-width: 12em; }
+.login-form { display: grid; place-items: center; padding: 2rem; }
+.login-form form { width: min(380px, 100%); }
+@media (max-width: 800px) { .login-split { grid-template-columns: 1fr; } .login-photo { display: none; } }
+h1, h2, h3, .price-xl, .stat b, .stats-strip b, .price, .calc .out b { font-variant-numeric: lining-nums; font-feature-settings: "lnum"; }
+.bars a { text-decoration: none; color: inherit; }

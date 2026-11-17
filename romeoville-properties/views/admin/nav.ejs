@@ -1,7 +1,0 @@
-<div class="wrap section">
-<nav class="subnav">
-  <a href="/admin" class="<%= path === '/admin/' || path === '/admin' ? 'on' : '' %>">Dashboard</a>
-  <a href="/admin/enquiries" class="<%= path.startsWith('/admin/enquiries') ? 'on' : '' %>">Enquiries</a>
-  <a href="/admin/properties" class="<%= path.startsWith('/admin/properties') ? 'on' : '' %>">Listings</a>
-  <form method="post" action="/admin/logout"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="link">Sign out (<%= session.user %>)</button></form>
-</nav>

@@ -1,7 +1,8 @@
-<%- include('partials/head') %>
-<section class="wrap section narrow center">
+<%- include('partials/head', { navKey: '' }) %>
+<section class="section"><div class="narrow center">
+  <span class="feature"><span class="ic mx-auto"><%- icon('circle-check') %></span></span>
   <h1><%= title %></h1>
-  <p><%= body %></p>
+  <p class="lead mx-auto"><%= body %></p>
   <p><a class="btn" href="/properties">Browse properties</a></p>
-</section>
+</div></section>
 <%- include('partials/foot') %>

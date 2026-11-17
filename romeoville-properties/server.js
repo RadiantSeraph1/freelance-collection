@@ -7,6 +7,7 @@ const {
 } = require('./src/db');
 const { seed } = require('./src/seed');
 const { sessionMiddleware } = require('./src/session');
+const { icon, initials } = require('./src/ui');
 
 const LABELS = {
   house: 'House', apartment: 'Apartment', townhouse: 'Townhouse', land: 'Land', commercial: 'Commercial',
@@ -56,7 +57,7 @@ function createApp(options = {}) {
       'X-Content-Type-Options': 'nosniff',
       'X-Frame-Options': 'DENY',
       'Referrer-Policy': 'strict-origin-when-cross-origin',
-      'Content-Security-Policy': "default-src 'self'; img-src 'self' https: data:; style-src 'self'; script-src 'none'; frame-ancestors 'none'",
+      'Content-Security-Policy': "default-src 'self'; img-src 'self' https: data:; style-src 'self'; font-src 'self'; script-src 'self'; frame-ancestors 'none'",
     });
     next();
   });
@@ -68,6 +69,10 @@ function createApp(options = {}) {
     Object.assign(res.locals, {
       site, LABELS, label: (k) => LABELS[k] || k, session: req.session, path: req.path,
       money: (amount, currency) => `${currency === 'GHS' ? 'GH₵' : '$'}${Number(amount).toLocaleString('en-US')}`,
+      icon, initials,
+      // Cards use the smaller copy of a bundled photo.
+      thumb: (url) => String(url || '').replace(/-lg\.jpg$/, '-md.jpg'),
+      photos: (p) => [p.image_url, ...String(p.gallery || '').split('\n')].map((u) => u.trim()).filter(Boolean),
       waLink: (text) => `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(text)}`,
     });
     next();
@@ -93,9 +98,16 @@ function createApp(options = {}) {
   });
 
   app.get('/', (req, res) => {
-    const featured = db.prepare("SELECT * FROM properties WHERE status != 'sold' ORDER BY featured DESC, created_at DESC, id DESC LIMIT 3").all();
+    const featured = db.prepare("SELECT * FROM properties WHERE status != 'sold' ORDER BY featured DESC, created_at DESC, id DESC LIMIT 6").all();
     const locations = db.prepare("SELECT DISTINCT location FROM properties WHERE status != 'sold' ORDER BY location").all().map((r) => r.location);
-    res.render('home', { title: site.name, featured, locations, TYPES, LISTINGS });
+    const counts = db.prepare("SELECT location, COUNT(*) AS n FROM properties WHERE status != 'sold' GROUP BY location").all();
+    const areaCount = Object.fromEntries(counts.map((c) => [c.location, c.n]));
+    const stats = {
+      total: counts.reduce((a, c) => a + c.n, 0), areas: counts.length,
+      sale: db.prepare("SELECT COUNT(*) AS n FROM properties WHERE status != 'sold' AND listing = 'sale'").get().n,
+      rent: db.prepare("SELECT COUNT(*) AS n FROM properties WHERE status != 'sold' AND listing = 'rent'").get().n,
+    };
+    res.render('home', { title: site.name, featured, locations, areaCount, stats, TYPES, LISTINGS });
   });
 
   app.get('/properties', (req, res) => {
@@ -129,10 +141,13 @@ function createApp(options = {}) {
     res.render('properties', { title: 'Properties', properties, f, locations, TYPES, LISTINGS, CURRENCIES });
   });
 
+  const similarTo = (p) => db.prepare(`SELECT * FROM properties WHERE status != 'sold' AND id != ? AND listing = ?
+      ORDER BY (location = ?) DESC, (type = ?) DESC, id LIMIT 3`).all(p.id, p.listing, p.location, p.type);
+
   app.get('/properties/:id', (req, res, next) => {
     const property = db.prepare('SELECT * FROM properties WHERE id = ?').get(intOrNull(req.params.id));
     if (!property) return next();
-    res.render('property', { title: property.title, property, errors: [], form: {} });
+    res.render('property', { title: property.title, property, errors: [], form: {}, similar: similarTo(property) });
   });
 
   app.get('/contact', (req, res) => {
@@ -155,7 +170,7 @@ function createApp(options = {}) {
     if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errors.push('That email address does not look right.');
     if (errors.length) {
       return res.status(400).render(property ? 'property' : 'contact', {
-        title: property ? property.title : 'Contact us', property, errors, form,
+        title: property ? property.title : 'Contact us', property, errors, form, similar: property ? similarTo(property) : [],
       });
     }
     db.prepare("INSERT INTO enquiries (property_id, name, phone, email, message, source, next_follow_up) VALUES (?, ?, ?, ?, ?, 'website', date('now'))")
@@ -233,14 +248,18 @@ function createApp(options = {}) {
       location: clean(body.location, 80), price: intOrNull(body.price),
       currency: oneOf(body.currency, CURRENCIES, 'USD'),
       bedrooms: intOrNull(body.bedrooms), bathrooms: intOrNull(body.bathrooms), size_sqm: intOrNull(body.size_sqm),
-      image_url: clean(body.image_url, 500), status: oneOf(body.status, PROPERTY_STATUSES, 'available'),
+      image_url: clean(body.image_url, 500),
+      gallery: String(body.gallery || '').split(/\r?\n/).map((l) => l.trim()).filter(Boolean).slice(0, 8).join('\n'),
+      status: oneOf(body.status, PROPERTY_STATUSES, 'available'),
       featured: body.featured ? 1 : 0,
     };
     const errors = [];
     if (p.title.length < 3) errors.push('Give the listing a title.');
     if (!p.location) errors.push('Enter the location.');
     if (p.price === null) errors.push('Enter the price as a whole number.');
-    if (p.image_url && !/^https:\/\/\S+$/.test(p.image_url)) errors.push('The photo link must start with https://');
+    const okLink = (u) => /^https:\/\/\S+$/.test(u) || /^\/img\/[\w.-]+$/.test(u);
+    if (p.image_url && !okLink(p.image_url)) errors.push('The photo link must start with https://');
+    if (p.gallery && !p.gallery.split('\n').every(okLink)) errors.push('Every extra photo link must start with https:// (one per line).');
     return { p, errors };
   }
 
@@ -249,9 +268,9 @@ function createApp(options = {}) {
   admin.post('/properties', (req, res) => {
     const { p, errors } = readProperty(req.body);
     if (errors.length) return propertyForm(res, p, errors, 400);
-    db.prepare(`INSERT INTO properties (ref, title, description, type, listing, location, price, currency, bedrooms, bathrooms, size_sqm, image_url, status, featured)
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
-      .run(nextRef(db), p.title, p.description, p.type, p.listing, p.location, p.price, p.currency, p.bedrooms, p.bathrooms, p.size_sqm, p.image_url, p.status, p.featured);
+    db.prepare(`INSERT INTO properties (ref, title, description, type, listing, location, price, currency, bedrooms, bathrooms, size_sqm, image_url, gallery, status, featured)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`)
+      .run(nextRef(db), p.title, p.description, p.type, p.listing, p.location, p.price, p.currency, p.bedrooms, p.bathrooms, p.size_sqm, p.image_url, p.gallery, p.status, p.featured);
     res.redirect('/admin/properties');
   });
 
@@ -267,8 +286,8 @@ function createApp(options = {}) {
     const { p, errors } = readProperty(req.body);
     if (errors.length) return propertyForm(res, { ...p, ...existing }, errors, 400);
     db.prepare(`UPDATE properties SET title = ?, description = ?, type = ?, listing = ?, location = ?, price = ?, currency = ?,
-      bedrooms = ?, bathrooms = ?, size_sqm = ?, image_url = ?, status = ?, featured = ? WHERE id = ?`)
-      .run(p.title, p.description, p.type, p.listing, p.location, p.price, p.currency, p.bedrooms, p.bathrooms, p.size_sqm, p.image_url, p.status, p.featured, existing.id);
+      bedrooms = ?, bathrooms = ?, size_sqm = ?, image_url = ?, gallery = ?, status = ?, featured = ? WHERE id = ?`)
+      .run(p.title, p.description, p.type, p.listing, p.location, p.price, p.currency, p.bedrooms, p.bathrooms, p.size_sqm, p.image_url, p.gallery, p.status, p.featured, existing.id);
     res.redirect('/admin/properties');
   });
 

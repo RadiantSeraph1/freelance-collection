@@ -30,12 +30,12 @@ test('health check and home page respond', async () => {
   assert.deepEqual((await (await fetch(`${base}/healthz`)).json()).status, 'ok');
   const home = await fetch(`${base}/`);
   assert.equal(home.status, 200);
-  assert.match(await home.text(), /Featured properties/);
+  assert.match(await home.text(), /Properties we are proud to show/);
 });
 
 test('catalogue filters narrow the results', async () => {
   const all = await (await fetch(`${base}/properties`)).text();
-  assert.match(all, /8 properties found/);
+  assert.match(all, /11 properties found/);
   const rent = await (await fetch(`${base}/properties?listing=rent&type=apartment`)).text();
   assert.match(rent, /2 properties found/);
   assert.doesNotMatch(rent, /RV-101/);
@@ -100,7 +100,7 @@ test('staff can add, edit and delete a listing', async () => {
   const created = await fetch(`${base}/admin/properties`, form({ _csrf: csrf, title: 'Test villa', type: 'house', listing: 'sale', location: 'Labone', price: '500000', currency: 'USD', bedrooms: '4', _headers: h }));
   assert.equal(created.status, 302);
   const row = db.prepare("SELECT * FROM properties WHERE title = 'Test villa'").get();
-  assert.equal(row.ref, 'RV-109');
+  assert.equal(row.ref, 'RV-112');
   assert.match(await (await fetch(`${base}/properties?location=Labone`)).text(), /Test villa/);
 
   await fetch(`${base}/admin/properties/${row.id}`, form({ _csrf: csrf, title: 'Test villa', type: 'house', listing: 'sale', location: 'Labone', price: '480000', currency: 'USD', status: 'sold', _headers: h }));
@@ -139,4 +139,42 @@ test('staff can log an enquiry and track follow-up', async () => {
 
 test('production refuses to start without secrets', () => {
   assert.throws(() => createApp({ dbPath: ':memory:', env: { NODE_ENV: 'production' } }), /SESSION_SECRET/);
+});
+
+test('every bundled photo a listing points at exists, and pages use no inline styles', async () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const rows = db.prepare('SELECT image_url, gallery FROM properties').all();
+  for (const r of rows) {
+    for (const u of [r.image_url, ...r.gallery.split('\n')].filter(Boolean)) {
+      assert.ok(fs.existsSync(path.join(__dirname, '..', 'public', u)), `missing ${u}`);
+      assert.ok(fs.existsSync(path.join(__dirname, '..', 'public', u.replace('-lg.jpg', '-md.jpg'))), `missing small copy of ${u}`);
+    }
+  }
+  for (const url of ['/', '/properties', '/properties/1', '/contact', '/admin/login']) {
+    const html = await (await fetch(`${base}${url}`)).text();
+    assert.doesNotMatch(html, /\sstyle="/, `${url} has an inline style, which the CSP blocks`);
+  }
+  const csp = (await fetch(`${base}/`)).headers.get('content-security-policy');
+  assert.match(csp, /script-src 'self'/);
+});
+
+test('property page shows a photo gallery and a payment calculator for sales only', async () => {
+  const sale = await (await fetch(`${base}/properties/1`)).text();
+  assert.match(sale, /data-gallery-main/);
+  assert.match(sale, /data-calc/);
+  const rent = await (await fetch(`${base}/properties/2`)).text();
+  assert.doesNotMatch(rent, /data-calc/);
+});
+
+test('staff can save extra gallery photos, and bad links are refused', async () => {
+  const { cookie, csrf } = await login();
+  const h = { cookie };
+  const base_ = { _csrf: csrf, title: 'Gallery test', location: 'Osu', price: '1000', _headers: h };
+  const bad = await fetch(`${base}/admin/properties`, form({ ...base_, gallery: 'https://ok.example/a.jpg\njavascript:alert(1)' }));
+  assert.equal(bad.status, 400);
+  const ok = await fetch(`${base}/admin/properties`, form({ ...base_, image_url: '/img/villa-dusk-lg.jpg', gallery: 'https://ok.example/a.jpg\n/img/apt-bright-lg.jpg' }));
+  assert.equal(ok.status, 302);
+  const row = db.prepare("SELECT * FROM properties WHERE title = 'Gallery test'").get();
+  assert.equal(row.gallery.split('\n').length, 2);
 });

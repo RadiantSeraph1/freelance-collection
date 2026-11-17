@@ -1,24 +1,32 @@
-<%- include('partials/head') %>
-<section class="wrap section">
-  <h1>Properties</h1>
-  <form class="filters" action="/properties">
-    <label>Keyword <input name="q" value="<%= f.q %>" placeholder="e.g. pool, RV-103"></label>
-    <label>Buy or rent <select name="listing"><option value="">Any</option><% LISTINGS.forEach((l) => { %><option value="<%= l %>" <%= f.listing === l ? 'selected' : '' %>><%= label(l) %></option><% }) %></select></label>
-    <label>Type <select name="type"><option value="">Any</option><% TYPES.forEach((t) => { %><option value="<%= t %>" <%= f.type === t ? 'selected' : '' %>><%= label(t) %></option><% }) %></select></label>
-    <label>Location <select name="location"><option value="">Any</option><% locations.forEach((l) => { %><option <%= f.location === l ? 'selected' : '' %>><%= l %></option><% }) %></select></label>
-    <label>Min. bedrooms <select name="beds"><option value="">Any</option><% [1,2,3,4,5].forEach((n) => { %><option value="<%= n %>" <%= f.beds === n ? 'selected' : '' %>><%= n %>+</option><% }) %></select></label>
-    <label>Currency <select name="currency"><option value="">Any</option><% CURRENCIES.forEach((c) => { %><option value="<%= c %>" <%= f.currency === c ? 'selected' : '' %>><%= c === 'GHS' ? 'GH₵ (cedis)' : 'US$' %></option><% }) %></select></label>
-    <label>Min. price <input name="min" type="number" min="0" value="<%= f.min ?? '' %>"></label>
-    <label>Max. price <input name="max" type="number" min="0" value="<%= f.max ?? '' %>"></label>
-    <label>Sort <select name="sort"><option value="newest">Newest</option><option value="price_asc" <%= f.sort === 'price_asc' ? 'selected' : '' %>>Price: low to high</option><option value="price_desc" <%= f.sort === 'price_desc' ? 'selected' : '' %>>Price: high to low</option></select></label>
-    <div class="actions"><button class="btn">Apply filters</button> <a href="/properties">Clear</a></div>
-  </form>
-  <% if ((f.min !== null || f.max !== null) && !f.currency) { %><p class="note">Choose a currency to filter by price. Listings are priced in either US dollars or cedis.</p><% } %>
-  <p class="muted"><%= properties.length %> <%= properties.length === 1 ? 'property' : 'properties' %> found</p>
-  <% if (properties.length) { %>
-    <div class="grid"><% properties.forEach((p) => { %><%- include('partials/card', { p }) %><% }) %></div>
-  <% } else { %>
-    <div class="empty"><p>No properties match those filters.</p><p><a href="/properties">Clear the filters</a> or <a href="/contact">tell us what you are looking for</a>.</p></div>
-  <% } %>
+<%- include('partials/head', { navKey: f.listing }) %>
+<section class="hero small">
+  <img class="cover" src="/img/<%= f.listing === 'rent' ? 'apt-living-sunny' : f.type === 'land' ? 'ld-estate-aerial' : 'villa-flat-roof' %>-lg.jpg" alt="" fetchpriority="high">
+  <div class="container"><span class="eyebrow">Accra</span><h1><%= f.type === 'land' ? 'Land for sale' : f.listing === 'rent' ? 'Properties to rent' : f.listing === 'sale' ? 'Properties for sale' : 'All properties' %></h1></div>
+</section>
+<section class="section tight">
+  <div class="container">
+    <form class="filter-bar" action="/properties" aria-label="Filter properties">
+      <label>Keyword <input name="q" value="<%= f.q %>" placeholder="pool, RV-103…"></label>
+      <label>Buy or rent <select name="listing"><option value="">Any</option><% LISTINGS.forEach((l) => { %><option value="<%= l %>" <%= f.listing === l ? 'selected' : '' %>><%= label(l) %></option><% }) %></select></label>
+      <label>Type <select name="type"><option value="">Any</option><% TYPES.forEach((t) => { %><option value="<%= t %>" <%= f.type === t ? 'selected' : '' %>><%= label(t) %></option><% }) %></select></label>
+      <label>Location <select name="location"><option value="">Any</option><% locations.forEach((l) => { %><option <%= f.location === l ? 'selected' : '' %>><%= l %></option><% }) %></select></label>
+      <label>Bedrooms <select name="beds"><option value="">Any</option><% [1,2,3,4,5].forEach((n) => { %><option value="<%= n %>" <%= f.beds === n ? 'selected' : '' %>><%= n %>+</option><% }) %></select></label>
+      <label>Currency <select name="currency"><option value="">Any</option><% CURRENCIES.forEach((c) => { %><option value="<%= c %>" <%= f.currency === c ? 'selected' : '' %>><%= c === 'GHS' ? 'GH₵ (cedis)' : 'US$' %></option><% }) %></select></label>
+      <label>Min. price <input name="min" type="number" min="0" value="<%= f.min ?? '' %>"></label>
+      <label>Max. price <input name="max" type="number" min="0" value="<%= f.max ?? '' %>"></label>
+      <label>Sort <select name="sort"><option value="newest">Newest</option><option value="price_asc" <%= f.sort === 'price_asc' ? 'selected' : '' %>>Price: low to high</option><option value="price_desc" <%= f.sort === 'price_desc' ? 'selected' : '' %>>Price: high to low</option></select></label>
+      <button class="btn"><%- icon('sliders-horizontal') %> Apply</button>
+    </form>
+    <% if ((f.min !== null || f.max !== null) && !f.currency) { %><p class="notice mt-m">Choose a currency to filter by price. Listings are priced in either US dollars or cedis.</p><% } %>
+    <div class="results-bar">
+      <strong><%= properties.length %> <%= properties.length === 1 ? 'property' : 'properties' %> found</strong>
+      <a class="arrow-link small" href="/properties">Clear filters</a>
+    </div>
+    <% if (properties.length) { %>
+      <div class="listing-list"><% properties.forEach((p) => { %><%- include('partials/row', { p }) %><% }) %></div>
+    <% } else { %>
+      <div class="empty"><p><strong>No properties match those filters.</strong></p><p><a href="/properties">Clear the filters</a> or <a href="/contact">tell us what you are looking for</a> and we will search for you.</p></div>
+    <% } %>
+  </div>
 </section>
 <%- include('partials/foot') %>

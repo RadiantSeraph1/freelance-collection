@@ -1,15 +1,18 @@
-<a class="card" href="/properties/<%= p.id %>">
-  <% if (p.image_url) { %><img class="photo" src="<%= p.image_url %>" alt="<%= p.title %>" loading="lazy">
-  <% } else { %><div class="photo ph ph-<%= p.type %>"><span><%= label(p.type) %></span></div><% } %>
-  <div class="card-body">
-    <div class="tags"><span class="tag"><%= label(p.listing) %></span><% if (p.status === 'under_offer') { %><span class="tag warn">Under offer</span><% } %></div>
+<a class="listing-card" href="/properties/<%= p.id %>">
+  <div class="media">
+    <img src="<%= thumb(p.image_url) %>" alt="<%= p.title %> in <%= p.location %>" loading="lazy" width="800" height="600">
+    <div class="tags"><span class="tag light"><%= label(p.listing) %></span><% if (p.status === 'under_offer') { %><span class="tag accent">Under offer</span><% } %></div>
+    <div class="price-tag"><%= money(p.price, p.currency) %><% if (p.listing === 'rent') { %> <small>/ month</small><% } %></div>
+    <span class="photo-count"><%- icon('camera') %> <%= photos(p).length %></span>
+  </div>
+  <div class="body">
     <h3><%= p.title %></h3>
-    <p class="muted"><%= p.location %> · Ref <%= p.ref %></p>
-    <p class="price"><%= money(p.price, p.currency) %><% if (p.listing === 'rent') { %><small> / month</small><% } %></p>
-    <p class="facts">
-      <% if (p.bedrooms !== null) { %><span><%= p.bedrooms %> bed</span><% } %>
-      <% if (p.bathrooms !== null) { %><span><%= p.bathrooms %> bath</span><% } %>
-      <% if (p.size_sqm !== null) { %><span><%= p.size_sqm.toLocaleString('en-US') %> m²</span><% } %>
-    </p>
+    <div class="loc"><%- icon('map-pin') %> <%= p.location %>, Accra</div>
+    <div class="specs">
+      <% if (p.bedrooms !== null) { %><span><%- icon('bed-double') %> <%= p.bedrooms %> bed</span><% } %>
+      <% if (p.bathrooms !== null) { %><span><%- icon('bath') %> <%= p.bathrooms %> bath</span><% } %>
+      <% if (p.size_sqm !== null) { %><span><%- icon('ruler') %> <%= p.size_sqm.toLocaleString('en-US') %> m²</span><% } %>
+      <% if (p.bedrooms === null && p.bathrooms === null && p.size_sqm === null) { %><span><%= label(p.type) %></span><% } %>
+    </div>
   </div>
 </a>

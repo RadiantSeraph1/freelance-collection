@@ -4,19 +4,29 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><%= title %><% if (title !== site.name) { %> | <%= site.name %><% } %></title>
-  <link rel="stylesheet" href="/style.css">
+  <meta name="description" content="Houses, apartments, land and commercial space in Accra, Ghana.">
+  <link rel="preload" href="/fonts/inter-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/kit.css">
+  <link rel="stylesheet" href="/theme.css">
 </head>
 <body>
-<% if (site.demo) { %><div class="demo">Demonstration prepared by Radiant InnovaTech. Listings and enquiries shown are sample data.<% if (site.temporary) { %> Changes you make here are temporary and may disappear.<% } %></div><% } %>
-<header class="top">
-  <div class="wrap bar">
-    <a class="brand" href="/"><%= site.name %></a>
-    <nav>
-      <a href="/properties?listing=sale">Buy</a>
-      <a href="/properties?listing=rent">Rent</a>
+<% if (site.demo) { %><div class="demo-banner">Demonstration prepared by Radiant InnovaTech. Listings and enquiries shown are sample data.<% if (site.temporary) { %> Changes you make here are temporary and may disappear.<% } %></div><% } %>
+<div class="utility"><div class="container">
+  <span class="hide-sm"><%- icon('map-pin') %> <%= site.address %></span>
+  <span class="cluster"><a href="tel:<%= site.phone.replace(/[^\d+]/g, '') %>"><%- icon('phone') %> <%= site.phone %></a><a class="hide-sm" href="mailto:<%= site.email %>"><%- icon('mail') %> <%= site.email %></a></span>
+</div></div>
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="/"><span class="brand-mark">R</span><span><%= site.name.split(' ')[0] %><small><%= site.name.split(' ').slice(1).join(' ') || 'Properties' %></small></span></a>
+    <button class="nav-toggle" data-nav-toggle aria-label="Menu" aria-expanded="false"><%- icon('menu') %></button>
+    <nav class="main-nav" aria-label="Main">
+      <a href="/properties?listing=sale" <%- path === '/properties' && locals.navKey === 'sale' ? 'aria-current="page"' : '' %>>Buy</a>
+      <a href="/properties?listing=rent" <%- locals.navKey === 'rent' ? 'aria-current="page"' : '' %>>Rent</a>
       <a href="/properties?type=land">Land</a>
+      <a href="/properties?type=commercial">Commercial</a>
       <a href="/contact">Contact</a>
       <% if (session) { %><a href="/admin">Staff</a><% } %>
+      <a class="btn sm" href="/contact">Book a viewing</a>
     </nav>
   </div>
 </header>

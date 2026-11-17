@@ -1,0 +1,19 @@
+<a class="listing-row" href="/properties/<%= p.id %>">
+  <div class="media">
+    <img src="<%= thumb(p.image_url) %>" alt="<%= p.title %> in <%= p.location %>" loading="lazy" width="800" height="600">
+    <div class="tags"><span class="tag light"><%= label(p.listing) %></span><% if (p.status === 'under_offer') { %><span class="tag accent">Under offer</span><% } %></div>
+    <span class="photo-count"><%- icon('camera') %> <%= photos(p).length %></span>
+  </div>
+  <div class="body">
+    <div class="price"><%= money(p.price, p.currency) %><% if (p.listing === 'rent') { %> <small>/ month</small><% } %></div>
+    <h3><%= p.title %></h3>
+    <div class="loc"><%- icon('map-pin') %> <%= p.location %>, Accra · Ref <%= p.ref %></div>
+    <p class="muted small"><%= p.description.length > 150 ? p.description.slice(0, 147).trim() + '…' : p.description %></p>
+    <div class="specs">
+      <% if (p.bedrooms !== null) { %><span><%- icon('bed-double') %> <%= p.bedrooms %> bed</span><% } %>
+      <% if (p.bathrooms !== null) { %><span><%- icon('bath') %> <%= p.bathrooms %> bath</span><% } %>
+      <% if (p.size_sqm !== null) { %><span><%- icon('ruler') %> <%= p.size_sqm.toLocaleString('en-US') %> m²</span><% } %>
+      <span><%- icon('house') %> <%= label(p.type) %></span>
+    </div>
+  </div>
+</a>

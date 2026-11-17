@@ -1,28 +1,57 @@
-<%- include('partials/head') %>
-<section class="wrap section">
-  <p><a href="/properties">← All properties</a></p>
-  <div class="detail">
-    <div>
-      <% if (property.image_url) { %><img class="photo big" src="<%= property.image_url %>" alt="<%= property.title %>">
-      <% } else { %><div class="photo big ph ph-<%= property.type %>"><span><%= label(property.type) %></span></div><% } %>
-      <div class="tags"><span class="tag"><%= label(property.listing) %></span><span class="tag <%= property.status === 'available' ? 'ok' : 'warn' %>"><%= label(property.status) %></span></div>
-      <h1><%= property.title %></h1>
-      <p class="muted"><%= property.location %> · Ref <%= property.ref %></p>
-      <p class="price big"><%= money(property.price, property.currency) %><% if (property.listing === 'rent') { %><small> / month</small><% } %></p>
-      <dl class="specs">
-        <div><dt>Type</dt><dd><%= label(property.type) %></dd></div>
-        <% if (property.bedrooms !== null) { %><div><dt>Bedrooms</dt><dd><%= property.bedrooms %></dd></div><% } %>
-        <% if (property.bathrooms !== null) { %><div><dt>Bathrooms</dt><dd><%= property.bathrooms %></dd></div><% } %>
-        <% if (property.size_sqm !== null) { %><div><dt>Size</dt><dd><%= property.size_sqm.toLocaleString('en-US') %> m²</dd></div><% } %>
-      </dl>
-      <p class="desc"><%= property.description %></p>
+<%- include('partials/head', { navKey: property.listing }) %>
+<% const pics = photos(property); %>
+<section class="section tight">
+  <div class="container">
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/properties?listing=<%= property.listing %>"><%= property.listing === 'rent' ? 'To rent' : 'For sale' %></a> / <a href="/properties?location=<%= encodeURIComponent(property.location) %>"><%= property.location %></a></nav>
+    <div class="gallery" data-gallery>
+      <div class="main"><img data-gallery-main src="<%= pics[0] %>" alt="<%= property.title %>"></div>
+      <% pics.slice(1, 4).forEach((u, i) => { %><button type="button" class="thumb" data-gallery-thumb data-full="<%= u %>" data-alt="<%= property.title %>, photo <%= i + 2 %>" aria-label="Show photo <%= i + 2 %>"><img src="<%= thumb(u) %>" alt="" loading="lazy"></button><% }) %>
     </div>
-    <aside class="panel">
-      <h2>Enquire about this property</h2>
-      <a class="btn wa" href="<%= waLink(`Hello, I am interested in ${property.title} (Ref ${property.ref}).`) %>" rel="noopener">Chat on WhatsApp</a>
-      <p class="muted center">or leave your details and we will call you</p>
-      <%- include('partials/enquiry-form') %>
-    </aside>
+    <div class="detail-layout">
+      <div>
+        <div class="cluster"><span class="tag"><%= label(property.listing) %></span><span class="badge <%= property.status === 'available' ? 'ok' : 'warn' %>"><%= label(property.status) %></span><span class="muted small">Ref <%= property.ref %></span></div>
+        <h1 class="mt-s"><%= property.title %></h1>
+        <div class="loc"><%- icon('map-pin') %> <%= property.location %>, Accra</div>
+        <p class="price-xl mt-m"><%= money(property.price, property.currency) %><% if (property.listing === 'rent') { %> <small>/ month</small><% } %></p>
+        <div class="facts">
+          <div><%- icon('house') %><b><%= label(property.type) %></b><span>Property type</span></div>
+          <% if (property.bedrooms !== null) { %><div><%- icon('bed-double') %><b><%= property.bedrooms %></b><span>Bedrooms</span></div><% } %>
+          <% if (property.bathrooms !== null) { %><div><%- icon('bath') %><b><%= property.bathrooms %></b><span>Bathrooms</span></div><% } %>
+          <% if (property.size_sqm !== null) { %><div><%- icon('ruler') %><b><%= property.size_sqm.toLocaleString('en-US') %> m²</b><span><%= property.type === 'land' ? 'Plot size' : 'Floor area' %></span></div><% } %>
+        </div>
+        <h2>About this property</h2>
+        <p class="prose"><%= property.description %></p>
+        <% if (property.listing === 'sale') { %>
+        <h2 class="mt-l">Estimate your monthly payment</h2>
+        <div class="calc" data-calc data-price="<%= property.price %>" data-symbol="<%= property.currency === 'GHS' ? 'GH₵' : '$' %>">
+          <div class="row">
+            <label>Deposit (%) <input name="deposit" type="number" min="0" max="90" value="30"></label>
+            <label>Term (years) <input name="years" type="number" min="1" max="30" value="15"></label>
+            <label>Interest rate (% a year) <input name="rate" type="number" min="0" max="60" step="0.5" value="<%= property.currency === 'GHS' ? 25 : 9 %>"></label>
+          </div>
+          <div class="out"><b data-calc-out></b><span class="small" data-calc-note></span></div>
+          <p class="muted small mt-s mb-0">An illustration only. Ask us about the payment plans and lenders that apply to this property.</p>
+        </div>
+        <% } %>
+      </div>
+      <aside class="sticky-card">
+        <div class="form-card">
+          <h3>Enquire about this property</h3>
+          <a class="btn wa block" href="<%= waLink(`Hello, I am interested in ${property.title} (Ref ${property.ref}).`) %>" rel="noopener"><%- icon('message-circle') %> Chat on WhatsApp</a>
+          <p class="muted small center mt-s">or leave your details and we will call you back</p>
+          <%- include('partials/enquiry-form') %>
+        </div>
+        <div class="agent-card mt-m"><span class="avatar">R</span><div><strong><%= site.name %></strong><div class="muted small"><%= site.phone %></div></div></div>
+      </aside>
+    </div>
   </div>
 </section>
+<% if (similar && similar.length) { %>
+<section class="section alt">
+  <div class="container">
+    <div class="section-head"><h2>You may also like</h2></div>
+    <div class="grid grid-3"><% similar.forEach((p) => { %><%- include('partials/card', { p }) %><% }) %></div>
+  </div>
+</section>
+<% } %>
 <%- include('partials/foot') %>

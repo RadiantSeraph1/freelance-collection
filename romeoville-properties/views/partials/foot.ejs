@@ -1,10 +1,31 @@
 </main>
-<footer class="foot">
-  <div class="wrap bar">
-    <div><strong><%= site.name %></strong><br><%= site.address %></div>
-    <div><%= site.phone %><br><%= site.email %></div>
-    <div><a href="/admin/login">Staff sign in</a></div>
+<footer class="site-footer">
+  <div class="container">
+    <div class="cols">
+      <div>
+        <a class="brand" href="/"><span class="brand-mark">R</span><span><%= site.name %></span></a>
+        <p>Houses, apartments, land and commercial space across Accra. Visit us, or tell us what you need and we will bring you options.</p>
+      </div>
+      <div><h4>Browse</h4><ul>
+        <li><a href="/properties?listing=sale">Homes for sale</a></li>
+        <li><a href="/properties?listing=rent">Homes to rent</a></li>
+        <li><a href="/properties?type=land">Land</a></li>
+        <li><a href="/properties?type=commercial">Commercial</a></li>
+      </ul></div>
+      <div><h4>Company</h4><ul>
+        <li><a href="/contact">Contact us</a></li>
+        <li><a href="<%= waLink('Hello, I would like to ask about your properties.') %>" rel="noopener">WhatsApp</a></li>
+        <li><a href="/admin/login">Staff sign in</a></li>
+      </ul></div>
+      <div><h4>Visit</h4><ul>
+        <li><%= site.address %></li>
+        <li><a href="tel:<%= site.phone.replace(/[^\d+]/g, '') %>"><%= site.phone %></a></li>
+        <li><a href="mailto:<%= site.email %>"><%= site.email %></a></li>
+      </ul></div>
+    </div>
+    <div class="legal"><span>© <%= new Date().getFullYear() %> <%= site.name %></span><span>Website demonstration by Radiant InnovaTech. Photographs are placeholders.</span></div>
   </div>
 </footer>
+<script src="/app.js" defer></script>
 </body>
 </html>

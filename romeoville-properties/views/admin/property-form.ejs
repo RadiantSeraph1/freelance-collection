@@ -1,9 +1,8 @@
-<%- include('../partials/head') %>
-<%- include('nav') %>
+<%- include('../partials/app-head', { active: 'properties' }) %>
   <h1><%= title %></h1>
   <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
   <% const sel = (a, b) => a === b ? 'selected' : ''; const v = (x) => x ?? ''; %>
-  <form method="post" action="/admin/properties<%= property.id ? '/' + property.id : '' %>" class="stack panel wide">
+  <form method="post" action="/admin/properties<%= property.id ? '/' + property.id : '' %>" class="stack form-card wide">
     <input type="hidden" name="_csrf" value="<%= csrf %>">
     <label>Title <input name="title" required maxlength="120" value="<%= v(property.title) %>"></label>
     <div class="row">
@@ -21,7 +20,8 @@
       <label>Bathrooms <input name="bathrooms" type="number" min="0" value="<%= v(property.bathrooms) %>"></label>
       <label>Size (m²) <input name="size_sqm" type="number" min="0" value="<%= v(property.size_sqm) %>"></label>
     </div>
-    <label>Photo link (https://…) <input name="image_url" maxlength="500" value="<%= v(property.image_url) %>"></label>
+    <label>Main photo link (https://…) <input name="image_url" maxlength="500" value="<%= v(property.image_url) %>"></label>
+    <label>More photos, one link per line (up to 8) <textarea name="gallery" rows="3" maxlength="2000"><%= v(property.gallery) %></textarea></label>
     <label>Description <textarea name="description" rows="6" maxlength="4000"><%= v(property.description) %></textarea></label>
     <label class="check"><input type="checkbox" name="featured" value="1" <%= property.featured ? 'checked' : '' %>> Feature on the home page</label>
     <div class="actions"><button class="btn">Save listing</button> <a href="/admin/properties">Cancel</a></div>
@@ -33,5 +33,4 @@
     <button class="btn red">Delete listing</button>
   </form>
   <% } %>
-</div>
-<%- include('../partials/foot') %>
+<%- include('../partials/app-foot') %>

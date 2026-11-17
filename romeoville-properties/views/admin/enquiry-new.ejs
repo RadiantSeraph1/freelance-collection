@@ -1,9 +1,8 @@
-<%- include('../partials/head') %>
-<%- include('nav') %>
+<%- include('../partials/app-head', { active: 'enquiries' }) %>
   <h1>Log an enquiry</h1>
   <p class="muted">For enquiries that arrive by phone, WhatsApp, social media or in person, so every lead is tracked in one place.</p>
   <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
-  <form method="post" action="/admin/enquiries" class="stack panel wide">
+  <form method="post" action="/admin/enquiries" class="stack form-card wide">
     <input type="hidden" name="_csrf" value="<%= csrf %>">
     <div class="row">
       <label>Customer name <input name="name" required maxlength="100" value="<%= form.name || '' %>"></label>
@@ -21,5 +20,4 @@
     <label>What they asked for <textarea name="message" rows="4" maxlength="2000"><%= form.message || '' %></textarea></label>
     <div class="actions"><button class="btn">Save enquiry</button> <a href="/admin/enquiries">Cancel</a></div>
   </form>
-</div>
-<%- include('../partials/foot') %>
+<%- include('../partials/app-foot') %>

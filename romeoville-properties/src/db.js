@@ -74,6 +74,10 @@ function openDb(path) {
     CREATE INDEX IF NOT EXISTS idx_enquiries_status ON enquiries(status);
     CREATE INDEX IF NOT EXISTS idx_enquiries_follow_up ON enquiries(next_follow_up);
   `);
+  // Older databases predate the photo gallery column.
+  if (!db.prepare('PRAGMA table_info(properties)').all().some((c) => c.name === 'gallery')) {
+    db.exec("ALTER TABLE properties ADD COLUMN gallery TEXT NOT NULL DEFAULT ''");
+  }
   return db;
 }
 
