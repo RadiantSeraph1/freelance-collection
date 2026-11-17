@@ -1,13 +1,12 @@
-<%- include('../partials/head') %>
-<%- include('nav') %>
+<%- include('../partials/app-head', { active: 'sales' }) %>
   <div class="bar"><h1>Sales and reservations</h1><a class="btn" href="/admin/sales/new">New reservation</a></div>
-  <nav class="subnav">
+  <nav class="tabs row-tabs" aria-label="Filter sales">
     <% [['active','All active'],['owing','Balance owing'],['lapsed','Lapsed reservations'],['completed','Documents complete'],['cancelled','Cancelled']].forEach(([k, t]) => { %>
-      <a href="/admin/sales?view=<%= k %>" class="<%= f.view === k ? 'on' : '' %>"><%= t %></a>
+      <a href="/admin/sales?view=<%= k %>" <%- f.view === k ? 'aria-current="page"' : '' %>><%= t %></a>
     <% }) %>
   </nav>
   <% if (sales.length) { %>
-  <table>
+  <div class="table-wrap"><table>
     <thead><tr><th>Plot</th><th>Customer</th><th class="num">Agreed price</th><th class="num">Paid</th><th class="num">Balance</th><th>Documents</th><th>Waiting on</th><th>Handled by</th></tr></thead>
     <tbody><% sales.forEach((s) => { %><tr>
       <td><%= s.ref %></td>
@@ -15,10 +14,9 @@
       <td class="num"><%= money(s.agreed_price) %></td><td class="num"><%= money(s.paid) %></td>
       <td class="num"><%= money(s.agreed_price - s.paid) %></td>
       <td><%= s.steps_done %> of <%= s.steps %></td>
-      <td><% if (s.status === 'cancelled') { %><span class="tag bad">Cancelled</span><% } else if (s.next_step) { %><%= s.next_step %><% } else { %><span class="tag ok">Complete</span><% } %></td>
+      <td><% if (s.status === 'cancelled') { %><span class="badge bad">Cancelled</span><% } else if (s.next_step) { %><%= s.next_step %><% } else { %><span class="badge ok">Complete</span><% } %></td>
       <td><%= s.handled_by || '–' %></td>
     </tr><% }) %></tbody>
-  </table>
+  </table></div>
   <% } else { %><p class="empty">Nothing here.</p><% } %>
-</div>
-<%- include('../partials/foot') %>
+<%- include('../partials/app-foot') %>

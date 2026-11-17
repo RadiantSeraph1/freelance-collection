@@ -1,6 +1,5 @@
-<%- include('../partials/head') %>
-<%- include('nav') %>
-  <p><a href="/admin/enquiries">← All enquiries</a></p>
+<%- include('../partials/app-head', { active: 'enquiries' }) %>
+  <p><a class="arrow-link small" href="/admin/enquiries">← All enquiries</a></p>
   <div class="bar"><h1><%= enquiry.name %></h1>
     <% if (sale) { %><a class="btn" href="/admin/sales/<%= sale.id %>">View reservation</a>
     <% } else { %><a class="btn" href="/admin/sales/new?enquiry=<%= enquiry.id %>">Reserve a plot for this customer</a><% } %>
@@ -20,7 +19,7 @@
       <% if (notes.length) { %><ul class="notes"><% notes.forEach((n) => { %><li><span class="muted"><%= n.created_at %> UTC · <%= n.author %></span><br><%= n.note %></li><% }) %></ul>
       <% } else { %><p class="muted">No notes yet.</p><% } %>
     </div>
-    <form method="post" action="/admin/enquiries/<%= enquiry.id %>" class="stack panel">
+    <form method="post" action="/admin/enquiries/<%= enquiry.id %>" class="stack form-card">
       <input type="hidden" name="_csrf" value="<%= csrf %>">
       <h2>Update</h2>
       <label>Stage <select name="status"><% ENQUIRY_STATUSES.forEach((s) => { %><option value="<%= s %>" <%= enquiry.status === s ? 'selected' : '' %>><%= label(s) %></option><% }) %></select></label>
@@ -30,5 +29,4 @@
       <button class="btn">Save</button>
     </form>
   </div>
-</div>
-<%- include('../partials/foot') %>
+<%- include('../partials/app-foot') %>

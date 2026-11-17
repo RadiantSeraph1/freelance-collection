@@ -2,9 +2,10 @@
 // payment here is fictional and must be replaced with real records before use.
 const { hashPassword, createSale, syncPlotStatus } = require('./db');
 
+// [code, name, location, description, photo]. Photos are free-licence stock placeholders.
 const estates = [
-  ['OYH', 'Oyarifa Hills', 'Oyarifa, Accra', 'Registered residential plots on high ground with graded access roads and electricity at the boundary.'],
-  ['DDG', 'Dodowa Gardens', 'Dodowa, Greater Accra', 'Affordable plots in a planned layout, a short drive from the Dodowa main road. Flexible payment plans.'],
+  ['OYH', 'Oyarifa Hills', 'Oyarifa, Accra', 'Registered residential plots on high ground with graded access roads and electricity at the boundary.', '/img/ld-estate-aerial-lg.jpg'],
+  ['DDG', 'Dodowa Gardens', 'Dodowa, Greater Accra', 'Affordable plots in a planned layout, a short drive from the Dodowa main road. Flexible payment plans.', '/img/ld-suburb2-lg.jpg'],
 ];
 
 // [estate index, plot no, dimensions, size m², price GH₵, demarcation]
@@ -25,7 +26,7 @@ function seed(db, { adminUser, adminPassword }) {
   }
   if (db.prepare('SELECT 1 FROM estates LIMIT 1').get()) return;
 
-  const addEstate = db.prepare('INSERT INTO estates (code, name, location, description) VALUES (?, ?, ?, ?)');
+  const addEstate = db.prepare('INSERT INTO estates (code, name, location, description, image_url) VALUES (?, ?, ?, ?, ?)');
   estates.forEach((e) => addEstate.run(...e));
   const addPlot = db.prepare('INSERT INTO plots (estate_id, plot_no, ref, dimensions, size_sqm, price, demarcation) VALUES (?, ?, ?, ?, ?, ?, ?)');
   plots.forEach(([e, no, dim, size, price, dem]) => addPlot.run(e + 1, no, `${estates[e][0]}-${no}`, dim, size, price, dem));

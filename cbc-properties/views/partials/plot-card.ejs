@@ -1,13 +1,16 @@
-<a class="card" href="/plots/<%= p.id %>">
-  <div class="photo ph ph-plot <%= p.status %>"><span>Plot <%= p.ref %></span></div>
-  <div class="card-body">
-    <div class="tags"><span class="tag <%= p.status === 'available' ? 'ok' : p.status === 'reserved' ? 'warn' : '' %>"><%= label(p.status) %></span></div>
-    <h3><%= p.estate_name %> – plot <%= p.plot_no %></h3>
-    <p class="muted"><%= p.estate_location %></p>
-    <p class="price"><%= money(p.price) %></p>
-    <p class="facts">
-      <% if (p.dimensions) { %><span><%= p.dimensions %></span><% } %>
-      <% if (p.size_sqm !== null) { %><span><%= p.size_sqm.toLocaleString('en-US') %> m²</span><% } %>
-    </p>
+<a class="listing-card" href="/plots/<%= p.id %>">
+  <div class="media">
+    <img src="<%= thumb(plotPhoto(p)) %>" alt="Land at <%= p.estate_name %>" loading="lazy" width="800" height="600">
+    <div class="tags"><span class="tag <%= p.status === 'available' ? '' : 'light' %>"><%= label(p.status) %></span></div>
+    <div class="price-tag"><%= money(p.price) %></div>
+  </div>
+  <div class="body">
+    <h3><%= p.estate_name %> · plot <%= p.plot_no %></h3>
+    <div class="loc"><%- icon('map-pin') %> <%= p.estate_location %> · Ref <%= p.ref %></div>
+    <div class="specs">
+      <% if (p.size_sqm !== null) { %><span><%- icon('ruler') %> <%= p.size_sqm.toLocaleString('en-US') %> m²</span><% } %>
+      <% if (p.dimensions) { %><span><%- icon('map') %> <%= p.dimensions %></span><% } %>
+      <span><%- icon('stamp') %> <%= label(p.demarcation) %></span>
+    </div>
   </div>
 </a>

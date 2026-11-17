@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title><%= title %> | <%= site.name %> staff</title>
+  <link rel="stylesheet" href="/kit.css">
+  <link rel="stylesheet" href="/theme.css">
+</head>
+<body class="app">
+<div class="app-shell">
+  <aside class="sidebar">
+    <a class="brand" href="/admin"><span class="brand-mark">C</span><span><%= site.name.split(' ')[0] %></span></a>
+    <nav class="side-nav" aria-label="Staff">
+      <span class="label">Sales</span>
+      <a href="/admin" <%- active === 'dashboard' ? 'aria-current="page"' : '' %>><%- icon('layout-dashboard') %> Dashboard</a>
+      <a href="/admin/enquiries" <%- active === 'enquiries' ? 'aria-current="page"' : '' %>><%- icon('inbox') %> Enquiries</a>
+      <a href="/admin/sales" <%- active === 'sales' ? 'aria-current="page"' : '' %>><%- icon('handshake') %> Sales</a>
+      <span class="label">Land</span>
+      <a href="/admin/plots" <%- active === 'plots' ? 'aria-current="page"' : '' %>><%- icon('map') %> Plots</a>
+      <a href="/admin/estates" <%- active === 'estates' ? 'aria-current="page"' : '' %>><%- icon('trees') %> Estates</a>
+      <span class="label">Insight</span>
+      <a href="/admin/reports" <%- active === 'reports' ? 'aria-current="page"' : '' %>><%- icon('chart-column') %> Reports</a>
+      <a href="/" target="_blank" rel="noopener"><%- icon('external-link') %> View website</a>
+    </nav>
+    <div class="side-foot">
+      <div class="who"><span class="avatar"><%= initials(session.user) %></span><div><b><%= session.user %></b><span class="muted small">Staff</span></div></div>
+      <form method="post" action="/admin/logout"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="link"><%- icon('log-out') %> Sign out</button></form>
+    </div>
+  </aside>
+  <div class="app-main">
+    <% if (site.demo) { %><div class="app-demo">Demonstration data.<% if (site.temporary) { %> Changes you make here are temporary and may disappear.<% } %></div><% } %>
+    <div class="page">

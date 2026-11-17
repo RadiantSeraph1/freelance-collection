@@ -119,6 +119,10 @@ function openDb(path) {
     CREATE INDEX IF NOT EXISTS idx_payments_sale ON payments(sale_id);
     CREATE INDEX IF NOT EXISTS idx_milestones_sale ON milestones(sale_id);
   `);
+  // Older databases predate estate photos.
+  if (!db.prepare('PRAGMA table_info(estates)').all().some((c) => c.name === 'image_url')) {
+    db.exec("ALTER TABLE estates ADD COLUMN image_url TEXT NOT NULL DEFAULT ''");
+  }
   return db;
 }
 

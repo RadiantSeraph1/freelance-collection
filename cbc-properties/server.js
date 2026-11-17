@@ -7,6 +7,8 @@ const {
 } = require('./src/db');
 const { seed } = require('./src/seed');
 const { sessionMiddleware } = require('./src/session');
+const { icon, initials } = require('./src/ui');
+const { layout } = require('./src/siteplan');
 
 const LABELS = {
   available: 'Available', reserved: 'Reserved', sold: 'Sold',
@@ -16,6 +18,7 @@ const LABELS = {
   active: 'Active', cancelled: 'Cancelled',
 };
 
+const PLOT_PHOTOS = ['ld-site', 'ld-plot-grass', 'ld-suburb', 'ld-newbuild', 'ld-suburb2', 'ld-estate-aerial'];
 const clean = (v, max = 200) => String(v ?? '').trim().slice(0, max);
 const intOrNull = (v) => {
   const n = Number.parseInt(v, 10);
@@ -65,7 +68,7 @@ function createApp(options = {}) {
       'X-Content-Type-Options': 'nosniff',
       'X-Frame-Options': 'DENY',
       'Referrer-Policy': 'strict-origin-when-cross-origin',
-      'Content-Security-Policy': "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'none'; frame-ancestors 'none'",
+      'Content-Security-Policy': "default-src 'self'; img-src 'self' data:; style-src 'self'; font-src 'self'; script-src 'self'; frame-ancestors 'none'",
     });
     next();
   });
@@ -75,7 +78,12 @@ function createApp(options = {}) {
 
   app.use((req, res, next) => {
     Object.assign(res.locals, {
-      site, label: (k) => LABELS[k] || k, session: req.session, path: req.path,
+      site, icon, initials, label: (k) => LABELS[k] || k,
+      thumb: (url) => String(url || '').replace(/-lg\.jpg$/, '-md.jpg'),
+      photo: (e) => (e && e.image_url) || (e && e.estate_image) || '/img/ld-site-lg.jpg',
+      // Plots have no photos of their own; vary the placeholder so a list does not repeat one image.
+      plotPhoto: (p) => `/img/${PLOT_PHOTOS[p.id % PLOT_PHOTOS.length]}-lg.jpg`,
+      session: req.session, path: req.path,
       money: (amount) => `${site.currency}${Number(amount || 0).toLocaleString('en-US')}`,
       waLink: (text) => `https://wa.me/${site.whatsapp}?text=${encodeURIComponent(text)}`,
     });
@@ -93,7 +101,7 @@ function createApp(options = {}) {
     next();
   };
 
-  const PLOT_SELECT = 'SELECT p.*, e.name AS estate_name, e.location AS estate_location, e.code AS estate_code FROM plots p JOIN estates e ON e.id = p.estate_id';
+  const PLOT_SELECT = 'SELECT p.*, e.name AS estate_name, e.location AS estate_location, e.code AS estate_code, e.image_url AS estate_image FROM plots p JOIN estates e ON e.id = p.estate_id';
   const allEstates = () => db.prepare('SELECT * FROM estates ORDER BY name').all();
   const getPlot = (id) => db.prepare(`${PLOT_SELECT} WHERE p.id = ?`).get(intOrNull(id));
   const getSale = (id) => db.prepare(`${SALE_SELECT} WHERE s.id = ?`).get(intOrNull(id));
@@ -109,7 +117,9 @@ function createApp(options = {}) {
     const estates = db.prepare(`SELECT e.*, COUNT(p.id) AS total, COALESCE(SUM(p.status = 'available'), 0) AS available,
       MIN(CASE WHEN p.status = 'available' THEN p.price END) AS from_price
       FROM estates e LEFT JOIN plots p ON p.estate_id = e.id GROUP BY e.id ORDER BY e.name`).all();
-    res.render('home', { title: site.name, estates });
+    const stats = db.prepare(`SELECT COUNT(*) AS plots, COALESCE(SUM(status = 'available'), 0) AS available,
+      MIN(CASE WHEN status = 'available' THEN price END) AS from_price FROM plots`).get();
+    res.render('home', { title: site.name, estates, stats });
   });
 
   app.get('/plots', (req, res) => {
@@ -133,10 +143,22 @@ function createApp(options = {}) {
     res.render('plots', { title: 'Plots', plots, f, estates: allEstates(), PLOT_STATUSES });
   });
 
+  const estatePlan = (estateId) => layout(db.prepare('SELECT * FROM plots WHERE estate_id = ? ORDER BY plot_no').all(estateId));
+  const plotExtras = (plot) => ({ plan: estatePlan(plot.estate_id), neighbours: db.prepare(`${PLOT_SELECT} WHERE p.estate_id = ? AND p.id != ? AND p.status = 'available' ORDER BY p.ref LIMIT 3`).all(plot.estate_id, plot.id) });
+
+  app.get('/estates/:id', (req, res, next) => {
+    const estate = db.prepare(`SELECT e.*, COUNT(p.id) AS total, COALESCE(SUM(p.status = 'available'), 0) AS available,
+      MIN(CASE WHEN p.status = 'available' THEN p.price END) AS from_price
+      FROM estates e LEFT JOIN plots p ON p.estate_id = e.id WHERE e.id = ? GROUP BY e.id`).get(intOrNull(req.params.id));
+    if (!estate) return next();
+    const plots = db.prepare(`${PLOT_SELECT} WHERE p.estate_id = ? ORDER BY p.plot_no`).all(estate.id);
+    res.render('estate', { title: estate.name, estate, plots, plan: layout(plots), errors: [], form: {} });
+  });
+
   app.get('/plots/:id', (req, res, next) => {
     const plot = getPlot(req.params.id);
     if (!plot) return next();
-    res.render('plot', { title: `Plot ${plot.ref}`, plot, errors: [], form: {} });
+    res.render('plot', { title: `Plot ${plot.ref}`, plot, errors: [], form: {}, ...plotExtras(plot) });
   });
 
   app.get('/contact', (req, res) => res.render('contact', { title: 'Contact us', errors: [], form: {} }));
@@ -155,7 +177,7 @@ function createApp(options = {}) {
     if (form.phone && !/^[+\d][\d\s()-]{6,}$/.test(form.phone)) errors.push('That phone number does not look right.');
     if (form.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) errors.push('That email address does not look right.');
     if (errors.length) {
-      return res.status(400).render(plot ? 'plot' : 'contact', { title: plot ? `Plot ${plot.ref}` : 'Contact us', plot, errors, form });
+      return res.status(400).render(plot ? 'plot' : 'contact', { title: plot ? `Plot ${plot.ref}` : 'Contact us', plot, errors, form, ...(plot ? plotExtras(plot) : {}) });
     }
     db.prepare("INSERT INTO enquiries (plot_id, name, phone, email, message, source, next_follow_up) VALUES (?, ?, ?, ?, ?, 'website', date('now'))")
       .run(plot ? plot.id : null, form.name, form.phone, form.email, form.message);

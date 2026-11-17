@@ -1,30 +1,54 @@
 <%- include('partials/head') %>
-<section class="wrap section">
-  <p><a href="/plots">← All plots</a></p>
-  <div class="detail">
-    <div>
-      <div class="photo big ph ph-plot <%= plot.status %>"><span>Plot <%= plot.ref %></span></div>
-      <div class="tags"><span class="tag <%= plot.status === 'available' ? 'ok' : plot.status === 'reserved' ? 'warn' : '' %>"><%= label(plot.status) %></span></div>
-      <h1><%= plot.estate_name %> – plot <%= plot.plot_no %></h1>
-      <p class="muted"><%= plot.estate_location %> · Ref <%= plot.ref %></p>
-      <p class="price big"><%= money(plot.price) %></p>
-      <dl class="specs">
-        <% if (plot.dimensions) { %><div><dt>Dimensions</dt><dd><%= plot.dimensions %></dd></div><% } %>
-        <% if (plot.size_sqm !== null) { %><div><dt>Size</dt><dd><%= plot.size_sqm.toLocaleString('en-US') %> m²</dd></div><% } %>
-        <div><dt>Demarcation</dt><dd><%= label(plot.demarcation) %></dd></div>
-      </dl>
+<section class="section tight">
+  <div class="container">
+    <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="/">Home</a> / <a href="/estates/<%= plot.estate_id %>"><%= plot.estate_name %></a> / Plot <%= plot.plot_no %></nav>
+    <div class="detail-layout">
+      <div>
+        <div class="photo-frame"><img src="<%= plotPhoto(plot) %>" alt="Land at <%= plot.estate_name %> (placeholder photograph)"></div>
+        <div class="cluster mt-m"><span class="badge <%= plot.status === 'available' ? 'ok' : plot.status === 'reserved' ? 'warn' : 'plain' %>"><%= label(plot.status) %></span><span class="muted small">Ref <%= plot.ref %></span></div>
+        <h1 class="mt-s"><%= plot.estate_name %> · plot <%= plot.plot_no %></h1>
+        <div class="loc"><%- icon('map-pin') %> <%= plot.estate_location %></div>
+        <p class="price-xl mt-m"><%= money(plot.price) %></p>
+        <div class="facts">
+          <% if (plot.size_sqm !== null) { %><div><%- icon('ruler') %><b><%= plot.size_sqm.toLocaleString('en-US') %> m²</b><span>Plot size</span></div><% } %>
+          <% if (plot.dimensions) { %><div><%- icon('map') %><b><%= plot.dimensions %></b><span>Dimensions</span></div><% } %>
+          <div><%- icon('stamp') %><b><%= label(plot.demarcation) %></b><span>Demarcation</span></div>
+        </div>
+        <h2>Where it sits in the estate</h2>
+        <%- include('partials/siteplan', { plan, estateName: plot.estate_name, currentId: plot.id }) %>
+        <% if (plot.status === 'available') { %>
+        <h2 class="mt-l">Plan your payments</h2>
+        <div class="calc" data-calc data-price="<%= plot.price %>" data-symbol="<%= site.currency %>">
+          <div class="row">
+            <label>Deposit (%) <input name="deposit" type="number" min="0" max="90" value="30"></label>
+            <label>Pay over (years) <input name="years" type="number" min="1" max="10" value="2"></label>
+            <label>Interest (% a year) <input name="rate" type="number" min="0" max="60" step="0.5" value="0"></label>
+          </div>
+          <div class="out"><b data-calc-out></b><span class="small" data-calc-note></span></div>
+          <p class="muted small mt-s mb-0">An illustration only. Ask us for the payment plan that applies to this plot.</p>
+        </div>
+        <% } %>
+      </div>
+      <aside class="sticky-card">
+        <div class="form-card">
+          <% if (plot.status === 'available') { %>
+            <h3>Ask about this plot</h3>
+            <a class="btn wa block" href="<%= waLink(`Hello, I am interested in plot ${plot.ref} at ${plot.estate_name}.`) %>" rel="noopener"><%- icon('message-circle') %> Chat on WhatsApp</a>
+            <p class="muted small center mt-s">or leave your details and we will call you</p>
+          <% } else { %>
+            <h3>This plot is <%= label(plot.status).toLowerCase() %></h3>
+            <p class="muted">Leave your details and we will suggest similar plots, or tell you if this one becomes available again.</p>
+          <% } %>
+          <%- include('partials/enquiry-form') %>
+        </div>
+      </aside>
     </div>
-    <aside class="panel">
-      <% if (plot.status === 'available') { %>
-        <h2>Ask about this plot</h2>
-        <a class="btn wa" href="<%= waLink(`Hello, I am interested in plot ${plot.ref} at ${plot.estate_name}.`) %>" rel="noopener">Chat on WhatsApp</a>
-        <p class="muted center">or leave your details and we will call you</p>
-      <% } else { %>
-        <h2>This plot is <%= label(plot.status).toLowerCase() %></h2>
-        <p class="muted">Leave your details and we will suggest similar plots, or tell you if this one becomes available again.</p>
-      <% } %>
-      <%- include('partials/enquiry-form') %>
-    </aside>
   </div>
 </section>
+<% if (neighbours && neighbours.length) { %>
+<section class="section alt"><div class="container">
+  <div class="section-head"><h2>Other available plots in <%= plot.estate_name %></h2></div>
+  <div class="grid grid-3"><% neighbours.forEach((p) => { %><%- include('partials/plot-card', { p }) %><% }) %></div>
+</div></section>
+<% } %>
 <%- include('partials/foot') %>

@@ -1,5 +1,4 @@
-<%- include('../partials/head') %>
-<%- include('nav') %>
+<%- include('../partials/app-head', { active: 'dashboard' }) %>
   <h1>Dashboard</h1>
   <div class="stats">
     <a class="stat" href="/admin/enquiries?status=new"><b><%= stats.newEnquiries %></b>New enquiries</a>
@@ -12,7 +11,7 @@
 
   <h2>Reservations past their hold date</h2>
   <% if (lapsed.length) { %>
-  <table>
+  <div class="table-wrap"><table>
     <thead><tr><th>Held until</th><th>Customer</th><th>Plot</th><th class="num">Paid</th><th class="num">Balance</th><th>Handled by</th></tr></thead>
     <tbody><% lapsed.forEach((s) => { %><tr>
       <td class="overdue"><%= s.reservation_expires %></td>
@@ -20,20 +19,19 @@
       <td><%= s.ref %></td><td class="num"><%= money(s.paid) %></td><td class="num"><%= money(s.agreed_price - s.paid) %></td>
       <td><%= s.handled_by || 'Unassigned' %></td>
     </tr><% }) %></tbody>
-  </table>
+  </table></div>
   <p class="muted">These plots are still held although the agreement has not been signed. Chase the customer or cancel to release the plot.</p>
   <% } else { %><p class="muted">None.</p><% } %>
 
   <h2>Enquiry follow-ups due today or overdue</h2>
   <% if (due.length) { %>
-  <table>
+  <div class="table-wrap"><table>
     <thead><tr><th>Due</th><th>Customer</th><th>Plot</th><th>Stage</th><th>Assigned to</th></tr></thead>
     <tbody><% due.forEach((e) => { %><tr>
       <td><%= e.next_follow_up %></td>
       <td><a href="/admin/enquiries/<%= e.id %>"><%= e.name %></a></td>
       <td><%= e.ref || 'General' %></td><td><%= label(e.status) %></td><td><%= e.assigned_to || 'Unassigned' %></td>
     </tr><% }) %></tbody>
-  </table>
+  </table></div>
   <% } else { %><p class="muted">Nothing is due.</p><% } %>
-</div>
-<%- include('../partials/foot') %>
+<%- include('../partials/app-foot') %>

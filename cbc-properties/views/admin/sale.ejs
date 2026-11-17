@@ -1,9 +1,8 @@
-<%- include('../partials/head') %>
-<%- include('nav') %>
-  <p><a href="/admin/sales">← All sales</a></p>
+<%- include('../partials/app-head', { active: 'sales' }) %>
+  <p><a class="arrow-link small" href="/admin/sales">← All sales</a></p>
   <h1><%= sale.customer_name %> – plot <%= sale.ref %></h1>
   <% const active = sale.status === 'active'; const balance = sale.agreed_price - sale.paid; const nextId = (milestones.find((m) => !m.done_on) || {}).id; %>
-  <% if (!active) { %><p class="errors">Cancelled: <%= sale.cancelled_reason %>. The plot was released; this record is kept for reference.</p><% } %>
+  <% if (!active) { %><p class="notice">Cancelled: <%= sale.cancelled_reason %>. The plot was released; this record is kept for reference.</p><% } %>
   <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
   <dl class="specs">
     <div><dt>Estate</dt><dd><%= sale.estate_name %></dd></div>
@@ -24,16 +23,16 @@
       </div>
       <progress value="<%= sale.paid %>" max="<%= sale.agreed_price %>"><%= Math.round(100 * sale.paid / sale.agreed_price) %>% paid</progress>
       <% if (payments.length) { %>
-      <table>
+      <div class="table-wrap"><table>
         <thead><tr><th>Date</th><th>Method</th><th>Reference</th><th class="num">Amount</th><th></th></tr></thead>
         <tbody><% payments.forEach((p) => { %><tr>
           <td><%= p.paid_on %></td><td><%= p.method %></td><td><%= p.reference || '–' %></td><td class="num"><%= money(p.amount) %></td>
           <td><% if (active) { %><form method="post" action="/admin/sales/<%= sale.id %>/payments/<%= p.id %>/delete"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="link">Remove</button></form><% } %></td>
         </tr><% }) %></tbody>
-      </table>
+      </table></div>
       <% } else { %><p class="muted">No payments recorded yet.</p><% } %>
       <% if (active && balance > 0) { %>
-      <form method="post" action="/admin/sales/<%= sale.id %>/payments" class="panel stack">
+      <form method="post" action="/admin/sales/<%= sale.id %>/payments" class="form-card stack">
         <input type="hidden" name="_csrf" value="<%= csrf %>">
         <h2>Record a payment</h2>
         <div class="row">
@@ -77,5 +76,4 @@
   </form>
   <p class="muted">Cancelling keeps this record and its payments for reference. Any refund is handled outside this system.</p>
   <% } %>
-</div>
-<%- include('../partials/foot') %>
+<%- include('../partials/app-foot') %>

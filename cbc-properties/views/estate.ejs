@@ -1,0 +1,29 @@
+<%- include('partials/head') %>
+<section class="hero small left">
+  <img class="cover" src="<%= photo(estate) %>" alt="" fetchpriority="high">
+  <div class="container">
+    <span class="eyebrow"><%- icon('map-pin') %> <%= estate.location %></span>
+    <h1><%= estate.name %></h1>
+    <p class="lead"><%= estate.description %></p>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <div class="between">
+      <div class="cluster"><span class="badge ok"><%= estate.available %> of <%= estate.total %> plots available</span><% if (estate.from_price) { %><span class="muted">Prices from <strong><%= money(estate.from_price) %></strong></span><% } %></div>
+      <a class="btn outline sm" href="/plots?estate=<%= estate.id %>">View as a list</a>
+    </div>
+    <h2 class="mt-m">Site plan</h2>
+    <%- include('partials/siteplan', { plan, estateName: estate.name }) %>
+    <div class="grid grid-3 mt-l">
+      <% plots.filter((p) => p.status === 'available').slice(0, 6).forEach((p) => { %><%- include('partials/plot-card', { p }) %><% }) %>
+    </div>
+  </div>
+</section>
+<section class="section alt">
+  <div class="container split start">
+    <div><span class="eyebrow">Interested?</span><h2>Ask about <%= estate.name %></h2><p class="lead">Tell us which plot you like and we will arrange a visit and share the payment options.</p></div>
+    <div class="form-card"><%- include('partials/enquiry-form', { plot: null }) %></div>
+  </div>
+</section>
+<%- include('partials/foot') %>

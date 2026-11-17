@@ -1,5 +1,4 @@
-<%- include('../partials/head') %>
-<%- include('nav') %>
+<%- include('../partials/app-head', { active: 'plots' }) %>
   <div class="bar"><h1>Plots</h1><a class="btn" href="/admin/plots/new">Add a plot</a></div>
   <form class="filters" action="/admin/plots">
     <label>Estate <select name="estate"><option value="">All</option><% estates.forEach((e) => { %><option value="<%= e.id %>" <%= f.estate === e.id ? 'selected' : '' %>><%= e.name %></option><% }) %></select></label>
@@ -7,17 +6,16 @@
     <div class="actions"><button class="btn">Filter</button> <a href="/admin/plots">Clear</a></div>
   </form>
   <% if (plots.length) { %>
-  <table>
+  <div class="table-wrap"><table>
     <thead><tr><th>Ref</th><th>Estate</th><th>Dimensions</th><th class="num">Price</th><th>Status</th><th>Demarcation</th><th>Customer</th><th></th></tr></thead>
     <tbody><% plots.forEach((p) => { %><tr>
       <td><a href="/plots/<%= p.id %>"><%= p.ref %></a></td><td><%= p.estate_name %></td><td><%= p.dimensions %></td>
       <td class="num"><%= money(p.price) %></td>
-      <td><span class="tag <%= p.status === 'available' ? 'ok' : p.status === 'reserved' ? 'warn' : '' %>"><%= label(p.status) %></span></td>
+      <td><span class="badge <%= p.status === 'available' ? 'ok' : p.status === 'reserved' ? 'warn' : '' %>"><%= label(p.status) %></span></td>
       <td><%= label(p.demarcation) %></td>
       <td><% if (p.sale_id) { %><a href="/admin/sales/<%= p.sale_id %>"><%= p.customer %></a><% } else { %>–<% } %></td>
       <td><a href="/admin/plots/<%= p.id %>/edit">Edit</a><% if (p.status === 'available') { %> · <a href="/admin/sales/new?plot=<%= p.id %>">Reserve</a><% } %></td>
     </tr><% }) %></tbody>
-  </table>
+  </table></div>
   <% } else { %><p class="empty">No plots match.</p><% } %>
-</div>
-<%- include('../partials/foot') %>
+<%- include('../partials/app-foot') %>

@@ -1,11 +1,27 @@
-<%- include('../partials/head') %>
-<section class="wrap section narrow">
-  <h1>Staff sign in</h1>
-  <% if (error) { %><ul class="errors"><li><%= error %></li></ul><% } %>
-  <form method="post" action="/admin/login" class="stack panel">
-    <label>Username <input name="username" required autocomplete="username"></label>
-    <label>Password <input name="password" type="password" required autocomplete="current-password"></label>
-    <button class="btn">Sign in</button>
-  </form>
-</section>
-<%- include('../partials/foot') %>
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex">
+  <title>Staff sign in | <%= site.name %></title>
+  <link rel="stylesheet" href="/kit.css">
+  <link rel="stylesheet" href="/theme.css">
+</head>
+<body>
+<div class="login-split">
+  <div class="login-photo"><img src="/img/ld-estate-aerial-lg.jpg" alt=""><div><span class="brand"><span class="brand-mark">C</span> <%= site.name %></span><h2>Every plot, payment and document in one place.</h2></div></div>
+  <div class="login-form">
+    <form method="post" action="/admin/login" class="stack">
+      <h1>Staff sign in</h1>
+      <p class="muted">Sign in to manage listings and enquiries.</p>
+      <% if (error) { %><ul class="errors"><li><%= error %></li></ul><% } %>
+      <label>Username <input name="username" required autocomplete="username"></label>
+      <label>Password <input name="password" type="password" required autocomplete="current-password"></label>
+      <button class="btn block">Sign in</button>
+      <p class="small"><a href="/">← Back to the website</a></p>
+    </form>
+  </div>
+</div>
+</body>
+</html>

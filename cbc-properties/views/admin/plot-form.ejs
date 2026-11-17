@@ -1,9 +1,8 @@
-<%- include('../partials/head') %>
-<%- include('nav') %>
+<%- include('../partials/app-head', { active: 'plots' }) %>
   <h1><%= title %></h1>
   <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
   <% const v = (x) => x ?? ''; %>
-  <form method="post" action="/admin/plots<%= plot.id ? '/' + plot.id : '' %>" class="stack panel wide">
+  <form method="post" action="/admin/plots<%= plot.id ? '/' + plot.id : '' %>" class="stack form-card wide">
     <input type="hidden" name="_csrf" value="<%= csrf %>">
     <div class="row">
       <label>Estate <select name="estate_id" required><option value="">Choose…</option><% estates.forEach((e) => { %><option value="<%= e.id %>" <%= plot.estate_id === e.id ? 'selected' : '' %>><%= e.name %> (<%= e.code %>)</option><% }) %></select></label>
@@ -26,5 +25,4 @@
     <button class="btn red">Delete plot</button>
   </form>
   <% } %>
-</div>
-<%- include('../partials/foot') %>
+<%- include('../partials/app-foot') %>

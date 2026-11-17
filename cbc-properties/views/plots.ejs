@@ -1,19 +1,24 @@
 <%- include('partials/head') %>
-<section class="wrap section">
-  <h1>Plots</h1>
-  <form class="filters" action="/plots">
-    <label>Keyword <input name="q" value="<%= f.q %>" placeholder="e.g. OYH-04"></label>
-    <label>Estate <select name="estate"><option value="">Any</option><% estates.forEach((e) => { %><option value="<%= e.id %>" <%= f.estate === e.id ? 'selected' : '' %>><%= e.name %></option><% }) %></select></label>
-    <label>Availability <select name="status"><option value="">Any</option><% PLOT_STATUSES.forEach((s) => { %><option value="<%= s %>" <%= f.status === s ? 'selected' : '' %>><%= label(s) %></option><% }) %></select></label>
-    <label>Min. size (m²) <input name="min_size" type="number" min="0" value="<%= f.minSize ?? '' %>"></label>
-    <label>Max. price (<%= site.currency %>) <input name="max_price" type="number" min="0" value="<%= f.maxPrice ?? '' %>"></label>
-    <div class="actions"><button class="btn">Apply filters</button> <a href="/plots">Clear</a></div>
-  </form>
-  <p class="muted"><%= plots.length %> <%= plots.length === 1 ? 'plot' : 'plots' %> found</p>
-  <% if (plots.length) { %>
-    <div class="grid"><% plots.forEach((p) => { %><%- include('partials/plot-card', { p }) %><% }) %></div>
-  <% } else { %>
-    <div class="empty"><p>No plots match those filters.</p><p><a href="/plots">Clear the filters</a> or <a href="/contact">tell us what you are looking for</a>.</p></div>
-  <% } %>
+<section class="hero small">
+  <img class="cover" src="/img/ld-suburb-lg.jpg" alt="" fetchpriority="high">
+  <div class="container"><span class="eyebrow">Greater Accra</span><h1>Plots</h1></div>
+</section>
+<section class="section tight">
+  <div class="container">
+    <form class="filter-bar" action="/plots" aria-label="Filter plots">
+      <label>Keyword <input name="q" value="<%= f.q %>" placeholder="e.g. OYH-04"></label>
+      <label>Estate <select name="estate"><option value="">Any</option><% estates.forEach((e) => { %><option value="<%= e.id %>" <%= f.estate === e.id ? 'selected' : '' %>><%= e.name %></option><% }) %></select></label>
+      <label>Availability <select name="status"><option value="">Any</option><% PLOT_STATUSES.forEach((s) => { %><option value="<%= s %>" <%= f.status === s ? 'selected' : '' %>><%= label(s) %></option><% }) %></select></label>
+      <label>Min. size (m²) <input name="min_size" type="number" min="0" value="<%= f.minSize ?? '' %>"></label>
+      <label>Max. price (<%= site.currency %>) <input name="max_price" type="number" min="0" value="<%= f.maxPrice ?? '' %>"></label>
+      <button class="btn"><%- icon('sliders-horizontal') %> Apply</button>
+    </form>
+    <div class="results-bar"><strong><%= plots.length %> <%= plots.length === 1 ? 'plot' : 'plots' %> found</strong><a class="arrow-link small" href="/plots">Clear filters</a></div>
+    <% if (plots.length) { %>
+      <div class="grid grid-3"><% plots.forEach((p) => { %><%- include('partials/plot-card', { p }) %><% }) %></div>
+    <% } else { %>
+      <div class="empty"><p><strong>No plots match those filters.</strong></p><p><a href="/plots">Clear the filters</a> or <a href="/contact">tell us what you are looking for</a>.</p></div>
+    <% } %>
+  </div>
 </section>
 <%- include('partials/foot') %>

@@ -1,0 +1,47 @@
+@font-face { font-family: "Fraunces"; src: url("/fonts/fraunces-latin-wght-normal.woff2") format("woff2"); font-weight: 100 900; font-style: normal; font-display: swap; }
+@font-face { font-family: "Manrope"; src: url("/fonts/manrope-latin-wght-normal.woff2") format("woff2"); font-weight: 200 800; font-style: normal; font-display: swap; }
+:root {
+  --font-display: "Fraunces", Georgia, serif;
+  --font-body: "Manrope", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --font-app-display: "Manrope", system-ui, sans-serif;
+  --ink: #26302b; --ink-strong: #14201a; --muted: #5f6d65;
+  --bg: #fff; --bg-alt: #f4f1ea; --line: #e4e0d5;
+  --brand: #1f5a3f; --brand-dark: #174632; --brand-ink: #fff;
+  --accent: #c2622d; --accent-ink: #a04e20; --accent-contrast: #fff; --accent-on-dark: #f0b88c;
+  --brand-soft: #e3efe8; --brand-soft-2: #bcd7c6; --ring: rgba(31, 90, 63, .2);
+  --link: #1f5a3f; --red: #b42318; --focus: #4b9a74;
+  --radius-btn: 999px; --radius-mark: 10px; --display-weight: 600; --display-tracking: -.02em;
+  --side-bg: #13211a; --side-active: rgba(240, 184, 140, .18); --footer-bg: #0f1b15; --utility-bg: #13211a; --app-bg: #f3f2ed;
+}
+.brand-mark { background: var(--brand); color: #fff; font-family: var(--font-display); font-weight: 700; }
+.hero h1 em { font-style: normal; color: var(--accent-on-dark); }
+.page .stat b { font-family: var(--font-app-display); }
+.legend { display: flex; gap: 1.2rem; flex-wrap: wrap; font-size: .85rem; color: var(--muted); margin: 0 0 .8rem; }
+.legend span { display: inline-flex; align-items: center; gap: .45rem; }
+.legend i { width: .9rem; height: .9rem; border-radius: 3px; display: inline-block; }
+.legend .a, .siteplan .plot.available rect { fill: #cfe8d7; stroke: #1f5a3f; }
+.legend .r, .siteplan .plot.reserved rect { fill: #fbe3b8; stroke: #b7791f; }
+.legend .s, .siteplan .plot.sold rect { fill: #e2e4e7; stroke: #98a2b3; }
+.legend .a { background: #cfe8d7; border: 1.5px solid #1f5a3f; } .legend .r { background: #fbe3b8; border: 1.5px solid #b7791f; } .legend .s { background: #e2e4e7; border: 1.5px solid #98a2b3; }
+.siteplan { width: 100%; height: auto; background: #f1efe4; border: 1px solid var(--line); border-radius: 14px; display: block; }
+.siteplan .plot rect { stroke-width: 1.6; transition: fill .15s; }
+.siteplan a:hover .plot.available rect { fill: #9fd3b2; }
+.siteplan .plot.current rect { stroke-width: 4; stroke: var(--accent); }
+.siteplan .plot text { font-family: var(--font-body); font-size: 13px; font-weight: 700; fill: #1b2a22; text-anchor: middle; pointer-events: none; }
+.siteplan .plot text.sub { font-size: 10px; font-weight: 500; fill: #4b5a51; }
+.siteplan .road { fill: #d9d5c6; }
+.siteplan .road-label { font-family: var(--font-body); font-size: 11px; letter-spacing: .2em; text-transform: uppercase; fill: #7a7660; text-anchor: middle; }
+.siteplan .compass { font-family: var(--font-body); font-size: 12px; font-weight: 800; fill: #3d4a43; text-anchor: middle; }
+.estate-card .media { aspect-ratio: 16 / 10; }
+.progress-row { display: flex; justify-content: space-between; font-size: .85rem; color: var(--muted); margin-bottom: .3rem; }
+.login-split { display: grid; grid-template-columns: 1.1fr 1fr; min-height: 100vh; }
+.login-photo { position: relative; color: #fff; display: flex; align-items: flex-end; padding: 3rem; isolation: isolate; }
+.login-photo img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; z-index: -2; }
+.login-photo::after { content: ""; position: absolute; inset: 0; z-index: -1; background: linear-gradient(180deg, rgba(10,12,14,.2), rgba(10,12,14,.8)); }
+.login-photo .brand { color: #fff; margin-bottom: 1rem; }
+.login-photo h2 { color: #fff; font-size: 2.2rem; max-width: 12em; }
+.login-form { display: grid; place-items: center; padding: 2rem; }
+.login-form form { width: min(380px, 100%); }
+@media (max-width: 800px) { .login-split { grid-template-columns: 1fr; } .login-photo { display: none; } }
+.siteplan-scroll { overflow-x: auto; border-radius: 14px; }
+.siteplan-scroll .siteplan { min-width: 620px; }

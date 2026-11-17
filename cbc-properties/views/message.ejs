@@ -1,7 +1,8 @@
 <%- include('partials/head') %>
-<section class="wrap section narrow center">
+<section class="section"><div class="narrow center">
+  <span class="feature"><span class="ic mx-auto"><%- icon('circle-check') %></span></span>
   <h1><%= title %></h1>
-  <p><%= body %></p>
-  <p><a class="btn" href="/plots">Browse plots</a></p>
-</section>
+  <p class="lead mx-auto"><%= body %></p>
+  <p><a class="btn" href="/plots?status=available">Browse plots</a></p>
+</div></section>
 <%- include('partials/foot') %>

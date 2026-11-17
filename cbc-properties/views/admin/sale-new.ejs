@@ -1,10 +1,9 @@
-<%- include('../partials/head') %>
-<%- include('nav') %>
+<%- include('../partials/app-head', { active: 'sales' }) %>
   <h1>New reservation</h1>
   <p class="muted">Recording a reservation takes the plot off the market and starts its documentation checklist.</p>
   <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
   <% const v = (x) => x ?? ''; %>
-  <form method="post" action="/admin/sales" class="stack panel wide">
+  <form method="post" action="/admin/sales" class="stack form-card wide">
     <input type="hidden" name="_csrf" value="<%= csrf %>">
     <input type="hidden" name="enquiry_id" value="<%= v(form.enquiry_id) %>">
     <div class="row">
@@ -20,5 +19,4 @@
     </div>
     <div class="actions"><button class="btn">Reserve plot</button> <a href="/admin/sales">Cancel</a></div>
   </form>
-</div>
-<%- include('../partials/foot') %>
+<%- include('../partials/app-foot') %>

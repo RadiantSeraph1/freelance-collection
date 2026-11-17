@@ -1,30 +1,88 @@
 <%- include('partials/head') %>
-<section class="hero">
-  <div class="wrap">
-    <h1>Verified, documented land in Greater Accra</h1>
-    <p>See exactly which plots are available, what they cost, and how far their paperwork has reached.</p>
-    <form class="search" action="/plots">
-      <select name="estate" aria-label="Estate"><option value="">Any estate</option><% estates.forEach((e) => { %><option value="<%= e.id %>"><%= e.name %></option><% }) %></select>
-      <input name="max_price" type="number" min="0" placeholder="Maximum budget (<%= site.currency %>)" aria-label="Maximum budget">
-      <input type="hidden" name="status" value="available">
-      <button class="btn">Find plots</button>
-    </form>
+<section class="hero left">
+  <img class="cover" src="/img/ld-sign-man-lg.jpg" alt="" fetchpriority="high">
+  <div class="container">
+    <span class="eyebrow">Registered plots · Greater Accra</span>
+    <h1>Land you can <em>see, verify and own</em> with confidence</h1>
+    <p class="lead">Browse every plot on a live site plan, see its price and paperwork status, and follow your purchase step by step to registered title.</p>
+    <div class="hero-actions">
+      <a class="btn accent" href="/plots?status=available">View available plots</a>
+      <a class="btn ghost-light" href="/contact">Book a site visit</a>
+    </div>
   </div>
 </section>
-<section class="wrap section">
-  <h2>Our estates</h2>
-  <div class="grid">
-    <% estates.forEach((e) => { %>
-    <a class="card" href="/plots?estate=<%= e.id %>">
-      <div class="card-body">
-        <h3><%= e.name %></h3>
-        <p class="muted"><%= e.location %></p>
-        <p><%= e.description %></p>
-        <p class="price"><% if (e.from_price) { %>From <%= money(e.from_price) %><% } else { %>Sold out<% } %></p>
-        <p class="facts"><span><%= e.available %> of <%= e.total %> plots available</span></p>
+<div class="container">
+  <div class="search-card">
+    <form action="/plots" aria-label="Find a plot">
+      <label>Estate <select name="estate"><option value="">Any estate</option><% estates.forEach((e) => { %><option value="<%= e.id %>"><%= e.name %></option><% }) %></select></label>
+      <label>Maximum budget (<%= site.currency %>) <input name="max_price" type="number" min="0" placeholder="e.g. 450000"></label>
+      <label>Minimum size (m²) <input name="min_size" type="number" min="0" placeholder="e.g. 600"></label>
+      <input type="hidden" name="status" value="available">
+      <button class="btn"><%- icon('search') %> Find plots</button>
+    </form>
+  </div>
+</div>
+
+<section class="section" id="estates">
+  <div class="container">
+    <div class="section-head row-end">
+      <div><span class="eyebrow">Our estates</span><h2>Choose your estate, then your plot</h2></div>
+      <a class="arrow-link" href="/plots">All <%= stats.plots %> plots <%- icon('arrow-right') %></a>
+    </div>
+    <div class="grid grid-2">
+      <% estates.forEach((e) => { %>
+      <a class="listing-card estate-card" href="/estates/<%= e.id %>">
+        <div class="media">
+          <img src="<%= thumb(photo(e)) %>" alt="Aerial view of <%= e.name %>" loading="lazy" width="800" height="500">
+          <div class="tags"><span class="tag light"><%= e.available %> of <%= e.total %> available</span></div>
+          <% if (e.from_price) { %><div class="price-tag"><small>From</small> <%= money(e.from_price) %></div><% } %>
+        </div>
+        <div class="body">
+          <h3><%= e.name %></h3>
+          <div class="loc"><%- icon('map-pin') %> <%= e.location %></div>
+          <p class="muted"><%= e.description %></p>
+          <span class="arrow-link">Open the site plan <%- icon('arrow-right') %></span>
+        </div>
+      </a>
+      <% }) %>
+    </div>
+  </div>
+</section>
+
+<section class="stats-strip" aria-label="At a glance">
+  <div class="container">
+    <div><b><%= estates.length %></b><span>Estates</span></div>
+    <div><b><%= stats.plots %></b><span>Plots laid out</span></div>
+    <div><b><%= stats.available %></b><span>Available now</span></div>
+    <div><b><%= stats.from_price ? money(stats.from_price) : '–' %></b><span>Prices from</span></div>
+  </div>
+</section>
+
+<section class="section alt" id="process">
+  <div class="container">
+    <div class="split start">
+      <div>
+        <span class="eyebrow">How buying works</span>
+        <h2>A clear paper trail from reservation to registered title</h2>
+        <p class="lead">Every purchase is tracked in nine steps. Your agent updates each one, so you always know where your documents are.</p>
+        <ul class="checklist">
+          <li><%- icon('wallet') %><div><strong>Reserve</strong><br><span class="muted">Pay the reservation fee and the plot is held for you.</span></div></li>
+          <li><%- icon('file-signature') %><div><strong>Agree</strong><br><span class="muted">Offer letter and sale and purchase agreement.</span></div></li>
+          <li><%- icon('map') %><div><strong>See your boundaries</strong><br><span class="muted">Site plan prepared and the plot demarcated and shown to you.</span></div></li>
+          <li><%- icon('landmark') %><div><strong>Register</strong><br><span class="muted">Indenture, stamping and Lands Commission registration.</span></div></li>
+        </ul>
+        <a class="btn" href="/contact">Talk to an agent</a>
       </div>
-    </a>
-    <% }) %>
+      <div class="photo-frame"><img src="/img/con-plans-lg.jpg" alt="Surveyor reviewing site plans" loading="lazy"></div>
+    </div>
+  </div>
+</section>
+
+<section class="cta-band">
+  <img src="/img/ld-luxury-aerial-lg.jpg" alt="" loading="lazy">
+  <div class="container">
+    <div><h2>Want to see the land first?</h2><p>We arrange site visits on weekdays and Saturdays.</p></div>
+    <a class="btn accent" href="/contact">Book a site visit</a>
   </div>
 </section>
 <%- include('partials/foot') %>

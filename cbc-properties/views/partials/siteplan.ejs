@@ -1,0 +1,18 @@
+<% const current = locals.currentId || 0; %>
+<div class="siteplan-scroll"><svg class="siteplan" viewBox="0 0 <%= plan.width %> <%= plan.height %>" role="img" aria-label="Site plan of <%= estateName %>, <%= plan.items.length %> plots">
+  <rect class="road" x="0" y="<%= plan.road.y %>" width="<%= plan.road.w %>" height="<%= plan.road.h %>"></rect>
+  <text class="road-label" x="<%= plan.width / 2 %>" y="<%= plan.roadLabelY %>">Access road</text>
+  <text class="compass" x="<%= plan.width - 22 %>" y="22">N ↑</text>
+  <% plan.items.forEach((i) => { %>
+  <a href="/plots/<%= i.plot.id %>" aria-label="Plot <%= i.plot.plot_no %>, <%= label(i.plot.status) %>">
+    <g class="plot <%= i.plot.status %> <%= i.plot.id === current ? 'current' : '' %>">
+      <title>Plot <%= i.plot.plot_no %> · <%= label(i.plot.status) %> · <%= money(i.plot.price) %><% if (i.plot.size_sqm !== null) { %> · <%= i.plot.size_sqm %> m²<% } %></title>
+      <rect x="<%= i.x %>" y="<%= i.y %>" width="<%= i.w %>" height="<%= i.h %>" rx="4"></rect>
+      <text x="<%= i.x + i.w / 2 %>" y="<%= i.y + 40 %>"><%= i.plot.plot_no %></text>
+      <text class="sub" x="<%= i.x + i.w / 2 %>" y="<%= i.y + 58 %>"><%= i.plot.size_sqm !== null ? i.plot.size_sqm + ' m²' : '' %></text>
+      <text class="sub" x="<%= i.x + i.w / 2 %>" y="<%= i.y + 74 %>"><%= i.plot.status === 'available' ? money(i.plot.price) : label(i.plot.status) %></text>
+    </g>
+  </a>
+  <% }) %>
+</svg></div>
+<div class="legend"><span><i class="a"></i> Available</span><span><i class="r"></i> Reserved</span><span><i class="s"></i> Sold</span><span class="muted">Schematic layout. Select a plot for details.</span></div>

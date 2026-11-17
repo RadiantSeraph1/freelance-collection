@@ -4,18 +4,28 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title><%= title %><% if (title !== site.name) { %> | <%= site.name %><% } %></title>
-  <link rel="stylesheet" href="/style.css">
+  <meta name="description" content="Registered, documented residential plots in Greater Accra, with a clear paper trail from reservation to registered title.">
+  <link rel="preload" href="/fonts/manrope-latin-wght-normal.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="/kit.css">
+  <link rel="stylesheet" href="/theme.css">
 </head>
 <body>
-<% if (site.demo) { %><div class="demo">Demonstration prepared by Radiant InnovaTech. Estates, plots, customers and payments shown are sample data.<% if (site.temporary) { %> Changes you make here are temporary and may disappear.<% } %></div><% } %>
-<header class="top">
-  <div class="wrap bar">
-    <a class="brand" href="/"><%= site.name %></a>
-    <nav>
+<% if (site.demo) { %><div class="demo-banner">Demonstration prepared by Radiant InnovaTech. Estates, plots, customers and payments shown are sample data.<% if (site.temporary) { %> Changes you make here are temporary and may disappear.<% } %></div><% } %>
+<div class="utility"><div class="container">
+  <span class="hide-sm"><%- icon('map-pin') %> <%= site.address %></span>
+  <span class="cluster"><a href="tel:<%= site.phone.replace(/[^\d+]/g, '') %>"><%- icon('phone') %> <%= site.phone %></a><a class="hide-sm" href="mailto:<%= site.email %>"><%- icon('mail') %> <%= site.email %></a></span>
+</div></div>
+<header class="site-header">
+  <div class="container">
+    <a class="brand" href="/"><span class="brand-mark">C</span><span><%= site.name.split(' ')[0] %><small><%= site.name.split(' ').slice(1).join(' ') || 'Properties' %></small></span></a>
+    <button class="nav-toggle" data-nav-toggle aria-label="Menu" aria-expanded="false"><%- icon('menu') %></button>
+    <nav class="main-nav" aria-label="Main">
+      <a href="/#estates">Estates</a>
       <a href="/plots?status=available">Available plots</a>
-      <a href="/plots">All plots</a>
+      <a href="/#process">How buying works</a>
       <a href="/contact">Contact</a>
       <% if (session) { %><a href="/admin">Staff</a><% } %>
+      <a class="btn sm" href="/contact">Book a site visit</a>
     </nav>
   </div>
 </header>

@@ -147,3 +147,24 @@ test('CSV export neutralises spreadsheet formulas', async () => {
 test('production refuses to start without secrets', () => {
   assert.throws(() => createApp({ dbPath: ':memory:', env: { NODE_ENV: 'production' } }), /SESSION_SECRET/);
 });
+
+test('estate page draws a site plan with every plot linked and coloured by status', async () => {
+  const html = await (await fetch(`${base}/estates/1`)).text();
+  const plots = db.prepare('SELECT id, status FROM plots WHERE estate_id = 1').all();
+  assert.equal((html.match(/<g class="plot /g) || []).length, plots.length);
+  for (const p of plots) assert.match(html, new RegExp(`href="/plots/${p.id}"[^>]*>\\s*<g class="plot ${p.status}`));
+  assert.equal((await fetch(`${base}/estates/9999`)).status, 404);
+});
+
+test('plot page highlights its own plot on the plan; photos exist; no inline styles', async () => {
+  const fs = require('node:fs'); const path = require('node:path');
+  const html = await (await fetch(`${base}/plots/1`)).text();
+  assert.match(html, /class="plot [a-z]+ current"/);
+  for (const e of db.prepare('SELECT image_url FROM estates').all()) {
+    assert.ok(fs.existsSync(path.join(__dirname, '..', 'public', e.image_url)), e.image_url);
+    assert.ok(fs.existsSync(path.join(__dirname, '..', 'public', e.image_url.replace('-lg.jpg', '-md.jpg'))));
+  }
+  for (const url of ['/', '/estates/1', '/plots', '/plots/1', '/contact', '/admin/login']) {
+    assert.doesNotMatch(await (await fetch(`${base}${url}`)).text(), /\sstyle="/, url);
+  }
+});
