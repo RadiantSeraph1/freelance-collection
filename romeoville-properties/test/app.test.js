@@ -178,3 +178,63 @@ test('staff can save extra gallery photos, and bad links are refused', async () 
   const row = db.prepare("SELECT * FROM properties WHERE title = 'Gallery test'").get();
   assert.equal(row.gallery.split('\n').length, 2);
 });
+
+test('persistence: changes are saved to Blob storage and restored by a new instance', async () => {
+  const fs = require('node:fs');
+  const os = require('node:os');
+  const path = require('node:path');
+  const { DatabaseSync } = require('node:sqlite');
+  const { buildHandler } = require('../src/persist');
+
+  // A stand-in for @vercel/blob that keeps files in memory.
+  const store = new Map();
+  const client = {
+    async get(key) { return store.has(key) ? { stream: new Response(store.get(key)).body } : null; },
+    async put(key, body) { store.set(key, Buffer.from(body)); },
+  };
+  const env = { BLOB_READ_WRITE_TOKEN: 'fake', ADMIN_PASSWORD: 'p', SESSION_SECRET: 's' };
+  const launch = async (dir) => {
+    const handler = buildHandler({ name: 'romeoville', env, client, tmpDir: dir, createApp: (o) => require('../server').createApp({ ...o, env }) });
+    const srv = await new Promise((resolve) => { const s = require('node:http').createServer(handler).listen(0, () => resolve(s)); });
+    return { srv, url: `http://127.0.0.1:${srv.address().port}` };
+  };
+  const dirA = fs.mkdtempSync(path.join(os.tmpdir(), 'persist-a-'));
+  const dirB = fs.mkdtempSync(path.join(os.tmpdir(), 'persist-b-'));
+
+  const a = await launch(dirA);
+  assert.equal((await fetch(`${a.url}/healthz`)).status, 200);
+  assert.ok(store.has('romeoville/app.db'), 'first start stores the seeded database');
+  const sent = await fetch(`${a.url}/enquiries`, form({ name: 'Persisted Person', phone: '+233 24 555 0000', message: 'hello' }));
+  assert.equal(sent.status, 302);
+  // A read-only request must not trigger an upload.
+  const before = store.get('romeoville/app.db');
+  await fetch(`${a.url}/properties`);
+  assert.equal(store.get('romeoville/app.db'), before);
+  a.srv.close();
+
+  // A brand-new instance (empty /tmp) sees the saved enquiry.
+  const b = await launch(dirB);
+  assert.equal((await fetch(`${b.url}/healthz`)).status, 200);
+  const copy = path.join(dirB, 'check.db');
+  fs.writeFileSync(copy, store.get('romeoville/app.db'));
+  const row = new DatabaseSync(copy).prepare("SELECT name FROM enquiries WHERE name = 'Persisted Person'").get();
+  assert.equal(row.name, 'Persisted Person');
+  const page = await fetch(`${b.url}/`);
+  assert.doesNotMatch(await page.text(), /temporary and may disappear/);
+  b.srv.close();
+});
+
+test('persistence: when storage fails the app answers 503 and retries later', async () => {
+  const { buildHandler } = require('../src/persist');
+  let fail = true;
+  const client = { async get() { if (fail) throw new Error('down'); return null; }, async put() {} };
+  const env = { BLOB_READ_WRITE_TOKEN: 'fake', ADMIN_PASSWORD: 'p', SESSION_SECRET: 's' };
+  const dir = require('node:fs').mkdtempSync(require('node:path').join(require('node:os').tmpdir(), 'persist-c-'));
+  const handler = buildHandler({ name: 'romeoville', env, client, tmpDir: dir, createApp: (o) => require('../server').createApp({ ...o, env }) });
+  const srv = await new Promise((resolve) => { const s = require('node:http').createServer(handler).listen(0, () => resolve(s)); });
+  const url = `http://127.0.0.1:${srv.address().port}`;
+  assert.equal((await fetch(`${url}/healthz`)).status, 503);
+  fail = false;
+  assert.equal((await fetch(`${url}/healthz`)).status, 200);
+  srv.close();
+});

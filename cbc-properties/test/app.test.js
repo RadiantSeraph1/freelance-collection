@@ -168,3 +168,33 @@ test('plot page highlights its own plot on the plan; photos exist; no inline sty
     assert.doesNotMatch(await (await fetch(`${base}${url}`)).text(), /\sstyle="/, url);
   }
 });
+
+test('persistence: data written by one instance is restored by a new one (Blob storage)', async () => {
+  const fs = require('node:fs');
+  const os = require('node:os');
+  const path = require('node:path');
+  const { DatabaseSync } = require('node:sqlite');
+  const { buildHandler } = require('../src/persist');
+
+  const store = new Map(); // stand-in for @vercel/blob
+  const client = {
+    async get(key) { return store.has(key) ? { stream: new Response(store.get(key)).body } : null; },
+    async put(key, body) { store.set(key, Buffer.from(body)); },
+  };
+  const env = { BLOB_READ_WRITE_TOKEN: 'fake', ADMIN_PASSWORD: 'p', SESSION_SECRET: 's', SEED_DEMO: 'on', DEMO_PASSWORD: 'demo-pass-1', AGENT_DEMO_PASSWORD: 'demo-pass-1' };
+  const launch = (dir) => buildHandler({ name: 'cbc', env, client, tmpDir: dir, createApp: (o) => require('../server').createApp({ ...o, env }) });
+  const dirA = fs.mkdtempSync(path.join(os.tmpdir(), 'persist-a-'));
+  const dirB = fs.mkdtempSync(path.join(os.tmpdir(), 'persist-b-'));
+
+  const a = await launch(dirA).boot();
+  assert.ok(store.has('cbc/app.db'), 'first start stores the seeded database');
+  a.app.locals.db.exec("CREATE TABLE persist_probe (v TEXT); INSERT INTO persist_probe VALUES ('kept')");
+  await a.save();
+
+  const b = await launch(dirB).boot(); // empty /tmp, as on a cold start
+  assert.equal(b.app.locals.db.prepare('SELECT v FROM persist_probe').get().v, 'kept');
+  // Sample data seeded before the save is still there and was not seeded twice.
+  const copy = path.join(dirB, 'check.db');
+  fs.writeFileSync(copy, store.get('cbc/app.db'));
+  assert.ok(new DatabaseSync(copy).prepare('SELECT COUNT(*) AS n FROM users').get().n >= 1);
+});

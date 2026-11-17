@@ -4,7 +4,16 @@
   "private": true,
   "description": "Demo lead-management system prepared by Radiant InnovaTech",
   "main": "server.js",
-  "engines": { "node": "22.x" },
-  "scripts": { "start": "node server.js", "test": "node --test" },
-  "dependencies": { "ejs": "^3.1.10", "express": "^4.21.2" }
+  "engines": {
+    "node": "22.x"
+  },
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  },
+  "dependencies": {
+    "@vercel/blob": "^2.9.0",
+    "ejs": "^3.1.10",
+    "express": "^4.21.2"
+  }
 }
