@@ -3,7 +3,7 @@
   <h1>Log a lead</h1>
   <p class="muted">For enquiries that arrive by WhatsApp, social media, phone or in person, so every lead is in one place. If this person already has an open lead, the new message is added to it instead of creating a duplicate.</p>
   <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
-  <form method="post" action="/admin/leads" class="stack panel wide">
+  <form method="post" action="/admin/leads" class="stack form-card wide">
     <input type="hidden" name="_csrf" value="<%= csrf %>">
     <div class="row">
       <label>Name <input name="name" required maxlength="100" value="<%= form.name || '' %>"></label>

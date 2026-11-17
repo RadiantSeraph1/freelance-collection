@@ -12,31 +12,31 @@
   </div>
 
   <h2>Which channels produce customers</h2>
-  <table>
+  <div class="table-wrap"><table>
     <thead><tr><th>Source</th><th class="num">Leads</th><th class="num">Open</th><th class="num">Won</th><th class="num">Lost</th><th class="num">Win rate</th><th class="num">Won value</th><th class="num">First response</th></tr></thead>
     <tbody><% bySource.forEach((s) => { %><tr>
       <td><%= label(s.source) %></td><td class="num"><%= s.total %></td><td class="num"><%= s.open %></td><td class="num"><%= s.won %></td><td class="num"><%= s.lost %></td>
       <td class="num"><%= pct(s.rate) %></td><td class="num"><%= money(s.value) %></td><td class="num"><%= hrs(s.reply_hours) %></td>
     </tr><% }) %></tbody>
-  </table>
+  </table></div>
   <p class="muted">Win rate counts closed leads only, so a channel with many open leads is not unfairly penalised.</p>
 
   <h2>Agent performance</h2>
-  <table>
+  <div class="table-wrap"><table>
     <thead><tr><th>Agent</th><th class="num">Leads</th><th class="num">Open</th><th class="num">Overdue follow-ups</th><th class="num">Won</th><th class="num">Lost</th><th class="num">Win rate</th><th class="num">Won value</th><th class="num">First response</th></tr></thead>
     <tbody><% byAgent.forEach((a) => { %><tr>
       <td><%= a.agent %></td><td class="num"><%= a.total %></td><td class="num"><%= a.open %></td><td class="num <%= a.overdue ? 'overdue' : '' %>"><%= a.overdue %></td>
       <td class="num"><%= a.won %></td><td class="num"><%= a.lost %></td><td class="num"><%= pct(a.rate) %></td><td class="num"><%= money(a.value) %></td><td class="num"><%= hrs(a.reply_hours) %></td>
     </tr><% }) %></tbody>
-  </table>
+  </table></div>
 
   <div class="two">
     <div>
       <h2>By type of enquiry</h2>
-      <table>
+      <div class="table-wrap"><table>
         <thead><tr><th>Interest</th><th class="num">Leads</th><th class="num">Won</th><th class="num">Win rate</th></tr></thead>
         <tbody><% byInterest.forEach((i) => { %><tr><td><%= label(i.interest) %></td><td class="num"><%= i.total %></td><td class="num"><%= i.won %></td><td class="num"><%= pct(i.rate) %></td></tr><% }) %></tbody>
-      </table>
+      </table></div>
       <h2>Why leads are lost</h2>
       <% const lostMax = Math.max(1, ...lost.map((r) => r.n)); %>
       <div class="bars"><% lost.forEach((r) => { %>
@@ -50,7 +50,7 @@
         <div class="bar-row"><span><%= m.month %></span><progress class="meter" value="<%= m.n %>" max="<%= monthMax %>"></progress><span class="num"><%= m.n %></span></div>
       <% }) %></div>
       <h2>Where leads are now</h2>
-      <table><tbody><% STAGES.forEach((s) => { %><tr><td><a href="/admin/leads?stage=<%= s %>"><%= label(s) %></a></td><td class="num"><%= stages[s] || 0 %></td></tr><% }) %></tbody></table>
+      <div class="table-wrap"><table><tbody><% STAGES.forEach((s) => { %><tr><td><a href="/admin/leads?stage=<%= s %>"><%= label(s) %></a></td><td class="num"><%= stages[s] || 0 %></td></tr><% }) %></tbody></table></div>
     </div>
   </div>
 </div>

@@ -12,17 +12,17 @@
   </form>
   <p class="muted"><%= leads.length %> <%= leads.length === 1 ? 'lead' : 'leads' %></p>
   <% if (leads.length) { %>
-  <table>
+  <div class="table-wrap"><table>
     <thead><tr><th>Received</th><th>Lead</th><th>Interested in</th><th>Source</th><th>Stage</th><th>Agent</th><th>Next follow-up</th></tr></thead>
     <tbody><% leads.forEach((l) => { const open = !['won','lost'].includes(l.stage); %><tr>
       <td><%= l.created_at.slice(0, 10) %></td>
-      <td><a href="/admin/leads/<%= l.id %>"><%= l.name %></a><% if (l.repeat_count) { %> <span class="tag warn">Asked again</span><% } %><% if (l.stale) { %> <span class="tag late">Quiet</span><% } %></td>
+      <td><a href="/admin/leads/<%= l.id %>"><%= l.name %></a><% if (l.repeat_count) { %> <span class="badge warn">Asked again</span><% } %><% if (l.stale) { %> <span class="badge bad">Quiet</span><% } %></td>
       <td><%= label(l.interest) %></td><td><%= label(l.source) %></td>
-      <td><span class="tag <%= l.stage === 'new' ? 'warn' : l.stage === 'won' ? 'ok' : l.stage === 'lost' ? 'bad' : '' %>"><%= label(l.stage) %></span></td>
+      <td><span class="badge <%= l.stage === 'new' ? 'warn' : l.stage === 'won' ? 'ok' : l.stage === 'lost' ? 'bad' : '' %>"><%= label(l.stage) %></span></td>
       <td><%= l.agent_name || 'Unassigned' %></td>
       <td><% if (open && l.next_follow_up) { %><span class="<%= l.due ? 'overdue' : '' %>"><%= l.next_follow_up %></span><% } else { %>–<% } %></td>
     </tr><% }) %></tbody>
-  </table>
+  </table></div>
   <% } else { %><p class="empty">No leads match.</p><% } %>
 </div>
 <%- include('../partials/foot') %>

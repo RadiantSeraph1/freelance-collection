@@ -1,11 +1,1 @@
-<div class="wrap section">
-<nav class="subnav">
-  <a href="/admin" class="<%= path === '/admin/' || path === '/admin' ? 'on' : '' %>">Dashboard</a>
-  <a href="/admin/pipeline" class="<%= path.startsWith('/admin/pipeline') ? 'on' : '' %>">Pipeline</a>
-  <a href="/admin/leads" class="<%= path.startsWith('/admin/leads') ? 'on' : '' %>">All leads</a>
-  <% if (me.role === 'admin') { %>
-    <a href="/admin/reports" class="<%= path.startsWith('/admin/reports') ? 'on' : '' %>">Reports</a>
-    <a href="/admin/team" class="<%= path.startsWith('/admin/team') ? 'on' : '' %>">Team</a>
-  <% } %>
-  <form method="post" action="/admin/logout"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="link"><%= me.name %> · Sign out</button></form>
-</nav>
+<div class="wrap">

@@ -13,7 +13,7 @@
 
   <% if (unassigned.length) { %>
   <h2>Needs an agent</h2>
-  <table>
+  <div class="table-wrap"><table>
     <thead><tr><th>Received</th><th>Lead</th><th>Interested in</th><th>Source</th><th>Assign to</th></tr></thead>
     <tbody><% unassigned.forEach((l) => { %><tr>
       <td><%= l.created_at.slice(0, 10) %></td>
@@ -21,31 +21,31 @@
       <td><%= label(l.interest) %></td><td><%= label(l.source) %></td>
       <td><%- include('assign', { l }) %></td>
     </tr><% }) %></tbody>
-  </table>
+  </table></div>
   <% } %>
 
   <h2>Follow-ups due today or overdue</h2>
   <% if (due.length) { %>
-  <table>
+  <div class="table-wrap"><table>
     <thead><tr><th>Due</th><th>Lead</th><th>Stage</th><th>Interested in</th><th>Agent</th><th></th></tr></thead>
     <tbody><% due.forEach((l) => { %><tr>
       <td class="<%= l.next_follow_up < l.today ? 'overdue' : '' %>"><%= l.next_follow_up %></td>
-      <td><a href="/admin/leads/<%= l.id %>"><%= l.name %></a><% if (l.repeat_count) { %> <span class="tag warn">Asked again</span><% } %></td>
+      <td><a href="/admin/leads/<%= l.id %>"><%= l.name %></a><% if (l.repeat_count) { %> <span class="badge warn">Asked again</span><% } %></td>
       <td><%= label(l.stage) %></td><td><%= label(l.interest) %></td><td><%= l.agent_name || 'Unassigned' %></td>
       <td><% if (l.phone) { %><a href="tel:<%= l.phone.replace(/[^+\d]/g, '') %>">Call</a><% } %></td>
     </tr><% }) %></tbody>
-  </table>
+  </table></div>
   <% } else { %><p class="muted">Nothing is due. Well done.</p><% } %>
 
   <% if (stale.length) { %>
   <h2>Leads that have gone quiet</h2>
-  <table>
+  <div class="table-wrap"><table>
     <thead><tr><th>Last activity</th><th>Lead</th><th>Stage</th><th>Agent</th></tr></thead>
     <tbody><% stale.forEach((l) => { %><tr>
       <td class="overdue"><%= l.updated_at.slice(0, 10) %></td>
       <td><a href="/admin/leads/<%= l.id %>"><%= l.name %></a></td><td><%= label(l.stage) %></td><td><%= l.agent_name || 'Unassigned' %></td>
     </tr><% }) %></tbody>
-  </table>
+  </table></div>
   <% } %>
 </div>
 <%- include('../partials/foot') %>

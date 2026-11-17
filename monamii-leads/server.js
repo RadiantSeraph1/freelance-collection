@@ -7,6 +7,7 @@ const {
 } = require('./src/db');
 const { seedAdmin, seedDemo } = require('./src/seed');
 const { sessionMiddleware } = require('./src/session');
+const { icon, initials } = require('./src/ui');
 
 const LABELS = {
   new: 'New', contacted: 'Contacted', viewing: 'Viewing / meeting booked', negotiating: 'Negotiating', won: 'Won', lost: 'Lost',
@@ -59,6 +60,7 @@ function createApp(options = {}) {
     name: env.SITE_NAME || 'Monamii Construction',
     phone: env.SITE_PHONE || '+233 00 000 0000',
     email: env.SITE_EMAIL || 'sales@example.com',
+    address: env.SITE_ADDRESS || 'Accra, Ghana',
     demo: env.DEMO_BANNER !== 'off',
     temporary: (options.dbPath || env.DB_PATH) === ':memory:', // serverless demo: data is not kept
   };
@@ -87,7 +89,7 @@ function createApp(options = {}) {
       'X-Content-Type-Options': 'nosniff',
       'X-Frame-Options': 'DENY',
       'Referrer-Policy': 'strict-origin-when-cross-origin',
-      'Content-Security-Policy': "default-src 'self'; img-src 'self' data:; style-src 'self'; script-src 'none'; frame-ancestors 'none'",
+      'Content-Security-Policy': "default-src 'self'; img-src 'self' data:; style-src 'self'; font-src 'self'; script-src 'self'; frame-ancestors 'none'",
     });
     next();
   });
@@ -98,7 +100,7 @@ function createApp(options = {}) {
 
   app.use((req, res, next) => {
     Object.assign(res.locals, {
-      site, label: (k) => LABELS[k] || k, session: req.session, path: req.path, me: null,
+      site, icon, initials, label: (k) => LABELS[k] || k, session: req.session, path: req.path, me: null,
       money: (amount) => `GH₵${Number(amount || 0).toLocaleString('en-US')}`,
       waLink: (phone, text) => `https://wa.me/${toWaNumber(phone)}?text=${encodeURIComponent(text)}`,
     });

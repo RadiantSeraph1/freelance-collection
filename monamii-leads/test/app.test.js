@@ -247,3 +247,14 @@ test('production refuses to start without secrets, and keeps the API off without
     assert.equal(app.locals.db.prepare('SELECT COUNT(*) AS n FROM leads').get().n, 0);
   } finally { s.close(); }
 });
+
+test('landing page has services, form and no inline styles; bundled photos exist', async () => {
+  const fs = require('node:fs');
+  const path = require('node:path');
+  const html = await (await fetch(`${base}/`)).text();
+  assert.match(html, /name="interest"/);
+  assert.match(html, /Construction/);
+  assert.doesNotMatch(html, /\sstyle="/);
+  for (const [, src] of html.matchAll(/src="(\/img\/[^"]+)"/g)) assert.ok(fs.existsSync(path.join(__dirname, '..', 'public', src)), src);
+  assert.match((await fetch(`${base}/`)).headers.get('content-security-policy'), /script-src 'self'/);
+});

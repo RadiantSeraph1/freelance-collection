@@ -1,28 +1,81 @@
 <%- include('partials/head') %>
-<section class="hero small">
-  <div class="wrap">
-    <h1>Tell us what you are looking for</h1>
-    <p>Houses to buy or rent, land, off-plan homes, property management, architecture and construction. One of our agents will contact you shortly.</p>
+<section class="hero left">
+  <img class="cover" src="/img/con-site-aerial-lg.jpg" alt="" fetchpriority="high">
+  <div class="container">
+    <span class="eyebrow">Construction · Architecture · Property</span>
+    <h1>Tell us what you are looking for, <em>we will build the rest</em></h1>
+    <p class="lead">Houses to buy or rent, land, off-plan homes, property management, architecture and construction. One of our agents will contact you shortly.</p>
+    <div class="hero-actions">
+      <a class="btn" href="#enquire">Get a free quote</a>
+      <a class="btn ghost-light" href="https://wa.me/<%= site.whatsapp %>" rel="noopener"><%- icon('message-circle') %> WhatsApp us</a>
+    </div>
   </div>
 </section>
-<section class="wrap section narrow">
-  <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
-  <form method="post" action="/enquire" class="stack panel">
-    <input type="hidden" name="source" value="<%= form.source || 'website' %>">
-    <label>Your name <input name="name" required maxlength="100" value="<%= form.name || '' %>"></label>
-    <div class="row">
-      <label>Phone / WhatsApp <input name="phone" type="tel" maxlength="30" value="<%= form.phone || '' %>"></label>
-      <label>Email <input name="email" type="email" maxlength="120" value="<%= form.email || '' %>"></label>
+
+<section class="stats-strip" aria-label="What we do">
+  <div class="container">
+    <div><b>Build</b><span>Homes and commercial works</span></div>
+    <div><b>Design</b><span>Architecture and planning</span></div>
+    <div><b>Manage</b><span>Lettings and upkeep</span></div>
+    <div><b>Sell</b><span>Houses, land and off-plan</span></div>
+  </div>
+</section>
+
+<section class="section" id="services">
+  <div class="container">
+    <div class="section-head"><span class="eyebrow">What we do</span><h2>One team from the first sketch to the keys</h2></div>
+    <div class="grid grid-3">
+      <a class="svc" href="/enquire?interest=construction#enquire"><img src="/img/con-site-workers-md.jpg" alt="" loading="lazy"><div><h3>Construction</h3><p>New builds, extensions and renovations, managed on site and on budget.</p></div></a>
+      <a class="svc" href="/enquire?interest=architecture#enquire"><img src="/img/con-plans-md.jpg" alt="" loading="lazy"><div><h3>Architecture &amp; design</h3><p>Plans, permits and drawings that suit your plot and your budget.</p></div></a>
+      <a class="svc" href="/enquire?interest=property_management#enquire"><img src="/img/apt-block-blue-md.jpg" alt="" loading="lazy"><div><h3>Property management</h3><p>Tenant sourcing, rent collection and maintenance for owners.</p></div></a>
+      <a class="svc" href="/enquire?interest=buy#enquire"><img src="/img/villa-flat-roof-md.jpg" alt="" loading="lazy"><div><h3>Houses to buy or rent</h3><p>Homes across Accra, with viewings arranged around you.</p></div></a>
+      <a class="svc" href="/enquire?interest=land#enquire"><img src="/img/ld-estate-aerial-md.jpg" alt="" loading="lazy"><div><h3>Land</h3><p>Registered plots in planned estates, with documents you can verify.</p></div></a>
+      <a class="svc" href="/enquire?interest=off_plan#enquire"><img src="/img/villa-pool-modern-md.jpg" alt="" loading="lazy"><div><h3>Off-plan homes</h3><p>Reserve a home before it is built, with a clear payment plan.</p></div></a>
     </div>
-    <div class="row">
-      <label>I am interested in <select name="interest"><% INTERESTS.forEach((i) => { %><option value="<%= i %>" <%= form.interest === i ? 'selected' : '' %>><%= label(i) %></option><% }) %></select></label>
-      <label>Budget (optional) <input name="budget" maxlength="60" value="<%= form.budget || '' %>" placeholder="e.g. GH₵ 800k"></label>
+  </div>
+</section>
+
+<section class="section alt" id="projects">
+  <div class="container split">
+    <div class="photo-frame"><img src="/img/con-renovation-lg.jpg" alt="Renovation in progress" loading="lazy"></div>
+    <div>
+      <span class="eyebrow">How we work</span>
+      <h2>A named agent, a clear quote and regular updates</h2>
+      <ul class="checklist">
+        <li><%- icon('phone') %><div><strong>Reply the same day</strong><br><span class="muted">Every enquiry is logged, assigned and followed up.</span></div></li>
+        <li><%- icon('ruler') %><div><strong>Site visit and quote</strong><br><span class="muted">We look at the plot or property, then send a written quote.</span></div></li>
+        <li><%- icon('hard-hat') %><div><strong>Built and handed over</strong><br><span class="muted">Progress is reported as work moves forward.</span></div></li>
+      </ul>
     </div>
-    <label>Property or listing (optional) <input name="property_ref" maxlength="120" value="<%= form.property_ref || '' %>" placeholder="e.g. 3-bedroom house, East Legon"></label>
-    <label>Message <textarea name="message" rows="4" maxlength="2000"><%= form.message || '' %></textarea></label>
-    <label class="hp" aria-hidden="true">Website <input name="website" tabindex="-1" autocomplete="off"></label>
-    <button class="btn">Send enquiry</button>
-  </form>
-  <p class="muted center">Prefer to talk? Call <%= site.phone %> or <a href="https://wa.me/<%= site.whatsapp %>" rel="noopener">chat on WhatsApp</a>.</p>
+  </div>
+</section>
+
+<section class="section" id="enquire">
+  <div class="container split start">
+    <div>
+      <span class="eyebrow">Enquire</span>
+      <h2>Get a free quote or arrange a call</h2>
+      <p class="lead">Tell us a little about what you need. We will contact you shortly. Prefer to talk? Call <a href="tel:<%= site.phone.replace(/[^\d+]/g, '') %>"><%= site.phone %></a> or <a href="https://wa.me/<%= site.whatsapp %>" rel="noopener">chat on WhatsApp</a>.</p>
+    </div>
+    <div class="form-card">
+      <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
+      <form method="post" action="/enquire" class="stack">
+        <input type="hidden" name="source" value="<%= form.source || 'website' %>">
+        <label>Your name <input name="name" required maxlength="100" autocomplete="name" value="<%= form.name || '' %>"></label>
+        <div class="row">
+          <label>Phone / WhatsApp <input name="phone" type="tel" maxlength="30" value="<%= form.phone || '' %>"></label>
+          <label>Email <input name="email" type="email" maxlength="120" value="<%= form.email || '' %>"></label>
+        </div>
+        <div class="row">
+          <label>I am interested in <select name="interest"><% INTERESTS.forEach((i) => { %><option value="<%= i %>" <%= form.interest === i ? 'selected' : '' %>><%= label(i) %></option><% }) %></select></label>
+          <label>Budget (optional) <input name="budget" maxlength="60" value="<%= form.budget || '' %>" placeholder="e.g. GH₵ 800k"></label>
+        </div>
+        <label>Property or listing (optional) <input name="property_ref" maxlength="120" value="<%= form.property_ref || '' %>" placeholder="e.g. 3-bedroom house, East Legon"></label>
+        <label>Message <textarea name="message" rows="4" maxlength="2000"><%= form.message || '' %></textarea></label>
+        <label class="hp" aria-hidden="true">Website <input name="website" tabindex="-1" autocomplete="off"></label>
+        <button class="btn block"><%- icon('send') %> Send enquiry</button>
+      </form>
+    </div>
+  </div>
 </section>
 <%- include('partials/foot') %>

@@ -1,10 +1,10 @@
 <%- include('../partials/head') %>
 <%- include('nav') %>
-  <p><a href="/admin/leads">← All leads</a></p>
+  <p><a class="arrow-link small" href="/admin/leads">← All leads</a></p>
   <% if (duplicate) { %><p class="note">This person already had an open lead, so their new message was added to it and the follow-up was brought forward to today.</p><% } %>
   <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
   <div class="bar">
-    <h1><%= lead.name %> <span class="tag <%= lead.stage === 'won' ? 'ok' : lead.stage === 'lost' ? 'bad' : lead.stage === 'new' ? 'warn' : '' %>"><%= label(lead.stage) %></span></h1>
+    <h1><%= lead.name %> <span class="badge <%= lead.stage === 'won' ? 'ok' : lead.stage === 'lost' ? 'bad' : lead.stage === 'new' ? 'warn' : '' %>"><%= label(lead.stage) %></span></h1>
     <div class="inline">
       <% if (lead.phone) { %><a class="btn" href="tel:<%= lead.phone.replace(/[^+\d]/g, '') %>">Call</a><a class="btn wa" href="<%= wa %>" rel="noopener">WhatsApp</a><% } %>
       <% if (lead.email) { %><a class="btn" href="mailto:<%= lead.email %>">Email</a><% } %>
@@ -33,7 +33,7 @@
       <% if (notes.length) { %><ul class="notes"><% notes.forEach((n) => { %><li><span class="muted"><%= n.created_at %> UTC · <%= n.author %></span><br><%= n.note %></li><% }) %></ul>
       <% } else { %><p class="muted">No notes yet.</p><% } %>
     </div>
-    <form method="post" action="/admin/leads/<%= lead.id %>" class="stack panel">
+    <form method="post" action="/admin/leads/<%= lead.id %>" class="stack form-card">
       <input type="hidden" name="_csrf" value="<%= csrf %>">
       <h2>Update</h2>
       <label>Stage <select name="stage"><% STAGES.forEach((s) => { %><option value="<%= s %>" <%= lead.stage === s ? 'selected' : '' %>><%= label(s) %></option><% }) %></select></label>
