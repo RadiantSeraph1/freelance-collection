@@ -1,0 +1,33 @@
+<% const v = (k) => (form && form[k] !== undefined && form[k] !== null ? form[k] : ''); %>
+<% if (withSender) { %>
+<h2>Sender (pickup)</h2>
+<div class="row">
+  <label>Name <input name="sender_name" required maxlength="100" value="<%= v('sender_name') %>"></label>
+  <label>Phone / WhatsApp <input name="sender_phone" type="tel" required maxlength="30" value="<%= v('sender_phone') %>"></label>
+</div>
+<div class="row">
+  <label>Pickup address <input name="pickup_address" required maxlength="200" value="<%= v('pickup_address') %>" placeholder="House number, street, landmark"></label>
+  <label>Pickup area <select name="pickup_zone"><% zoneNames.forEach((z) => { %><option <%= v('pickup_zone') === z ? 'selected' : '' %>><%= z %></option><% }) %></select></label>
+</div>
+<% } %>
+<h2>Receiver (delivery)</h2>
+<div class="row">
+  <label>Name <input name="receiver_name" required maxlength="100" value="<%= v('receiver_name') %>"></label>
+  <label>Phone / WhatsApp <input name="receiver_phone" type="tel" required maxlength="30" value="<%= v('receiver_phone') %>"></label>
+</div>
+<div class="row">
+  <label>Delivery address <input name="delivery_address" required maxlength="200" value="<%= v('delivery_address') %>" placeholder="House number, street, landmark"></label>
+  <label>Delivery area <select name="delivery_zone"><% zoneNames.forEach((z) => { %><option <%= v('delivery_zone') === z ? 'selected' : '' %>><%= z %></option><% }) %></select></label>
+</div>
+<h2>Parcel</h2>
+<div class="row">
+  <label>What is being sent <input name="description" required maxlength="200" value="<%= v('description') %>"></label>
+  <label>Weight (kg) <input name="weight_kg" inputmode="decimal" required maxlength="6" value="<%= v('weight_kg') %>" placeholder="e.g. 2.5"></label>
+  <label>Service <select name="service"><% Object.keys(SERVICES).forEach((k) => { %><option value="<%= k %>" <%= (v('service') || 'next_day') === k ? 'selected' : '' %>><%= SERVICES[k].name %>: <%= SERVICES[k].text %></option><% }) %></select></label>
+</div>
+<div class="row">
+  <% if (payments.length > 1) { %>
+  <label>Who pays the delivery fee <select name="payment_mode"><% payments.forEach((p) => { %><option value="<%= p %>" <%= v('payment_mode') === p ? 'selected' : '' %>><%= label(p) %></option><% }) %></select></label>
+  <% } %>
+  <label>Cash to collect on delivery (optional, GH₵) <input name="cod_amount" type="number" min="0" max="50000" value="<%= v('cod_amount') %>" placeholder="0"></label>
+</div>

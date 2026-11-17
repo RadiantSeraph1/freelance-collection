@@ -1,0 +1,12 @@
+<%- include('../partials/head') %>
+<div class="wrap section">
+<%- include('../partials/subnav') %>
+  <h1>My cash</h1>
+  <% const holding = items.filter((i) => !i.remitted_at).reduce((n, i) => n + i.collected, 0); %>
+  <div class="stats"><div class="stat <%= holding ? 'alert' : '' %>"><b><%= money(holding) %></b>I should hand in</div></div>
+  <% if (items.length) { %>
+  <table><thead><tr><th>Collected</th><th>Parcel</th><th>What</th><th class="num">Amount</th><th>Handed in</th></tr></thead>
+  <tbody><% items.forEach((i) => { %><tr><td><%= i.collected_at.slice(0, 16) %></td><td class="mono"><%= i.tracking %></td><td><%= i.kind === 'pickup_fee' ? 'Fee at pickup' : 'On delivery' %></td><td class="num"><%= money(i.collected) %></td><td><%= i.remitted_at ? i.remitted_at.slice(0, 10) : 'Not yet' %></td></tr><% }) %></tbody></table>
+  <% } else { %><p class="empty">No cash collected yet.</p><% } %>
+</div>
+<%- include('../partials/foot') %>

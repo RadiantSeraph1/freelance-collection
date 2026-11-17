@@ -1,0 +1,22 @@
+<%- include('../partials/head') %>
+<div class="wrap section">
+<%- include('../partials/subnav') %>
+  <h1>Cash from riders</h1>
+  <p class="muted">Riders collect delivery fees at pickup and cash on delivery. When a rider hands the cash in, check it against this list and mark it received.</p>
+  <table>
+    <thead><tr><th>Rider</th><th class="num">Items</th><th class="num">Should hand in</th><th class="num">Short</th><th></th></tr></thead>
+    <tbody><% riders.forEach((r) => { %><tr>
+      <td><%= r.name %></td><td class="num"><%= r.items %></td><td class="num"><b><%= money(r.holding) %></b></td><td class="num <%= r.short > 0 ? 'overdue' : '' %>"><%= r.short > 0 ? money(r.short) : '–' %></td>
+      <td><% if (r.items) { %><form method="post" action="/admin/cash/remit"><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="rider_id" value="<%= r.id %>"><button class="btn">Mark <%= money(r.holding) %> received</button></form><% } %></td>
+    </tr><% }) %></tbody>
+  </table>
+  <p class="muted">“Short” is cash a rider collected that was less than expected for the parcel. Look into it before marking the cash received.</p>
+  <h2>Items not yet handed in</h2>
+  <% if (items.length) { %><table><thead><tr><th>Rider</th><th>Parcel</th><th>What</th><th class="num">Expected</th><th class="num">Collected</th><th>When</th></tr></thead>
+  <tbody><% items.forEach((i) => { %><tr><td><%= i.rider_name %></td><td><a class="mono" href="/admin/shipments/<%= i.shipment_id %>"><%= i.tracking %></a></td><td><%= i.kind === 'pickup_fee' ? 'Fee at pickup' : 'On delivery' %></td><td class="num"><%= money(i.expected) %></td><td class="num <%= i.collected < i.expected ? 'overdue' : '' %>"><%= money(i.collected) %></td><td><%= i.collected_at.slice(0, 16) %></td></tr><% }) %></tbody></table>
+  <% } else { %><p class="muted">Nothing outstanding.</p><% } %>
+  <h2>Recently handed in</h2>
+  <% if (recent.length) { %><table><thead><tr><th>Rider</th><th>Date</th><th class="num">Items</th><th class="num">Amount</th><th>Received by</th></tr></thead>
+  <tbody><% recent.forEach((r) => { %><tr><td><%= r.name %></td><td><%= r.day %></td><td class="num"><%= r.items %></td><td class="num"><%= money(r.total) %></td><td><%= r.remitted_by %></td></tr><% }) %></tbody></table><% } else { %><p class="muted">None yet.</p><% } %>
+</div>
+<%- include('../partials/foot') %>

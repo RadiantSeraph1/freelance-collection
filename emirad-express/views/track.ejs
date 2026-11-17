@@ -1,0 +1,19 @@
+<%- include('partials/head') %>
+<section class="wrap section narrow">
+  <p class="muted">Tracking number</p>
+  <h1 class="mono"><%= s.tracking %> <span class="tag <%= s.status === 'delivered' ? 'ok' : ['failed', 'returned', 'cancelled'].includes(s.status) ? 'bad' : '' %>"><%= label(s.status) %></span></h1>
+  <dl class="specs">
+    <div><dt>From</dt><dd><%= s.pickup_zone %></dd></div>
+    <div><dt>To</dt><dd><%= s.delivery_zone %></dd></div>
+    <div><dt>Receiver</dt><dd><%= s.receiver_name.split(' ')[0] %></dd></div>
+    <div><dt>Service</dt><dd><%= label(s.service) %></dd></div>
+    <div><dt><%= s.status === 'delivered' ? 'Delivered on' : 'Expected by' %></dt><dd><%= s.status === 'delivered' ? s.closed_at.slice(0, 10) : s.due_date %></dd></div>
+    <% if (s.status === 'delivered') { %><div><dt>Received by</dt><dd><%= s.delivered_to %></dd></div><% } %>
+  </dl>
+  <% if (s.status === 'failed') { %><p class="note">We could not deliver on attempt <%= s.attempts %>: <%= label(s.failure_reason).toLowerCase() %>. We will contact the receiver to arrange another delivery.</p><% } %>
+  <% if (s.late && s.status !== 'failed') { %><p class="note">This parcel is later than promised. We are sorry, and are working on it.</p><% } %>
+  <h2>Progress</h2>
+  <%- include('partials/timeline', { events, closed }) %>
+  <p class="muted">Questions? Call <%= site.phone %> and quote your tracking number.</p>
+</section>
+<%- include('partials/foot') %>

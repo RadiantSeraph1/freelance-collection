@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title><%= title %><% if (!title.startsWith(site.name)) { %> | <%= site.name %><% } %></title>
+  <link rel="stylesheet" href="/style.css">
+</head>
+<body>
+<% if (site.demo) { %><div class="demo">Demonstration prepared by Radiant InnovaTech. Parcels, customers, riders and prices shown are sample data.<% if (site.temporary) { %> Changes you make here are temporary and may disappear.<% } %></div><% } %>
+<header class="top">
+  <div class="wrap bar">
+    <a class="brand" href="/"><%= site.name %></a>
+    <nav>
+      <a href="/">Track</a>
+      <a href="/quote">Get a price</a>
+      <a href="/book">Book a pickup</a>
+      <a href="/rates">Rates</a>
+      <% if (me) { %><a href="<%= {manager: '/admin', rider: '/rider', business: '/account'}[me.role] %>"><%= me.role === 'manager' ? 'Dispatch' : me.role === 'rider' ? 'My jobs' : 'My account' %></a><% } else { %><a href="/login">Sign in</a><% } %>
+    </nav>
+  </div>
+</header>
+<main>

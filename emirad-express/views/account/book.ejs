@@ -1,0 +1,13 @@
+<%- include('../partials/head') %>
+<div class="wrap section narrow">
+<%- include('../partials/subnav') %>
+  <h1>Book a delivery</h1>
+  <p class="muted">Pickup is from <b><%= me.address %>, <%= me.zone %></b>. Fees are added to your monthly statement.</p>
+  <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
+  <form method="post" action="/account/book" class="stack panel">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <%- include('../partials/booking-fields', { form, withSender: false, payments: ['account'] }) %>
+    <button class="btn">Book delivery</button>
+  </form>
+</div>
+<%- include('../partials/foot') %>

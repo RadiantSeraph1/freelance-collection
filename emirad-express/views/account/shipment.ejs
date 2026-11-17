@@ -1,0 +1,23 @@
+<%- include('../partials/head') %>
+<div class="wrap section narrow">
+<%- include('../partials/subnav') %>
+  <p><a href="/account">← My parcels</a></p>
+  <h1><span class="mono"><%= s.tracking %></span> <span class="tag <%= s.status === 'delivered' ? 'ok' : ['failed', 'returned', 'cancelled'].includes(s.status) ? 'bad' : '' %>"><%= label(s.status) %></span></h1>
+  <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
+  <dl class="specs">
+    <div><dt>Receiver</dt><dd><%= s.receiver_name %><br><span class="muted"><%= s.receiver_phone %></span></dd></div>
+    <div><dt>Deliver to</dt><dd><%= s.delivery_address %>, <%= s.delivery_zone %></dd></div>
+    <div><dt>Parcel</dt><dd><%= s.description %> · <%= s.weight_kg %> kg</dd></div>
+    <div><dt>Service</dt><dd><%= label(s.service) %> · due <%= s.due_date %></dd></div>
+    <div><dt>Delivery fee</dt><dd><%= money(s.price) %></dd></div>
+    <div><dt>Cash on delivery</dt><dd><%= s.cod_amount ? money(s.cod_amount) : 'None' %></dd></div>
+  </dl>
+  <p>Customer tracking link: <a href="/track/<%= s.tracking %>" class="mono"><%= url %></a></p>
+  <p><a class="btn wa" href="<%= waLink(s.receiver_phone, 'Hello ' + s.receiver_name.split(' ')[0] + ', your parcel from ' + me.company + ' is on its way. Track it here: ' + url) %>" rel="noopener">Send the receiver the tracking link on WhatsApp</a></p>
+  <h2>Progress</h2>
+  <%- include('../partials/timeline', { events, closed: ['delivered', 'returned', 'cancelled'].includes(s.status) }) %>
+  <% if (['booked', 'pickup_scheduled'].includes(s.status)) { %>
+  <form method="post" action="/account/shipments/<%= s.id %>/cancel" class="danger"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn red">Cancel this delivery</button><span class="muted">Only possible before the rider collects it.</span></form>
+  <% } %>
+</div>
+<%- include('../partials/foot') %>

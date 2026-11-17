@@ -1,0 +1,11 @@
+<%- include('../partials/head') %>
+<div class="wrap section">
+<%- include('../partials/subnav') %>
+  <h1>Monthly statement</h1>
+  <form action="/account/statement" class="filters no-print">
+    <label>Month <select name="period"><% periods.forEach((p) => { %><option <%= p === period ? 'selected' : '' %>><%= p %></option><% }) %></select></label>
+    <div class="actions"><button class="btn">Show</button></div>
+  </form>
+  <%- include('../partials/statement', { data, business, base: '/account/shipments' }) %>
+</div>
+<%- include('../partials/foot') %>

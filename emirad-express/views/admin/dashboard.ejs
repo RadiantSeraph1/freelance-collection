@@ -1,0 +1,39 @@
+<%- include('../partials/head') %>
+<div class="wrap section">
+<%- include('../partials/subnav') %>
+  <h1>Dispatch dashboard</h1>
+  <div class="stats">
+    <div class="stat"><b><%= stats.today %></b>Booked today</div>
+    <a class="stat <%= stats.toAssign ? 'alert' : '' %>" href="/admin/shipments?status=booked"><b><%= stats.toAssign %></b>Waiting for a rider</a>
+    <a class="stat" href="/admin/board"><b><%= stats.moving %></b>On the road</a>
+    <div class="stat"><b><%= stats.deliveredToday %></b>Delivered today</div>
+    <a class="stat <%= stats.late ? 'alert' : '' %>" href="/admin/shipments?status=active"><b><%= stats.late %></b>Late</a>
+    <a class="stat <%= stats.failed ? 'alert' : '' %>" href="/admin/shipments?status=failed"><b><%= stats.failed %></b>Failed, needs action</a>
+  </div>
+
+  <h2>Waiting for a rider</h2>
+  <% if (toAssign.length) { %>
+  <table>
+    <thead><tr><th>Tracking</th><th>Pickup</th><th>Deliver to</th><th>Service</th><th>Due</th><th>Assign</th></tr></thead>
+    <tbody><% toAssign.forEach((s) => { %><tr>
+      <td><a class="mono" href="/admin/shipments/<%= s.id %>"><%= s.tracking %></a></td>
+      <td><%= s.sender_name %><br><span class="muted"><%= s.pickup_zone %></span></td><td><%= s.receiver_name %><br><span class="muted"><%= s.delivery_zone %></span></td>
+      <td><%= label(s.service) %></td><td><%= s.due_date %></td>
+      <td><form method="post" action="/admin/shipments/<%= s.id %>/assign" class="inline"><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="back" value="dashboard">
+        <select name="rider_id" required aria-label="Rider for <%= s.tracking %>"><option value="">Choose rider…</option><% riders.forEach((r) => { %><option value="<%= r.id %>"><%= r.name %></option><% }) %></select><button class="btn">Assign</button></form></td>
+    </tr><% }) %></tbody>
+  </table>
+  <% } else { %><p class="muted">Every booking has a rider.</p><% } %>
+
+  <% if (late.length) { %><h2>Late parcels</h2><%- include('../partials/ship-table', { rows: late, base: '/admin/shipments' }) %><% } %>
+  <% if (failed.length) { %><h2>Failed deliveries</h2><%- include('../partials/ship-table', { rows: failed, base: '/admin/shipments' }) %><% } %>
+  <h2>Due today</h2>
+  <%- include('../partials/ship-table', { rows: dueToday, base: '/admin/shipments' }) %>
+
+  <h2>Cash riders are holding</h2>
+  <% if (cash.length) { %>
+  <table><thead><tr><th>Rider</th><th class="num">Items</th><th class="num">Cash held</th><th></th></tr></thead>
+  <tbody><% cash.forEach((c) => { %><tr><td><%= c.name %></td><td class="num"><%= c.items %></td><td class="num"><%= money(c.total) %></td><td><a href="/admin/cash">Reconcile</a></td></tr><% }) %></tbody></table>
+  <% } else { %><p class="muted">All cash has been handed in.</p><% } %>
+</div>
+<%- include('../partials/foot') %>

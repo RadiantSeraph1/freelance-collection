@@ -1,0 +1,56 @@
+<%- include('../partials/head') %>
+<div class="wrap section">
+<%- include('../partials/subnav') %>
+  <p><a href="/admin/shipments">← All shipments</a></p>
+  <h1><span class="mono"><%= s.tracking %></span> <span class="tag <%= s.status === 'delivered' ? 'ok' : ['failed', 'returned', 'cancelled'].includes(s.status) ? 'bad' : '' %>"><%= label(s.status) %></span><% if (s.late) { %> <span class="tag bad">Late</span><% } %></h1>
+  <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
+  <div class="two">
+    <div>
+      <dl class="specs">
+        <div><dt>Sender</dt><dd><%= s.sender_name %><br><span class="muted"><%= s.sender_phone %></span></dd></div>
+        <div><dt>Pickup</dt><dd><%= s.pickup_address %>, <%= s.pickup_zone %></dd></div>
+        <div><dt>Receiver</dt><dd><%= s.receiver_name %><br><span class="muted"><%= s.receiver_phone %></span></dd></div>
+        <div><dt>Deliver to</dt><dd><%= s.delivery_address %>, <%= s.delivery_zone %></dd></div>
+        <div><dt>Parcel</dt><dd><%= s.description %> · <%= s.weight_kg %> kg</dd></div>
+        <div><dt>Service</dt><dd><%= label(s.service) %> · due <%= s.due_date %></dd></div>
+        <div><dt>Price</dt><dd><%= money(s.price) %> · <%= label(s.payment_mode) %></dd></div>
+        <div><dt>Cash on delivery</dt><dd><%= s.cod_amount ? money(s.cod_amount) : 'None' %></dd></div>
+        <div><dt>Customer</dt><dd><%= s.business_company || 'One-off' %> · <%= label(s.source) %></dd></div>
+        <div><dt>Attempts</dt><dd><%= s.attempts %><%= s.failure_reason ? ' · ' + label(s.failure_reason) : '' %></dd></div>
+      </dl>
+      <h2>History</h2>
+      <%- include('../partials/timeline', { events, closed: ['delivered', 'returned', 'cancelled'].includes(s.status), showWho: true }) %>
+      <% if (cash.length) { %><h2>Cash</h2>
+      <table><thead><tr><th>What</th><th class="num">Expected</th><th class="num">Collected</th><th>Handed in</th></tr></thead>
+      <tbody><% cash.forEach((c) => { %><tr><td><%= c.kind === 'pickup_fee' ? 'Delivery fee at pickup' : 'Collected on delivery' %></td><td class="num"><%= money(c.expected) %></td><td class="num <%= c.collected < c.expected ? 'overdue' : '' %>"><%= money(c.collected) %></td><td><%= c.remitted_at ? c.remitted_at.slice(0, 10) : 'Not yet' %></td></tr><% }) %></tbody></table><% } %>
+    </div>
+    <div>
+      <div class="panel stack">
+        <h2>Tell the customer</h2>
+        <a class="btn wa" href="<%= waLink(s.receiver_phone, receiverText) %>" rel="noopener">WhatsApp the receiver</a>
+        <a class="btn wa" href="<%= waLink(s.sender_phone, senderText) %>" rel="noopener">WhatsApp the sender</a>
+        <p class="muted">Tracking link: <a href="/track/<%= s.tracking %>" class="mono"><%= s.tracking %></a></p>
+      </div>
+      <% if (!['delivered', 'returned', 'cancelled'].includes(s.status)) { %>
+      <form method="post" action="/admin/shipments/<%= s.id %>/assign" class="panel stack">
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        <h2>Rider</h2>
+        <p class="muted">Now: <%= s.rider_name || 'nobody' %></p>
+        <label>Assign or change <select name="rider_id"><% riders.forEach((r) => { %><option value="<%= r.id %>" <%= s.rider_id === r.id ? 'selected' : '' %>><%= r.name %></option><% }) %></select></label>
+        <button class="btn">Save rider</button>
+      </form>
+      <form method="post" action="/admin/shipments/<%= s.id %>/status" class="panel stack">
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        <h2>Update status</h2>
+        <label>Change to <select name="to"><% next.forEach((n) => { %><option value="<%= n %>"><%= n === 'booked' ? 'Back to booked (remove rider)' : label(n) %></option><% }) %></select></label>
+        <label>If delivered: received by <input name="recipient" maxlength="80"></label>
+        <label>If failed: reason <select name="reason"><option value="">Choose…</option><% FAIL_REASONS.forEach((r) => { %><option value="<%= r %>"><%= label(r) %></option><% }) %></select></label>
+        <label>Cash collected (GH₵, if any) <input name="collected" type="number" min="0"></label>
+        <label>Note shown to the customer <input name="note" maxlength="300"></label>
+        <button class="btn">Update</button>
+      </form>
+      <% } %>
+    </div>
+  </div>
+</div>
+<%- include('../partials/foot') %>

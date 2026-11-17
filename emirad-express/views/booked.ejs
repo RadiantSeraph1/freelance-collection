@@ -1,0 +1,12 @@
+<%- include('partials/head') %>
+<section class="wrap section narrow center">
+  <h1>Booking received</h1>
+  <% if (s) { %>
+  <p>Your tracking number is</p>
+  <p class="price big mono"><%= s.tracking %></p>
+  <p>Price: <b><%= money(s.price) %></b> · <%= label(s.service) %> · due by <%= s.due_date %></p>
+  <p class="muted"><%= label(s.payment_mode) %>. A rider will be assigned shortly. Share the tracking link with <%= s.receiver_name.split(' ')[0] %> so they can follow it too.</p>
+  <p><a class="btn" href="/track/<%= s.tracking %>">Track this parcel</a></p>
+  <% } else { %><p>Thank you. We have received your booking and will be in touch.</p><% } %>
+</section>
+<%- include('partials/foot') %>

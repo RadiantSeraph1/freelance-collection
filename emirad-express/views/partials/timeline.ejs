@@ -1,0 +1,8 @@
+<ul class="timeline">
+  <% events.slice().reverse().forEach((e, i) => { %>
+  <li class="<%= e.status === 'failed' || e.status === 'returned' || e.status === 'cancelled' ? 'bad' : (i === 0 && !closed) ? 'now' : 'done' %>">
+    <b><%= e.text %></b>
+    <span class="muted"><%= e.created_at.slice(0, 16) %> UTC<%= e.visible ? '' : ' · internal' %><%= locals.showWho && e.by_name ? ' · ' + e.by_name : '' %></span>
+  </li>
+  <% }) %>
+</ul>

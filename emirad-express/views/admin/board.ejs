@@ -1,0 +1,23 @@
+<%- include('../partials/head') %>
+<div class="wrap section">
+<%- include('../partials/subnav') %>
+  <div class="bar"><h1>Board</h1>
+    <form action="/admin/board" class="inline"><select name="rider" aria-label="Rider"><option value="">All riders</option><% riders.forEach((r) => { %><option value="<%= r.id %>" <%= rider === String(r.id) ? 'selected' : '' %>><%= r.name %></option><% }) %></select><button class="btn">Show</button></form>
+  </div>
+  <div class="board">
+    <% columns.forEach((c) => { %>
+    <section class="col">
+      <h2><span><%= label(c.status) %></span><span class="muted"><%= c.rows.length %></span></h2>
+      <% c.rows.forEach((s) => { %>
+      <a class="job <%= s.late ? 'late' : '' %>" href="/admin/shipments/<%= s.id %>">
+        <b class="mono"><%= s.tracking %></b>
+        <%= s.pickup_zone %> → <%= s.delivery_zone %><br>
+        <span class="muted"><%= label(s.service) %> · due <%= s.due_date %> · <%= s.rider_name || 'no rider' %></span>
+      </a>
+      <% }) %>
+      <% if (!c.rows.length) { %><p class="muted">Empty</p><% } %>
+    </section>
+    <% }) %>
+  </div>
+</div>
+<%- include('../partials/foot') %>

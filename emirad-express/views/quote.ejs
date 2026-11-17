@@ -1,0 +1,28 @@
+<%- include('partials/head') %>
+<section class="wrap section narrow">
+  <h1>Get a price</h1>
+  <form method="get" action="/quote" class="stack panel">
+    <div class="row">
+      <label>From <select name="pickup_zone"><% zoneNames.forEach((z) => { %><option <%= form.pickup_zone === z ? 'selected' : '' %>><%= z %></option><% }) %></select></label>
+      <label>To <select name="delivery_zone"><% zoneNames.forEach((z) => { %><option <%= form.delivery_zone === z ? 'selected' : '' %>><%= z %></option><% }) %></select></label>
+    </div>
+    <div class="row">
+      <label>Weight (kg) <input name="weight_kg" inputmode="decimal" required value="<%= form.weight_kg %>" placeholder="e.g. 2"></label>
+      <label>Service <select name="service"><% Object.keys(SERVICES).forEach((k) => { %><option value="<%= k %>" <%= (form.service || 'next_day') === k ? 'selected' : '' %>><%= SERVICES[k].name %></option><% }) %></select></label>
+    </div>
+    <button class="btn">Show price</button>
+  </form>
+  <% if (result && result.error) { %><ul class="errors"><li><%= result.error %></li></ul><% } %>
+  <% if (result && !result.error) { %>
+  <div class="panel">
+    <p class="price big"><%= money(result.price) %></p>
+    <table><tbody>
+      <tr><td><%= SERVICES[form.service].name %> delivery</td><td class="num"><%= money(result.base) %></td></tr>
+      <tr><td>Area charge</td><td class="num"><%= money(result.zoneCharge) %></td></tr>
+      <tr><td>Weight charge</td><td class="num"><%= money(result.weightCharge) %></td></tr>
+    </tbody></table>
+    <p><a class="btn" href="/book?<%= new URLSearchParams(form).toString() %>">Book this delivery</a></p>
+  </div>
+  <% } %>
+</section>
+<%- include('partials/foot') %>

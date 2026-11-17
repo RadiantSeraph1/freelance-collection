@@ -1,0 +1,32 @@
+<%- include('partials/head') %>
+<section class="hero">
+  <div class="wrap">
+    <h1>Send it today. Watch it arrive.</h1>
+    <p>Parcels and documents across Accra and Tema, with a tracking link for everyone involved.</p>
+    <% if (error) { %><ul class="errors"><li><%= error %></li></ul><% } %>
+    <form class="track-box" action="/track" method="get">
+      <input name="code" placeholder="Tracking number, e.g. EE-AB3D-7KMN" aria-label="Tracking number" maxlength="20" autocomplete="off">
+      <button class="btn">Track parcel</button>
+    </form>
+    <% if (samples.length) { %><p class="hero-note">Demo tracking numbers to try: <% samples.forEach((s, i) => { %><a class="mono" href="/track/<%= s.tracking %>"><%= s.tracking %></a> (<%= label(s.status).toLowerCase() %>)<%= i < samples.length - 1 ? ' · ' : '' %><% }) %></p><% } %>
+  </div>
+</section>
+<section class="wrap section">
+  <h2>Choose how fast</h2>
+  <div class="grid">
+    <% Object.keys(SERVICES).forEach((k) => { %>
+    <a class="card" href="/book?service=<%= k %>"><div class="card-body"><h3><%= SERVICES[k].name %></h3><p><%= SERVICES[k].text %>.</p><p class="price">From <%= money(SERVICES[k].base) %></p></div></a>
+    <% }) %>
+  </div>
+  <h2>How it works</h2>
+  <div class="two">
+    <ol>
+      <li>Get a price, then book online, or call or WhatsApp us.</li>
+      <li>A rider collects the parcel from you.</li>
+      <li>You and the receiver follow it with your tracking link.</li>
+      <li>The receiver signs for it. Cash on delivery is collected for you if you ask.</li>
+    </ol>
+    <div class="panel"><h2 class="flush">Have a shop or send often?</h2><p>Business accounts get their own login, bulk booking, monthly invoicing and cash-on-delivery statements.</p><a class="btn" href="/login">Business sign in</a></div>
+  </div>
+</section>
+<%- include('partials/foot') %>

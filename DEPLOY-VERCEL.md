@@ -1,6 +1,6 @@
 # Deploying the demos on Vercel
 
-There are four separate apps in this repository. Create **one Vercel project per app**, all from this repository, each with a different **Root Directory**.
+There are five separate apps in this repository. Create **one Vercel project per app**, all from this repository, each with a different **Root Directory**.
 
 | App | Root Directory |
 |---|---|
@@ -8,6 +8,7 @@ There are four separate apps in this repository. Create **one Vercel project per
 | CBC Properties | `cbc-properties` |
 | Monamii Construction | `monamii-leads` |
 | Floorspace Realty | `floorspace-pm` |
+| Emirad Express | `emirad-express` |
 
 For each project: **Framework Preset: Other**, leave the build command and output directory empty, and leave Node.js on the default or choose 22.x. Each app already contains `api/index.js`, `vercel.json` and `.vercelignore`, so there is nothing else to configure except the environment variables below.
 
@@ -27,9 +28,9 @@ Set these under Project Settings, then Environment Variables. Vercel sets `NODE_
 |---|---|---|
 | `SESSION_SECRET` | all | A long random string, for example the output of `openssl rand -hex 32`. Must stay the same across deployments or everyone is signed out. |
 | `ADMIN_PASSWORD` | all | The password for the `admin` account. Choose your own. |
-| `SEED_DEMO` | Monamii, Floorspace | `on`, to load the sample data and demo accounts. Without it they start empty. |
+| `SEED_DEMO` | Monamii, Floorspace, Emirad Express | `on`, to load the sample data and demo accounts. Without it they start empty. |
 | `AGENT_DEMO_PASSWORD` | Monamii | Password for the demo agents `kofi`, `abena`, `yaw`. Choose your own. |
-| `DEMO_PASSWORD` | Floorspace | Password for the demo landlords and tenants. Choose your own. |
+| `DEMO_PASSWORD` | Floorspace, Emirad Express | Password for the demo landlords and tenants (Floorspace), or the demo riders and business accounts (Emirad Express). Choose your own. |
 | `LEAD_API_KEY` | Monamii (optional) | Lets you demonstrate the enquiry API. Without it the API stays off. |
 | `SITE_NAME`, `SITE_PHONE`, `SITE_WHATSAPP`, `SITE_EMAIL` | all (optional) | Contact details shown on the public pages. They default to placeholders. |
 
@@ -40,6 +41,7 @@ Do not use the example passwords from the READMEs on a public URL. Anyone who fi
 - **Romeoville, CBC:** `admin` with your `ADMIN_PASSWORD`.
 - **Monamii:** `admin` with `ADMIN_PASSWORD` (manager); `kofi`, `abena`, `yaw` with `AGENT_DEMO_PASSWORD` (agents).
 - **Floorspace:** `admin` with `ADMIN_PASSWORD` (manager); `kboateng`, `asarpong` (landlords) and `ama`, `kojo`, `efua`, `yaw`, `nana`, `linda` (tenants) with `DEMO_PASSWORD`.
+- **Emirad Express:** `admin` with `ADMIN_PASSWORD` (dispatcher); `kofi`, `esi`, `musah` (riders) and `shopnest`, `glow` (business accounts) with `DEMO_PASSWORD`.
 
 ## After each deployment
 

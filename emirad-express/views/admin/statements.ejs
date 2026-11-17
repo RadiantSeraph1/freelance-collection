@@ -1,0 +1,12 @@
+<%- include('../partials/head') %>
+<div class="wrap section">
+<%- include('../partials/subnav') %>
+  <h1>Business statements</h1>
+  <form action="/admin/statements" class="filters no-print">
+    <label>Business <select name="business"><% businesses.forEach((b) => { %><option value="<%= b.id %>" <%= business && business.id === b.id ? 'selected' : '' %>><%= b.company %></option><% }) %></select></label>
+    <label>Month <select name="period"><% periods.forEach((p) => { %><option <%= p === period ? 'selected' : '' %>><%= p %></option><% }) %></select></label>
+    <div class="actions"><button class="btn">Show</button></div>
+  </form>
+  <% if (data) { %><%- include('../partials/statement', { data, business: { company: business.company }, base: '/admin/shipments' }) %><% } else { %><p class="empty">No business customers yet.</p><% } %>
+</div>
+<%- include('../partials/foot') %>

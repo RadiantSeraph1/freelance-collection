@@ -1,0 +1,43 @@
+<%- include('../partials/head') %>
+<div class="wrap section narrow">
+<%- include('../partials/subnav') %>
+  <p><a href="/rider">← My jobs</a></p>
+  <% const owed = s.cod_amount + (s.payment_mode === 'receiver_cash' ? s.price : 0); %>
+  <h1><span class="mono"><%= s.tracking %></span> <span class="tag"><%= label(s.status) %></span></h1>
+  <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
+  <dl class="specs">
+    <div><dt>Pickup from</dt><dd><%= s.sender_name %><br><%= s.pickup_address %>, <%= s.pickup_zone %><br><a href="tel:<%= s.sender_phone.replace(/[^+\d]/g, '') %>"><%= s.sender_phone %></a></dd></div>
+    <div><dt>Deliver to</dt><dd><%= s.receiver_name %><br><%= s.delivery_address %>, <%= s.delivery_zone %><br><a href="tel:<%= s.receiver_phone.replace(/[^+\d]/g, '') %>"><%= s.receiver_phone %></a></dd></div>
+    <div><dt>Parcel</dt><dd><%= s.description %> · <%= s.weight_kg %> kg</dd></div>
+    <div><dt>Due</dt><dd class="<%= s.late ? 'overdue' : '' %>"><%= s.due_date %> · <%= label(s.service) %></dd></div>
+  </dl>
+  <% if (s.payment_mode === 'sender_cash' && s.status === 'pickup_scheduled') { %><p class="note">Collect <b><%= money(s.price) %></b> from the sender when you pick up.</p><% } %>
+  <% if (owed && ['picked_up', 'out_for_delivery', 'failed'].includes(s.status)) { %><p class="note">Collect <b><%= money(owed) %></b> from the receiver<%= s.cod_amount ? ' (goods ' + money(s.cod_amount) + (s.payment_mode === 'receiver_cash' ? ' + delivery ' + money(s.price) : '') + ')' : ' (delivery fee)' %>.</p><% } %>
+  <div class="big-actions">
+    <a class="btn wa" href="<%= waLink(s.receiver_phone, 'Hello ' + s.receiver_name.split(' ')[0] + ', this is your ' + site.name + ' rider with your parcel ' + s.tracking + '. I am on my way. Please keep your phone on.') %>" rel="noopener">WhatsApp the receiver</a>
+    <% if (s.status === 'pickup_scheduled') { %>
+    <form method="post" action="/rider/jobs/<%= s.id %>/status" class="stack panel"><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="to" value="picked_up">
+      <% if (s.payment_mode === 'sender_cash') { %><label>Cash collected (GH₵) <input name="collected" type="number" min="0" value="<%= s.price %>"></label><% } %>
+      <button class="btn">Picked up</button></form>
+    <% } else if (s.status === 'picked_up') { %>
+    <form method="post" action="/rider/jobs/<%= s.id %>/status"><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="to" value="out_for_delivery"><button class="btn">Out for delivery</button></form>
+    <% } else if (s.status === 'failed') { %>
+    <form method="post" action="/rider/jobs/<%= s.id %>/status"><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="to" value="out_for_delivery"><button class="btn">Try again: out for delivery</button></form>
+    <p class="muted">Failed so far: <%= s.attempts %>. Ask the dispatcher if the parcel should be returned.</p>
+    <% } else if (s.status === 'out_for_delivery') { %>
+    <form method="post" action="/rider/jobs/<%= s.id %>/status" class="stack panel"><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="to" value="delivered">
+      <h2>Delivered</h2>
+      <label>Received by <input name="recipient" required maxlength="80" value="<%= s.receiver_name %>"></label>
+      <% if (owed) { %><label>Cash collected (GH₵) <input name="collected" type="number" min="0" value="<%= owed %>"></label><% } %>
+      <button class="btn">Mark delivered</button></form>
+    <form method="post" action="/rider/jobs/<%= s.id %>/status" class="stack panel"><input type="hidden" name="_csrf" value="<%= csrf %>"><input type="hidden" name="to" value="failed">
+      <h2>Could not deliver</h2>
+      <label>Why <select name="reason" required><option value="">Choose…</option><% FAIL_REASONS.forEach((r) => { %><option value="<%= r %>"><%= label(r) %></option><% }) %></select></label>
+      <label>Note (optional, the customer will see it) <input name="note" maxlength="300"></label>
+      <button class="btn red">Mark failed</button></form>
+    <% } %>
+  </div>
+  <h2>History</h2>
+  <%- include('../partials/timeline', { events, closed: false }) %>
+</div>
+<%- include('../partials/foot') %>
