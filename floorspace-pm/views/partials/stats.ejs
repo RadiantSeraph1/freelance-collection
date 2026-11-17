@@ -1,0 +1,6 @@
+<div class="stats">
+  <div class="stat"><b><%= money(l.charged, cur) %></b>Charged</div>
+  <div class="stat"><b><%= money(l.paid, cur) %></b>Paid</div>
+  <div class="stat <%= l.balance > 0 ? 'alert' : '' %>"><b><%= l.balance < 0 ? money(-l.balance, cur) + ' credit' : money(l.balance, cur) %></b>Balance</div>
+  <div class="stat <%= l.overdue ? 'alert' : '' %>"><b><%= money(l.overdue, cur) %></b><%= l.overdue ? 'Overdue ' + l.daysOverdue + ' days' : 'Overdue' %></div>
+</div>

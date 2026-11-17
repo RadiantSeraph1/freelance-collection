@@ -1,0 +1,25 @@
+<%- include('../partials/head') %>
+<div class="wrap section">
+<%- include('../partials/subnav') %>
+  <h1>Record an inspection</h1>
+  <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
+  <form method="post" action="/admin/inspections" class="stack panel wide">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <div class="row">
+      <label>Unit <select name="unit_id" required><option value="">Choose…</option><% units.forEach((u) => { %><option value="<%= u.id %>" <%= form.unit_id === u.id ? 'selected' : '' %>><%= u.property_name %>, <%= u.label %></option><% }) %></select></label>
+      <label>Date <input name="inspected_on" type="date" max="<%= todayDate %>" required value="<%= form.inspected_on || '' %>"></label>
+      <label>Type <select name="kind"><% INSPECTION_KINDS.forEach((k) => { %><option value="<%= k %>" <%= form.kind === k ? 'selected' : '' %>><%= label(k) %></option><% }) %></select></label>
+    </div>
+    <table>
+      <thead><tr><th>Area</th><th>Condition</th><th>Note</th></tr></thead>
+      <tbody><% AREAS.forEach((a, i) => { %><tr>
+        <td><%= a %></td>
+        <td><% CONDITIONS.forEach((c) => { %><label class="check"><input type="radio" name="cond_<%= i %>" value="<%= c %>" <%= c === 'good' ? 'checked' : '' %>> <%= label(c) %></label><% }) %></td>
+        <td><input name="note_<%= i %>" maxlength="300" aria-label="Note for <%= a %>"></td>
+      </tr><% }) %></tbody>
+    </table>
+    <label>Overall summary <textarea name="summary" rows="3" maxlength="2000"><%= form.summary || '' %></textarea></label>
+    <div class="actions"><button class="btn">Save inspection</button> <a href="/admin/inspections">Cancel</a></div>
+  </form>
+</div>
+<%- include('../partials/foot') %>

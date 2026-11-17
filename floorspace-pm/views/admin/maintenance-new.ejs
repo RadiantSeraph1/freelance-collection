@@ -1,0 +1,17 @@
+<%- include('../partials/head') %>
+<div class="wrap section">
+<%- include('../partials/subnav') %>
+  <h1>Log a repair request</h1>
+  <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
+  <form method="post" action="/admin/maintenance" class="stack panel wide">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <label>Unit <select name="unit_id" required><option value="">Choose…</option><% units.forEach((u) => { %><option value="<%= u.id %>" <%= form.unit_id === u.id ? 'selected' : '' %>><%= u.property_name %>, <%= u.label %><%= u.tenant_name ? ' (' + u.tenant_name + ')' : ' (vacant)' %></option><% }) %></select></label>
+    <div class="row">
+      <label>Problem <input name="title" required maxlength="120" value="<%= form.title || '' %>"></label>
+      <label>Priority <select name="priority"><% PRIORITIES.forEach((p) => { %><option value="<%= p %>" <%= form.priority === p ? 'selected' : '' %>><%= label(p) %></option><% }) %></select></label>
+    </div>
+    <label>Details <textarea name="description" rows="4" maxlength="2000"><%= form.description || '' %></textarea></label>
+    <div class="actions"><button class="btn">Log request</button> <a href="/admin/maintenance">Cancel</a></div>
+  </form>
+</div>
+<%- include('../partials/foot') %>

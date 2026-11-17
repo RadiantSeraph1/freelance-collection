@@ -1,0 +1,51 @@
+<%- include('../partials/head') %>
+<div class="wrap section">
+<%- include('../partials/subnav') %>
+  <p><a href="/admin/properties">← All properties</a></p>
+  <h1><%= property.name %></h1>
+  <p class="muted"><%= property.address %><%= property.area ? ' · ' + property.area : '' %> · Owner: <%= property.landlord_name %> · Management fee <%= property.fee_percent %>%</p>
+  <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
+  <h2>Units</h2>
+  <table>
+    <thead><tr><th>Unit</th><th>Beds</th><th>Tenant</th><th class="num">Rent</th><th>Rent status</th><th>Listing</th></tr></thead>
+    <tbody><% units.forEach((u) => { %><tr>
+      <td><a href="/admin/units/<%= u.id %>"><%= u.label %></a></td><td><%= u.bedrooms ?? '–' %></td>
+      <td><% if (u.tenancy_id) { %><a href="/admin/tenancies/<%= u.tenancy_id %>"><%= u.tenant_name %></a><% } else { %><span class="tag warn">Vacant</span><% } %></td>
+      <td class="num"><%= u.tenancy_id ? money(u.rent, u.rent_currency) : money(u.asking_rent, u.currency) + ' asking' %></td>
+      <td><% if (u.l) { %><% if (u.l.overdue) { %><span class="tag bad">Overdue <%= money(u.l.overdue, u.rent_currency) %></span><% } else { %><span class="tag ok">Up to date</span><% } %><% } else { %>–<% } %></td>
+      <td><%= u.listed ? 'Advertised when vacant' : 'Not advertised' %></td>
+    </tr><% }) %></tbody>
+  </table>
+  <div class="two">
+    <form method="post" action="/admin/properties/<%= property.id %>/units" class="stack panel">
+      <input type="hidden" name="_csrf" value="<%= csrf %>">
+      <h2>Add a unit</h2>
+      <div class="row">
+        <label>Name or number <input name="label" required maxlength="30"></label>
+        <label>Bedrooms <input name="bedrooms" type="number" min="0"></label>
+        <label>Bathrooms <input name="bathrooms" type="number" min="0"></label>
+      </div>
+      <div class="row">
+        <label>Asking rent per month <input name="asking_rent" type="number" min="0"></label>
+        <label>Currency <select name="currency"><% CURRENCIES.forEach((c) => { %><option><%= c %></option><% }) %></select></label>
+      </div>
+      <label>Description <textarea name="description" rows="3" maxlength="1000"></textarea></label>
+      <label class="check"><input type="checkbox" name="listed" value="1" checked> Advertise on the website when vacant</label>
+      <button class="btn">Add unit</button>
+    </form>
+    <form method="post" action="/admin/properties/<%= property.id %>" class="stack panel">
+      <input type="hidden" name="_csrf" value="<%= csrf %>">
+      <h2>Property details</h2>
+      <label>Landlord <select name="landlord_id"><% landlords.forEach((l) => { %><option value="<%= l.id %>" <%= property.landlord_id === l.id ? 'selected' : '' %>><%= l.name %></option><% }) %></select></label>
+      <label>Name <input name="name" required maxlength="100" value="<%= property.name %>"></label>
+      <label>Area <input name="area" maxlength="60" value="<%= property.area %>"></label>
+      <label>Address <input name="address" maxlength="150" value="<%= property.address %>"></label>
+      <label>Management fee (%) <input name="fee_percent" type="number" min="0" max="50" required value="<%= property.fee_percent %>"></label>
+      <label>Internal notes <textarea name="notes" rows="3" maxlength="1000"><%= property.notes %></textarea></label>
+      <button class="btn">Save property</button>
+    </form>
+  </div>
+  <h2>Recent repair requests</h2>
+  <%- include('../partials/requests-table', { requests, base: '/admin/maintenance' }) %>
+</div>
+<%- include('../partials/foot') %>

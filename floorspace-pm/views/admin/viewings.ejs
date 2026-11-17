@@ -1,0 +1,23 @@
+<%- include('../partials/head') %>
+<div class="wrap section">
+<%- include('../partials/subnav') %>
+  <h1>Viewing requests</h1>
+  <% if (viewings.length) { %>
+  <table>
+    <thead><tr><th>Who</th><th>Unit</th><th>Preferred</th><th>Message</th><th>Update</th></tr></thead>
+    <tbody><% viewings.forEach((v) => { %><tr>
+      <td><b><%= v.name %></b><br><span class="muted"><%= v.phone || v.email %></span><% if (v.phone) { %><br><a href="<%= waLink(v.phone, 'Hello ' + v.name.split(' ')[0] + ', this is ' + site.name + ' about your viewing request for ' + v.property_name + ', unit ' + v.label + '.') %>" rel="noopener">WhatsApp</a><% } %></td>
+      <td><%= v.property_name %>, <%= v.label %><br><span class="muted"><%= money(v.asking_rent, v.currency) %> / month</span></td>
+      <td><%= v.preferred_date || 'Any day' %></td><td><%= v.message || '–' %></td>
+      <td><form method="post" action="/admin/viewings/<%= v.id %>" class="inline">
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        <select name="status" aria-label="Status"><% VIEWING_STATUSES.forEach((s) => { %><option value="<%= s %>" <%= v.status === s ? 'selected' : '' %>><%= label(s) %></option><% }) %></select>
+        <input name="preferred_date" type="date" value="<%= v.preferred_date || '' %>" aria-label="Viewing date">
+        <input name="notes" maxlength="500" value="<%= v.notes %>" placeholder="Note" aria-label="Note">
+        <button class="btn">Save</button>
+      </form></td>
+    </tr><% }) %></tbody>
+  </table>
+  <% } else { %><p class="empty">No viewing requests yet.</p><% } %>
+</div>
+<%- include('../partials/foot') %>

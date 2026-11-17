@@ -1,0 +1,30 @@
+<%- include('partials/head') %>
+<section class="wrap section">
+  <p><a href="/vacancies">← All vacancies</a></p>
+  <div class="detail">
+    <div>
+      <h1><%= unit.bedrooms === 0 ? 'Studio' : unit.bedrooms + '-bedroom' %> at <%= unit.property_name %></h1>
+      <p class="muted"><%= unit.area %><%= unit.address ? ' · ' + unit.address : '' %> · Unit <%= unit.label %></p>
+      <p class="price big"><%= money(unit.asking_rent, unit.currency) %><small> / month</small></p>
+      <dl class="specs">
+        <% if (unit.bedrooms !== null) { %><div><dt>Bedrooms</dt><dd><%= unit.bedrooms %></dd></div><% } %>
+        <% if (unit.bathrooms !== null) { %><div><dt>Bathrooms</dt><dd><%= unit.bathrooms %></dd></div><% } %>
+      </dl>
+      <p class="desc"><%= unit.description %></p>
+    </div>
+    <aside class="panel">
+      <h2>Request a viewing</h2>
+      <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
+      <form method="post" action="/vacancies/<%= unit.id %>/viewing" class="stack">
+        <label>Your name <input name="name" required maxlength="100" value="<%= form.name || '' %>"></label>
+        <label>Phone / WhatsApp <input name="phone" type="tel" maxlength="30" value="<%= form.phone || '' %>"></label>
+        <label>Email <input name="email" type="email" maxlength="120" value="<%= form.email || '' %>"></label>
+        <label>Preferred date <input name="preferred_date" type="date" min="<%= todayDate %>" value="<%= form.preferred_date || '' %>"></label>
+        <label>Message <textarea name="message" rows="3" maxlength="1000"><%= form.message || '' %></textarea></label>
+        <label class="hp" aria-hidden="true">Website <input name="website" tabindex="-1" autocomplete="off"></label>
+        <button class="btn">Request viewing</button>
+      </form>
+    </aside>
+  </div>
+</section>
+<%- include('partials/foot') %>

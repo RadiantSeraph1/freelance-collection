@@ -1,0 +1,29 @@
+<%- include('../partials/head') %>
+<div class="wrap section">
+<%- include('../partials/subnav') %>
+  <h1>Properties</h1>
+  <table>
+    <thead><tr><th>Property</th><th>Area</th><th>Landlord</th><th class="num">Fee</th><th class="num">Units</th><th class="num">Occupied</th></tr></thead>
+    <tbody><% properties.forEach((p) => { %><tr>
+      <td><a href="/admin/properties/<%= p.id %>"><%= p.name %></a></td><td><%= p.area %></td><td><%= p.landlord_name %></td>
+      <td class="num"><%= p.fee_percent %>%</td><td class="num"><%= p.units %></td><td class="num"><%= p.occupied %></td>
+    </tr><% }) %></tbody>
+  </table>
+  <h2>Add a property</h2>
+  <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
+  <form method="post" action="/admin/properties" class="stack panel wide">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <div class="row">
+      <label>Landlord <select name="landlord_id" required><option value="">Choose…</option><% landlords.forEach((l) => { %><option value="<%= l.id %>" <%= form.landlord_id === l.id ? 'selected' : '' %>><%= l.name %></option><% }) %></select></label>
+      <label>Property name <input name="name" required maxlength="100" value="<%= form.name || '' %>"></label>
+      <label>Area <input name="area" maxlength="60" value="<%= form.area || '' %>" placeholder="e.g. East Legon"></label>
+    </div>
+    <div class="row">
+      <label>Address <input name="address" maxlength="150" value="<%= form.address || '' %>"></label>
+      <label>Management fee (% of rent received) <input name="fee_percent" type="number" min="0" max="50" required value="<%= form.fee_percent ?? 10 %>"></label>
+    </div>
+    <p class="muted">Add landlords on the <a href="/admin/people">People</a> page first.</p>
+    <button class="btn">Add property</button>
+  </form>
+</div>
+<%- include('../partials/foot') %>

@@ -1,0 +1,58 @@
+<%- include('../partials/head') %>
+<div class="wrap section">
+<%- include('../partials/subnav') %>
+  <% const cur = t.currency; %>
+  <p><a href="/admin/rent">← Rent</a></p>
+  <div class="bar"><h1><%= t.tenant_name %> <span class="tag <%= t.status === 'active' ? 'ok' : '' %>"><%= t.status === 'active' ? 'Current tenant' : 'Ended ' + t.ended_on %></span></h1></div>
+  <p class="muted"><a href="/admin/units/<%= t.unit_id %>"><%= t.property_name %>, unit <%= t.unit_label %></a> · Owner: <%= t.landlord_name %> · Rent <%= money(t.rent, cur) %> due on day <%= t.due_day %> · Started <%= t.start_date %><%= t.end_date ? ' · Lease ends ' + t.end_date : '' %> · Deposit <%= money(t.deposit, cur) %> · <%= t.tenant_phone || 'no phone' %></p>
+  <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
+  <%- include('../partials/stats', { l, cur }) %>
+  <div class="two">
+    <div>
+      <h2>Rent ledger</h2>
+      <%- include('../partials/ledger', { l, cur }) %>
+      <h2>Payments received</h2>
+      <% if (l.payments.length) { %>
+      <table><thead><tr><th>Date</th><th>Method</th><th>Reference</th><th class="num">Amount</th><th>Recorded by</th><th></th></tr></thead>
+      <tbody><% l.payments.slice().reverse().forEach((p) => { %><tr><td><%= p.paid_on %></td><td><%= p.method %></td><td><%= p.reference || '–' %></td><td class="num"><%= money(p.amount, cur) %></td><td><%= p.recorded_by %></td>
+        <td><form method="post" action="/admin/tenancies/<%= t.id %>/payments/<%= p.id %>/delete"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="link">Remove</button></form></td></tr><% }) %></tbody></table>
+      <% } else { %><p class="muted">No payments yet.</p><% } %>
+    </div>
+    <div>
+      <form method="post" action="/admin/tenancies/<%= t.id %>/payments" class="stack panel">
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        <h2>Record a payment</h2>
+        <div class="row">
+          <label>Amount (<%= cur %>) <input name="amount" type="number" min="1" required value="<%= l.overdue || (l.nextDue ? l.nextDue.amount : '') %>"></label>
+          <label>Date received <input name="paid_on" type="date" value="<%= todayDate %>" max="<%= todayDate %>" required></label>
+          <label>Method <select name="method"><% PAYMENT_METHODS.forEach((m) => { %><option><%= m %></option><% }) %></select></label>
+          <label>Receipt / reference <input name="reference" maxlength="60"></label>
+        </div>
+        <button class="btn">Add payment</button>
+      </form>
+      <div class="panel stack">
+        <h2>Reminder</h2>
+        <p class="muted">Last reminded: <%= reminders.length ? reminders[0].sent_on : 'never' %></p>
+        <% if (t.tenant_phone) { %><a class="btn wa" href="<%= waLink(t.tenant_phone, reminderText) %>" rel="noopener">Open WhatsApp with message</a><% } %>
+        <form method="post" action="/admin/tenancies/<%= t.id %>/reminders"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="btn">Log reminder as sent</button></form>
+      </div>
+      <% if (t.status === 'active') { %>
+      <form method="post" action="/admin/tenancies/<%= t.id %>/rent" class="stack panel">
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        <h2>Change the rent</h2>
+        <label>New monthly rent (<%= cur %>) <input name="rent" type="number" min="1" required value="<%= t.rent %>"></label>
+        <p class="muted">Applies to months that have not yet fallen due. Earlier months keep the rent that applied then.</p>
+        <button class="btn">Update rent</button>
+      </form>
+      <form method="post" action="/admin/tenancies/<%= t.id %>/end" class="stack panel danger-panel">
+        <input type="hidden" name="_csrf" value="<%= csrf %>">
+        <h2>End this tenancy</h2>
+        <label>Moved out on <input name="ended_on" type="date" value="<%= todayDate %>"></label>
+        <p class="muted">The unit becomes vacant. The month the tenant leaves is charged in full; later months are removed. Any balance stays on this record.</p>
+        <button class="btn red">End tenancy</button>
+      </form>
+      <% } %>
+    </div>
+  </div>
+</div>
+<%- include('../partials/foot') %>

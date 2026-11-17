@@ -1,0 +1,13 @@
+<%- include('../partials/head') %>
+<div class="wrap section">
+<%- include('../partials/subnav') %>
+  <p><a href="<%= back %>">← Back</a></p>
+  <h1><%= label(inspection.kind) %> inspection</h1>
+  <p class="muted"><%= inspection.property_name %>, unit <%= inspection.label %> · <%= inspection.inspected_on %> · Inspector: <%= inspection.inspector || '–' %></p>
+  <table>
+    <thead><tr><th>Area</th><th>Condition</th><th>Note</th></tr></thead>
+    <tbody><% items.forEach((i) => { %><tr><td><%= i.area %></td><td><span class="tag <%= i.condition === 'good' ? 'ok' : i.condition === 'poor' ? 'bad' : 'warn' %>"><%= label(i.condition) %></span></td><td><%= i.note || '' %></td></tr><% }) %></tbody>
+  </table>
+  <% if (inspection.summary) { %><h2>Summary</h2><p class="desc"><%= inspection.summary %></p><% } %>
+</div>
+<%- include('../partials/foot') %>

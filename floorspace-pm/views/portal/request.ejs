@@ -1,0 +1,17 @@
+<%- include('../partials/head') %>
+<div class="wrap section">
+<%- include('../partials/subnav') %>
+  <p><a href="/portal">← Back</a></p>
+  <h1><%= request.title %> <span class="tag <%= request.status === 'done' ? 'ok' : request.status === 'open' ? 'warn' : '' %>"><%= label(request.status) %></span></h1>
+  <p class="muted"><%= request.property_name %>, unit <%= request.unit_label %> · Reported <%= request.created_at.slice(0, 10) %> · Priority: <%= label(request.priority) %></p>
+  <dl class="specs">
+    <div><dt>Contractor</dt><dd><%= request.contractor || 'Not yet assigned' %></dd></div>
+    <% if (me.role === 'landlord' && request.cost) { %><div><dt>Cost</dt><dd><%= money(request.cost, request.cost_currency) %><%= request.charge_landlord ? ' (deducted from your statement)' : ' (not charged to you)' %></dd></div><% } %>
+    <% if (request.completed_on) { %><div><dt>Completed</dt><dd><%= request.completed_on %></dd></div><% } %>
+  </dl>
+  <h2>Details</h2>
+  <p class="desc"><%= request.description || 'No details given.' %></p>
+  <h2>Progress</h2>
+  <ul class="notes"><% notes.forEach((n) => { %><li><span class="muted"><%= n.created_at.slice(0, 10) %> · <%= n.author %></span><br><%= n.note %></li><% }) %></ul>
+</div>
+<%- include('../partials/foot') %>

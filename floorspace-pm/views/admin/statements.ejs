@@ -1,0 +1,12 @@
+<%- include('../partials/head') %>
+<div class="wrap section">
+<%- include('../partials/subnav') %>
+  <h1>Owner statements</h1>
+  <form action="/admin/statements" class="filters no-print">
+    <label>Landlord <select name="landlord"><% landlords.forEach((l) => { %><option value="<%= l.id %>" <%= landlord && landlord.id === l.id ? 'selected' : '' %>><%= l.name %></option><% }) %></select></label>
+    <label>Month <select name="period"><% periods.forEach((p) => { %><option <%= p === period ? 'selected' : '' %>><%= p %></option><% }) %></select></label>
+    <div class="actions"><button class="btn">Show statement</button></div>
+  </form>
+  <% if (data) { %><%- include('../partials/statement', { data, landlord, period }) %><% } else { %><p class="empty">Add a landlord first.</p><% } %>
+</div>
+<%- include('../partials/foot') %>

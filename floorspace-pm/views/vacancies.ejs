@@ -1,0 +1,28 @@
+<%- include('partials/head') %>
+<section class="hero small">
+  <div class="wrap">
+    <h1>Homes available to rent</h1>
+    <p>Managed apartments and houses in Accra. Request a viewing online and we will confirm a time.</p>
+    <form class="search" action="/vacancies">
+      <select name="area" aria-label="Area"><option value="">Any area</option><% areas.forEach((a) => { %><option <%= f.area === a ? 'selected' : '' %>><%= a %></option><% }) %></select>
+      <select name="beds" aria-label="Bedrooms"><option value="">Any bedrooms</option><% [1,2,3,4].forEach((n) => { %><option value="<%= n %>" <%= f.beds === n ? 'selected' : '' %>><%= n %>+ bedrooms</option><% }) %></select>
+      <button class="btn">Search</button>
+    </form>
+  </div>
+</section>
+<section class="wrap section">
+  <p class="muted"><%= units.length %> available</p>
+  <% if (units.length) { %>
+  <div class="grid"><% units.forEach((u) => { %>
+    <a class="card" href="/vacancies/<%= u.id %>">
+      <div class="card-body">
+        <h3><%= u.bedrooms === 0 ? 'Studio' : u.bedrooms + '-bedroom' %> at <%= u.property_name %></h3>
+        <p class="muted"><%= u.area %> · Unit <%= u.label %></p>
+        <p class="price"><%= money(u.asking_rent, u.currency) %><small> / month</small></p>
+        <p class="facts"><% if (u.bedrooms !== null) { %><span><%= u.bedrooms %> bed</span><% } %><% if (u.bathrooms !== null) { %><span><%= u.bathrooms %> bath</span><% } %></p>
+      </div>
+    </a>
+  <% }) %></div>
+  <% } else { %><div class="empty"><p>Nothing matches right now. Please <a href="/vacancies">clear the filters</a> or call <%= site.phone %>.</p></div><% } %>
+</section>
+<%- include('partials/foot') %>

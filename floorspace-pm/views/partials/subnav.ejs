@@ -1,0 +1,21 @@
+<nav class="subnav">
+  <% const here = (p) => path === p || path.startsWith(p + '/'); %>
+  <% if (me.role === 'manager') { %>
+    <a href="/admin" class="<%= path === '/admin' || path === '/admin/' ? 'on' : '' %>">Dashboard</a>
+    <a href="/admin/rent" class="<%= here('/admin/rent') || here('/admin/tenancies') ? 'on' : '' %>">Rent</a>
+    <a href="/admin/properties" class="<%= here('/admin/properties') || here('/admin/units') ? 'on' : '' %>">Properties</a>
+    <a href="/admin/maintenance" class="<%= here('/admin/maintenance') ? 'on' : '' %>">Maintenance</a>
+    <a href="/admin/inspections" class="<%= here('/admin/inspections') ? 'on' : '' %>">Inspections</a>
+    <a href="/admin/viewings" class="<%= here('/admin/viewings') ? 'on' : '' %>">Viewings</a>
+    <a href="/admin/statements" class="<%= here('/admin/statements') ? 'on' : '' %>">Statements</a>
+    <a href="/admin/people" class="<%= here('/admin/people') ? 'on' : '' %>">People</a>
+  <% } else if (me.role === 'landlord') { %>
+    <a href="/portal" class="<%= path === '/portal' || path === '/portal/' || here('/portal/properties') ? 'on' : '' %>">My properties</a>
+    <a href="/portal/statements" class="<%= here('/portal/statements') ? 'on' : '' %>">Statements</a>
+  <% } else { %>
+    <a href="/portal" class="<%= path === '/portal' || path === '/portal/' ? 'on' : '' %>">My tenancy</a>
+  <% } %>
+  <span class="grow"></span>
+  <a href="/account/password">Password</a>
+  <form method="post" action="/account/logout"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="link"><%= me.name %> · Sign out</button></form>
+</nav>

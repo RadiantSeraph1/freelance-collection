@@ -1,0 +1,33 @@
+<%- include('../partials/head') %>
+<div class="wrap section">
+<%- include('../partials/subnav') %>
+  <h1>People</h1>
+  <table>
+    <thead><tr><th>Name</th><th>Role</th><th>Username</th><th>Phone</th><th class="num">Properties / tenancies</th><th>Status</th><th></th></tr></thead>
+    <tbody><% people.forEach((p) => { %><tr>
+      <td><%= p.name %></td><td><%= label(p.role) %></td><td><%= p.username %></td><td><%= p.phone || '–' %></td>
+      <td class="num"><%= p.role === 'landlord' ? p.properties : p.tenancies %></td>
+      <td><span class="tag <%= p.active ? 'ok' : 'bad' %>"><%= p.active ? 'Active' : 'Deactivated' %></span></td>
+      <td><form method="post" action="/admin/people/<%= p.id %>/toggle"><input type="hidden" name="_csrf" value="<%= csrf %>"><button class="link"><%= p.active ? 'Deactivate' : 'Reactivate' %></button></form></td>
+    </tr><% }) %></tbody>
+  </table>
+  <p class="muted">Deactivated people can no longer sign in. Their records are kept.</p>
+  <h2>Add a landlord or tenant</h2>
+  <% if (errors.length) { %><ul class="errors"><% errors.forEach((e) => { %><li><%= e %></li><% }) %></ul><% } %>
+  <form method="post" action="/admin/people" class="stack panel wide">
+    <input type="hidden" name="_csrf" value="<%= csrf %>">
+    <div class="row">
+      <label>Name <input name="name" required maxlength="80" value="<%= form.name || '' %>"></label>
+      <label>Role <select name="role"><option value="landlord" <%= form.role === 'landlord' ? 'selected' : '' %>>Landlord</option><option value="tenant" <%= form.role !== 'landlord' ? 'selected' : '' %>>Tenant</option></select></label>
+      <label>Phone <input name="phone" maxlength="30" value="<%= form.phone || '' %>"></label>
+      <label>Email <input name="email" type="email" maxlength="120" value="<%= form.email || '' %>"></label>
+    </div>
+    <div class="row">
+      <label>Username <input name="username" required maxlength="30" autocomplete="off" value="<%= form.username || '' %>"></label>
+      <label>Starting password (8+ characters) <input name="password" type="password" required minlength="8" autocomplete="new-password"></label>
+    </div>
+    <p class="muted">Give them the starting password; they can change it themselves after signing in.</p>
+    <button class="btn">Add person</button>
+  </form>
+</div>
+<%- include('../partials/foot') %>
