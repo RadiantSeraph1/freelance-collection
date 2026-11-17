@@ -12,13 +12,15 @@ There are five separate apps in this repository. Create **one Vercel project per
 
 For each project: **Framework Preset: Other**, leave the build command and output directory empty, and leave Node.js on the default or choose 22.x. Each app already contains `app.js` (the single entry point Vercel runs) and `.vercelignore`, so there is nothing else to configure except the environment variables below. Do not add an `api/` folder or a `vercel.json` with rewrites: that makes Vercel run a second copy of the app with its own separate in-memory data.
 
-## Read this first: data is temporary on Vercel
+## How data is kept on Vercel
 
-These apps store their data in SQLite. Vercel's documentation says SQLite cannot be used there: each function instance has its own temporary storage that is lost when the instance recycles, and instances do not share data.
+These apps store their data in SQLite, and Vercel has no persistent disk. Each app therefore saves its database file to a **private Vercel Blob store** and restores it when an instance starts (see `src/persist.js`).
 
-The apps are therefore set up as **demos**: each function instance starts with an in-memory database filled with sample data, and a banner on every page says that changes are temporary. Browsing works well. Anything a visitor saves (an enquiry, a payment, a repair request) may vanish, and may not appear on every page load if Vercel runs more than one instance.
-
-This is fine for letting a prospect click around. It is **not** suitable for real data, and it is not suitable for a prospect trial where they enter their own records. For that, the data layer needs a hosted database, or the apps need a host with a persistent disk.
+- Create one Blob store per project and connect it to that project (Storage tab). Vercel then adds `BLOB_READ_WRITE_TOKEN` automatically. Without that variable the app falls back to an in-memory database that is re-seeded with sample data on every start, and the pages say changes are temporary.
+- On the first start the store is filled with the seeded sample data. After any request that changes data, the file is uploaded before the response finishes.
+- This is a snapshot, not a shared database. If Vercel runs two instances at once, each works from its own copy and the last upload wins. That is fine for a demonstration where a few people click around. It is **not** suitable for real customer data or for several people editing at the same moment. For that, move the data layer to a hosted database, or use a host with a persistent disk.
+- To reset a demo to its sample data, delete the app's `app.db` file from its Blob store (Storage tab); the next request recreates it.
+- Blob data is billed by Vercel under your plan. A demo database is well under 1 MB.
 
 ## Environment variables
 
@@ -26,6 +28,7 @@ Set these under Project Settings, then Environment Variables. Vercel sets `NODE_
 
 | Variable | Apps | Value |
 |---|---|---|
+| `BLOB_READ_WRITE_TOKEN` | all | Added for you when you connect a Blob store to the project. Turns on persistence. |
 | `SESSION_SECRET` | all | A long random string, for example the output of `openssl rand -hex 32`. Must stay the same across deployments or everyone is signed out. |
 | `ADMIN_PASSWORD` | all | The password for the `admin` account. Choose your own. |
 | `SEED_DEMO` | Monamii, Floorspace, Emirad Express | `on`, to load the sample data and demo accounts. Without it they start empty. |
