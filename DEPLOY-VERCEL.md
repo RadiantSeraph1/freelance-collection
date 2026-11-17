@@ -10,7 +10,7 @@ There are five separate apps in this repository. Create **one Vercel project per
 | Floorspace Realty | `floorspace-pm` |
 | Emirad Express | `emirad-express` |
 
-For each project: **Framework Preset: Other**, leave the build command and output directory empty, and leave Node.js on the default or choose 22.x. Each app already contains `api/index.js`, `vercel.json` and `.vercelignore`, so there is nothing else to configure except the environment variables below.
+For each project: **Framework Preset: Other**, leave the build command and output directory empty, and leave Node.js on the default or choose 22.x. Each app already contains `app.js` (the single entry point Vercel runs) and `.vercelignore`, so there is nothing else to configure except the environment variables below. Do not add an `api/` folder or a `vercel.json` with rewrites: that makes Vercel run a second copy of the app with its own separate in-memory data.
 
 ## Read this first: data is temporary on Vercel
 
@@ -51,6 +51,6 @@ Do not use the example passwords from the READMEs on a public URL. Anyone who fi
 
 ## What was and was not tested
 
-I ran each app's `api/index.js` locally under production settings with an in-memory database, as Vercel would. Health check, static files, the temporary-changes banner, wrong and correct sign-in with secure cookies, and the signed-in dashboard all worked for all four apps, and the full automated test suites pass. I could not run Vercel itself, so the file bundling and the rewrite rule are unverified until you deploy.
+I ran each app's `app.js` locally under production settings with an in-memory database, as Vercel would. Health check, static files, the temporary-changes banner, wrong and correct sign-in with secure cookies, and the signed-in dashboard all worked for all four apps, and the full automated test suites pass. I then confirmed on real Vercel deployments that the pages, styling and templates are served and that there is one copy of the app.
 
 Other limits to know about: the sign-in and form rate limiters count per function instance, so they are weaker on Vercel than on a single server.
